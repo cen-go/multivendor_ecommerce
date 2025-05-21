@@ -41,7 +41,7 @@ export default function SidebarNavAdmin({ menuLinks }: SidebarNavAdminProps) {
                 <CommandItem
                   key={index}
                   className={cn(
-                    "w-full h-12 mt-1 cursor-pointer hover:bg-transparent",
+                    "w-full h-12 mt-1 cursor-pointer",
                     link.link === pathName
                       ? "bg-accent text-accent-foreground"
                       : ""
