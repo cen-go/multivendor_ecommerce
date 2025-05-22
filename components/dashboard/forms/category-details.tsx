@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 // Schema for validation
 import { CategoryFormSchema } from "@/lib/schemas";
 // Types
-import { Category } from "@/lib/generated/prisma";
+import { Category } from "@prisma/client";
 import { useEffect } from "react";
 // Shadcn imports
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import ImageUpload from "../shared/image-upload";
 
 interface CategoryDetailsProps {
   data?: Category;
@@ -83,6 +84,29 @@ export default function CategoryDetails({ data }: CategoryDetailsProps) {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem className="justify-center">
+                    <FormControl>
+                      <ImageUpload
+                        type="profile"
+                        value={field.value.map((image) => image.url)}
+                        disabled={isSubmitting}
+                        onChange={(cldUrl) => field.onChange([{ url: cldUrl }])}
+                        onRemove={(cldUrl) =>
+                          field.onChange(
+                            [...field.value].filter(
+                              (image) => image.url !== cldUrl
+                            )
+                          )
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="name"
@@ -139,7 +163,12 @@ export default function CategoryDetails({ data }: CategoryDetailsProps) {
                 )}
               />
 
-              <Button type="submit" disabled={isSubmitting} className="mt-2">
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSubmitting}
+                className="mt-2"
+              >
                 {isSubmitting
                   ? "Submitting..."
                   : data?.id

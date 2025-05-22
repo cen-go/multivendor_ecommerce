@@ -3,7 +3,7 @@ import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { clerkClient } from '@clerk/nextjs/server';
 // Types
 import { NextRequest } from 'next/server'
-import { User } from '@/lib/generated/prisma';
+import { User } from '@prisma/client';
 // DB client
 import db from '@/lib/db';
 
