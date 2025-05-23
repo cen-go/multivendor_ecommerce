@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 // Clerk imports
 import { ClerkProvider } from "@clerk/nextjs";
+// Fonts
 import { Inter, Barlow } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 
 // Fonts
@@ -38,6 +40,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster richColors />
           </ThemeProvider>
         </body>
       </html>

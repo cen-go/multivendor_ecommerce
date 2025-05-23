@@ -1,5 +1,8 @@
 "use client";
 
+// Next and React imports
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 // useForm utilities
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +11,6 @@ import { useForm } from "react-hook-form";
 import { CategoryFormSchema } from "@/lib/schemas";
 // Types
 import { Category } from "@prisma/client";
-import { useEffect } from "react";
 // Shadcn imports
 import { Button } from "@/components/ui/button";
 import {
@@ -30,13 +32,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+// component for Cloudinary upload
 import ImageUpload from "../shared/image-upload";
+// Server action
+import { upsertCategory } from "@/actions/category";
 
 interface CategoryDetailsProps {
   data?: Category;
 }
 
 export default function CategoryDetails({ data }: CategoryDetailsProps) {
+  const router = useRouter()
+
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof CategoryFormSchema>>({
     mode: "onChange", // Form validation mode
@@ -68,6 +76,26 @@ export default function CategoryDetails({ data }: CategoryDetailsProps) {
   // Submit handler for form submission
   async function onSubmit(values: z.infer<typeof CategoryFormSchema>) {
     console.log(values);
+    try {
+      const response = await upsertCategory({
+        id: data?.id,
+        ...values,
+        image: values.image[0].url,
+      })
+      // Display success message
+      toast.success(
+        `${response.name} category is ${data?.id ? "updated" : "created"}.`
+      );
+
+      // Redirect or refresh data
+      if (data?.id) {
+        router.refresh();
+      } else {
+        router.push("/dashboard/admin/categories");
+      }
+    } catch {
+      toast.error(`An error occured!`)
+    }
   }
 
   return (
@@ -110,7 +138,6 @@ export default function CategoryDetails({ data }: CategoryDetailsProps) {
               <FormField
                 control={form.control}
                 name="name"
-                disabled={isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>Category Name</FormLabel>
@@ -124,7 +151,6 @@ export default function CategoryDetails({ data }: CategoryDetailsProps) {
               <FormField
                 control={form.control}
                 name="url"
-                disabled={isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>Category Url</FormLabel>
@@ -142,7 +168,6 @@ export default function CategoryDetails({ data }: CategoryDetailsProps) {
               <FormField
                 control={form.control}
                 name="featured"
-                disabled={isSubmitting}
                 render={({ field }) => (
                   <FormItem className="flex-1 border p-4 rounded-md">
                     <div className="flex items-center gap-2">

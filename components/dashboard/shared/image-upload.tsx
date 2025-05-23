@@ -24,7 +24,6 @@ export default function ImageUpload({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function onUpload(result:any) {
-    console.log(result);
     onChange(result.info.secure_url);
   }
 
@@ -47,7 +46,7 @@ export default function ImageUpload({
               <>
                 <button
                   type="button"
-                  className="z-20 absolute -right-4 bottom-0 flex items-center font-medium text-[17px] h-14 w-14 justify-center  text-white bg-gradient-to-t from-blue-primary to-blue-300 border-none shadow-lg rounded-full hover:shadow-md active:shadow-sm"
+                  className="z-20 absolute right-0 bottom-0 flex items-center font-medium text-[17px] h-14 w-14 justify-center  text-white bg-gradient-to-t from-blue-primary to-blue-300 border-none shadow-lg rounded-full hover:shadow-md active:shadow-sm cursor-pointer"
                   disabled={disabled}
                   onClick={() => open()}
                 >
