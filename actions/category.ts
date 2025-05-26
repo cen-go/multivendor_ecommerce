@@ -11,7 +11,6 @@ import { Category, Role } from "@prisma/client";
 // Parameters:
 //   - category: category object containing the details of the category to ne upserted
 // Returns: Updated or newly created category details.
-
 export async function upsertCategory(category: Partial<Category>) {
   try {
     // Get the current user
@@ -43,12 +42,21 @@ export async function upsertCategory(category: Partial<Category>) {
     }
 
     // Validate the form data
-    const data = CategoryFormSchema.parse({
+    const validatedData = CategoryFormSchema.safeParse({
       name: category.name,
       url: category.url,
       image: [{url: category.image}],
       featured: category.featured,
     });
+
+    if (!validatedData.success) {
+      const validationError = validatedData.error.flatten();
+      throw new Error(
+        `Field errors: ${validationError.fieldErrors.toLocaleString()}, Form errors: ${validationError.formErrors.toLocaleString()}`
+      );
+    }
+
+    const data = validatedData.data;
 
     // Update if the category already exist or create a new category
     if (category.id) {
@@ -70,4 +78,15 @@ export async function upsertCategory(category: Partial<Category>) {
     console.error("error: ", error)
     throw error;
   }
+}
+
+// Function: getAllCategories
+// Description: Retrieves all the categories from the database.
+// Permission Level: Public
+// Returns: An array of categories sorted by updatedAt date in descending order
+export async function getAllCategories() {
+  const categories = await db.category.findMany({
+    orderBy: {updatedAt: "desc"},
+  });
+  return categories;
 }

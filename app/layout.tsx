@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 // Clerk imports
 import { ClerkProvider } from "@clerk/nextjs";
+// Modal provider
+import ModalProvider from "@/lib/modal-provider";
 // Fonts
 import { Inter, Barlow } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner"
@@ -39,7 +41,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <ModalProvider>{children}</ModalProvider>
             <Toaster richColors />
           </ThemeProvider>
         </body>

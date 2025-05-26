@@ -15,7 +15,9 @@ export default async function AdminDashboardLayout({children}: {children: ReactN
       <div className="ml-0 md:ml-[300px]">
         <Header />
         <div className="w-full mt-[75px] p-4">
-          {children}
+          <main>
+            {children}
+          </main>
         </div>
       </div>
     </div>
