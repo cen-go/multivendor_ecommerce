@@ -78,10 +78,10 @@ export default function DataTable<TData, TValue>({
             onChange={(e) =>
               table.getColumn(filterValue)?.setFilterValue(e.target.value)
             }
-            className="h-12"
+            className="h-12 me-1"
           />
         </div>
-        <div className="flex gap-x-2">
+        <div className="flex flex-col lg:flex-row gap-2">
           {modalChildren && (
             <Button
               className="flex gap-2"
@@ -110,7 +110,7 @@ export default function DataTable<TData, TValue>({
       </div>
 
       {/* Table */}
-      <div className="border bg-background rounded-lg">
+      <div className="border bg-background rounded-lg mt-2">
         <Table>
           {/* Table Header */}
           {!noHeader && (
