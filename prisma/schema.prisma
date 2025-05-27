@@ -32,6 +32,24 @@ model Category {
   url      String  @unique
   featured Boolean @default(false)
 
+  subCategories SubCategory[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model SubCategory {
+  id         String  @id @default(uuid())
+  categoryId String
+  name       String  @unique
+  image      String
+  url        String  @unique
+  featured   Boolean @default(false)
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
 }

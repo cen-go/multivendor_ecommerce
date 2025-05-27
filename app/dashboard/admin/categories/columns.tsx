@@ -51,7 +51,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Category } from "@prisma/client";
 
 // TODO import getCAtegory and deleteCategory
-import {  } from "@/actions/category";
+import { getCategoryById, deleteCategory } from "@/actions/category";
 
 // COLUMNS definition
 export const columns: ColumnDef<Category>[] = [
@@ -129,6 +129,11 @@ function CellActions({ rowData }: CellActionsProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Return null if rowData or rowData.id don't exist
+  if (!rowData || !rowData.id) {
+    return null;
+  }
+
   return (
     <AlertDialog>
       <DropdownMenu>
@@ -146,8 +151,13 @@ function CellActions({ rowData }: CellActionsProps) {
                 // Custom model wrapper
                 <CustomModal>
                   <CategoryDetails data={{ ...rowData }} />
-                </CustomModal>
-                // TODO: getCategory
+                </CustomModal>,
+                // get the latest data by passing data fetching function as 2. arg. of setOpen
+                async () => {
+                  return {
+                    rowData: await getCategoryById(rowData.id)
+                  }
+                }
               );
             }}
           >
@@ -179,7 +189,7 @@ function CellActions({ rowData }: CellActionsProps) {
             className="bg-destructive hover:bg-destructive/80 text-white mb-2"
             onClick={async () => {
               setLoading(true);
-              // TODO: Call delete category function
+              await deleteCategory(rowData.id);
 
               toast.success("The category has been deleted.");
               setLoading(false);

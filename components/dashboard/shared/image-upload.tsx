@@ -29,7 +29,10 @@ export default function ImageUpload({
 
   if (type === "profile") {
     return (
-      <div className="relative rounded-full w-40 h-40 bg-slate-300 border-2 border-white shadow-2xl">
+      <div
+        style={{ pointerEvents: "auto" }}
+        className="relative rounded-full w-40 h-40 bg-slate-300 border-2 border-white shadow-2xl"
+      >
         {value.length > 0 && (
           <Image
             src={value[0]}
@@ -39,16 +42,25 @@ export default function ImageUpload({
             className="w-40 h-40 rounded-full object-cover absolute top-0 bottom-0 right-0 left-0"
           />
         )}
-        <CldUploadWidget uploadPreset={preset} onSuccess={onUpload}>
+        <CldUploadWidget
+          uploadPreset={preset}
+          onSuccess={onUpload}
+          onClose={() => {
+            // Restore the pointer events (adjust as needed)
+            document.body.style.pointerEvents = "";
+          }}
+        >
           {({ open }) => {
-
             return (
               <>
                 <button
                   type="button"
                   className="z-20 absolute right-0 bottom-0 flex items-center font-medium text-[17px] h-14 w-14 justify-center  text-white bg-gradient-to-t from-blue-primary to-blue-300 border-none shadow-lg rounded-full hover:shadow-md active:shadow-sm cursor-pointer"
                   disabled={disabled}
-                  onClick={() => open()}
+                  onClick={() => {
+                    document.body.style.pointerEvents = "auto";
+                    open();
+                  }}
                 >
                   <svg
                     viewBox="0 0 640 512"

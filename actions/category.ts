@@ -90,3 +90,39 @@ export async function getAllCategories() {
   });
   return categories;
 }
+
+// Function: getCategoryById
+// Description: Retrieves a specific category from the database.
+// Permission Level: Public
+// Parameters:
+//   - categoryId: the ID of the category to be retrieved.
+// Returns: Details of the requested category.
+export async function getCategoryById(categoryId: string) {
+  const category = await db.category.findUnique({where: {id: categoryId}});
+  return category;
+}
+
+// Function: deleteCategory
+// Description: Deletes a specific category from the database.
+// Permission Level: Admin only
+// Parameters:
+//   - categoryId: the ID of the category to be deleted.
+// Returns: Respons indicating success of or failure of the delete operation.
+export async function deleteCategory(categoryId: string) {
+  try {
+    // Get the current user
+    const user = await currentUser()
+    if (!user) throw new Error("Unauthenticated!");
+
+    // Verify the user is an admin
+    if (user.privateMetadata.role !== Role.ADMIN) {
+      throw new Error("Unauthorized Access: Admin privileges required.");
+    }
+
+    const response = await db.category.delete({where: {id: categoryId}});
+    return response
+  } catch (error) {
+    console.error("error: ", error)
+    throw error;
+  }
+}
