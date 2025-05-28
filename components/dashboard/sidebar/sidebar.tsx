@@ -5,10 +5,14 @@ import Logo from "@/components/shared/logo";
 import UserInfo from "./user-info";
 import SidebarNavAdmin from "./side-nav-admin";
 // Constants
-import { adminDashboardSidebarOptions } from "@/lib/constants/dashboard-sidebar-options";
+import { adminDashboardSidebarOptions, SellerDashboardSidebarOptions } from "@/lib/constants/dashboard-sidebar-options";
+// Types
+import { Store } from "@prisma/client";
+import SidebarNavSeller from "./side-nav-seller";
 
 interface SidebarProps {
   isAdmin?: boolean;
+  stores?: Store[];
 }
 
 export default async function Sidebar({isAdmin}: SidebarProps) {
@@ -18,7 +22,11 @@ export default async function Sidebar({isAdmin}: SidebarProps) {
       <Logo width="210px" height="140px" sizes="33vw" priority={true} />
       <span className="mt-3" />
       {user && <UserInfo user={user} />}
-      {isAdmin && <SidebarNavAdmin menuLinks={adminDashboardSidebarOptions} />}
+      {isAdmin ? (
+        <SidebarNavAdmin menuLinks={adminDashboardSidebarOptions} />
+      ) : (
+        <SidebarNavSeller menuLinks={SellerDashboardSidebarOptions} />
+      )}
     </div>
-  )
+  );
 }
