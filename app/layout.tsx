@@ -8,6 +8,7 @@ import ModalProvider from "@/lib/modal-provider";
 import { Inter, Barlow } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
+import { APP_NAME } from "@/lib/constants";
 
 // Fonts
 const interFont = Inter({ subsets: ["latin"] });
@@ -19,7 +20,10 @@ const barlowFont = Barlow({
 
 // Metadata
 export const metadata: Metadata = {
-  title: "GoShop",
+  title: {
+    template: `%s | ${APP_NAME}`,
+    default: APP_NAME,
+  },
   description:
     "Welcome to GoShop, ultimate destination for seamless online shopping!",
 };
