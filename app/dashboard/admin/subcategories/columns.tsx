@@ -210,7 +210,11 @@ function CellActions({ rowData }: CellActionsProps) {
             className="bg-destructive hover:bg-destructive/80 text-white mb-2"
             onClick={async () => {
               setLoading(true);
-              await deleteSubcategory(rowData.id);
+              const res = await deleteSubcategory(rowData.id);
+
+              if (!res.success) {
+                toast.error(res.message);
+              }
 
               toast.success("The category has been deleted.");
               setLoading(false);

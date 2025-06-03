@@ -1,3 +1,4 @@
+import { StoreStatus } from "@prisma/client";
 import * as z from "zod";
 
 // Helper function to define string requirement
@@ -85,7 +86,19 @@ export const StoreFormSchema = z.object({
       message:
         "Only letters, numbers, hyphen, and underscore are allowed in the store url, and consecutive occurrences of hyphens, underscores, or spaces are not permitted.",
     }),
-    logo: z.object({url: z.string()}).array().length(1, "Choose a logo image"),
-    cover: z.object({url: z.string()}).array().length(1, "Choose a cover image"),
-    featured: z.boolean(),
+  logo: z.object({ url: z.string() }).array().length(1, "Choose a logo image"),
+  cover: z
+    .object({ url: z.string() })
+    .array()
+    .length(1, "Choose a cover image"),
+  featured: z.boolean().optional(),
+  status: z.enum(
+    [
+      StoreStatus.ACTIVE,
+        StoreStatus.BANNED,
+        StoreStatus.DISABLED,
+        StoreStatus.PENDING,
+    ],
+    { message: "Please select a valid store status" }
+  ).optional(),
 });

@@ -15,11 +15,14 @@ export async function upsertSubcategory(subcategory: Partial<SubCategory>) {
   try {
     // Get the current user
     const user = await currentUser();
-    if (!user) throw new Error("Unauthenticated!");
+    if (!user) {
+      return { success: false, message: "Unauthenticated!" };
+    }
 
     // Verify the user is an admin
-    if (user.privateMetadata.role !== Role.ADMIN)
-      throw new Error("Unauthorized Access: Admin privileges required.");
+    if (user.privateMetadata.role !== Role.ADMIN) {
+      return { success: false, message: "Unauthorized Access: Admin privileges required." };
+    }
 
     // Throw error if a subcategory with the same name or url exists
     const existingSubcategory = await db.subCategory.findFirst({
@@ -38,7 +41,7 @@ export async function upsertSubcategory(subcategory: Partial<SubCategory>) {
       } else if (existingSubcategory.url === subcategory.url) {
         errorMessage = "A subcategory with the same URL already exists.";
       }
-      throw new Error(errorMessage);
+      return { success: false, message: errorMessage };
     }
 
     // Validate the form data
@@ -52,32 +55,36 @@ export async function upsertSubcategory(subcategory: Partial<SubCategory>) {
 
     if (!validatedData.success) {
       const validationError = validatedData.error.flatten();
-      throw new Error(
-        `Field errors: ${validationError.fieldErrors.toLocaleString()}, Form errors: ${validationError.formErrors.toLocaleString()}`
-      );
+      return {
+        success: false,
+        fieldErrors: validationError.fieldErrors,
+        formErrors: validationError.formErrors,
+        message: "Validation failed.",
+      };
     }
 
     const data = validatedData.data;
 
     // Update if the subcategory already exist or create a new subcategory
+    let subcategoryDetails;
     if (subcategory.id) {
       // Update
-      const subcategoryDetails = await db.subCategory.update({
+      subcategoryDetails = await db.subCategory.update({
         where: { id: subcategory.id },
         data: { ...data, image: data.image[0].url },
       });
-      return subcategoryDetails;
     } else {
       // Create a new subcategory
-      const subcategoryDetails = await db.subCategory.create({
+      subcategoryDetails = await db.subCategory.create({
         data: { ...data, image: data.image[0].url },
       });
-      return subcategoryDetails
     }
+
+    return {success: true, subcategory: subcategoryDetails};
 
   } catch (error) {
     console.error("error: ", error)
-    throw error;
+    return { success: false, message: "An unexpected error occurred." };
   }
 }
 
@@ -116,17 +123,20 @@ export async function deleteSubcategory(subcategoryId: string) {
   try {
     // Get the current user
     const user = await currentUser()
-    if (!user) throw new Error("Unauthenticated!");
+    if (!user) {
+      return { success: false, message: "Unauthenticated!" };
+    }
 
     // Verify the user is an admin
     if (user.privateMetadata.role !== Role.ADMIN) {
-      throw new Error("Unauthorized Access: Admin privileges required.");
+      return { success: false, message: "Unauthorized Access: Admin privileges required." };
     }
 
-    const response = await db.subCategory.delete({where: {id: subcategoryId}});
-    return response
+    const deletedSubcategory = await db.subCategory.delete({where: {id: subcategoryId}});
+    return {success: true, deletedSubcategory};
+
   } catch (error) {
     console.error("error: ", error)
-    throw error;
+    return {success: false, message: "An unexpected error occurred." };
   }
 }

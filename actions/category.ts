@@ -14,12 +14,15 @@ import { Category, Role } from "@prisma/client";
 export async function upsertCategory(category: Partial<Category>) {
   try {
     // Get the current user
-    const user = await currentUser();
-    if (!user) throw new Error("Unauthenticated!");
+    const user = await currentUser()
+    if (!user) {
+      return { success: false, message: "Unauthenticated!" };
+    }
 
     // Verify the user is an admin
-    if (user.privateMetadata.role !== Role.ADMIN)
-      throw new Error("Unauthorized Access: Admin privileges required.");
+    if (user.privateMetadata.role !== Role.ADMIN) {
+      return { success: false, message: "Unauthorized Access: Admin privileges required." };
+    }
 
     // Throw error if a category with the same name or url exists
     const existingCategory = await db.category.findFirst({
@@ -38,7 +41,7 @@ export async function upsertCategory(category: Partial<Category>) {
       } else if (existingCategory.url === category.url) {
         errorMessage = "A category with the same URL already exists.";
       }
-      throw new Error(errorMessage);
+      return { success: false, message: errorMessage };
     }
 
     // Validate the form data
@@ -51,32 +54,36 @@ export async function upsertCategory(category: Partial<Category>) {
 
     if (!validatedData.success) {
       const validationError = validatedData.error.flatten();
-      throw new Error(
-        `Field errors: ${validationError.fieldErrors.toLocaleString()}, Form errors: ${validationError.formErrors.toLocaleString()}`
-      );
+      return {
+        success: false,
+        fieldErrors: validationError.fieldErrors,
+        formErrors: validationError.formErrors,
+        message: "Validation failed.",
+      };
     }
 
     const data = validatedData.data;
 
     // Update if the category already exist or create a new category
+    let categoryDetails;
     if (category.id) {
       // Update
-      const categoryDetails = await db.category.update({
+      categoryDetails = await db.category.update({
         where: { id: category.id },
         data: { ...data, image: data.image[0].url },
       });
-      return categoryDetails;
     } else {
       // Create a new category
-      const categoryDetails = await db.category.create({
+      categoryDetails = await db.category.create({
         data: { ...data, image: data.image[0].url },
       });
-      return categoryDetails
     }
+
+    return {success: true, category: categoryDetails};
 
   } catch (error) {
     console.error("error: ", error)
-    throw error;
+    return {success: false, message: "An unexpected error occurred."};
   }
 }
 
@@ -112,17 +119,20 @@ export async function deleteCategory(categoryId: string) {
   try {
     // Get the current user
     const user = await currentUser()
-    if (!user) throw new Error("Unauthenticated!");
+    if (!user) {
+      return { success: false, message: "Unauthenticated!" };
+    }
 
     // Verify the user is an admin
     if (user.privateMetadata.role !== Role.ADMIN) {
-      throw new Error("Unauthorized Access: Admin privileges required.");
+      return { success: false, message: "Unauthorized Access: Admin privileges required." };
     }
 
-    const response = await db.category.delete({where: {id: categoryId}});
-    return response
+    const deletedCategory = await db.category.delete({where: {id: categoryId}});
+    return {success: true, deletedCategory};
+
   } catch (error) {
     console.error("error: ", error)
-    throw error;
+    return {success: false, message: "An unexpected error occurred." };
   }
 }

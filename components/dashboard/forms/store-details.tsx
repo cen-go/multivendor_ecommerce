@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -31,11 +30,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 // component for Cloudinary upload
 import ImageUpload from "../shared/image-upload";
 import { Textarea } from "@/components/ui/textarea";
+import { upsertStore } from "@/actions/store";
 // Server action
 // import { upsertStore } from "@/actions/store";
 
@@ -59,7 +58,6 @@ export default function StoreDetails({ data }: StoreDetailsProps) {
       url: data?.url ?? "",
       logo: data?.logo ? [{ url: data?.logo }] : [],
       cover: data?.cover ? [{ url: data?.cover }] : [],
-      featured: data?.featured ?? false,
     },
   });
 
@@ -70,40 +68,56 @@ export default function StoreDetails({ data }: StoreDetailsProps) {
   useEffect(() => {
     if (data) {
       form.reset({
-        name: data?.name,
-        description: data?.description,
-        email: data?.email,
-        phone: data?.phone,
-        url: data?.url,
+        ...data,
         logo: [{ url: data?.logo }],
         cover: [{ url: data?.cover }],
-        featured: data?.featured,
       });
     }
   }, [data, form]);
 
   // Submit handler for form submission
   async function onSubmit(values: z.infer<typeof StoreFormSchema>) {
-    try {
-      const response = await upsertStore({
-        id: data?.id,
-        ...values,
-        logo: values.logo[0].url,
-        cover: values.cover[0].url,
-      })
-      // Display success message
-      toast.success(
-        `${response.name} store is ${data?.id ? "updated" : "created"}.`
-      );
+    const response = await upsertStore({
+      id: data?.id,
+      ...values,
+      logo: values.logo[0]?.url,
+      cover: values.cover[0]?.url,
+    });
 
-      // Redirect or refresh data
-      if (data?.id) {
-        router.refresh();
+    if (!response.success) {
+      // Show field/form errors if available
+      if (response.fieldErrors || response.formErrors) {
+        // Set these errors in form using form.setError
+        if (response.fieldErrors) {
+          Object.entries(response.fieldErrors).forEach(([field, messages]) => {
+            if (messages && messages.length > 0) {
+              form.setError(field as keyof z.infer<typeof StoreFormSchema>, {
+                message: messages[0],
+              });
+            }
+          });
+        }
+        if (response.formErrors && response.formErrors.length > 0) {
+          toast.error(response.formErrors.join(", "));
+        }
+      } else if (response.message) {
+        toast.error(response.message);
       } else {
-        router.push("/dashboard/seller/stores");
+        toast.error("An unknown error occurred.");
       }
-    } catch {
-      toast.error(`An error occured!`)
+      return;
+    }
+
+    // Success
+    toast.success(
+      `${response.store?.name} store is ${data?.id ? "updated" : "created"}.`
+    );
+
+    // Redirect or refresh data
+    if (data?.id) {
+      router.refresh();
+    } else {
+      router.push(`/dashboard/seller/stores/${response.store?.url}`);
     }
   }
 
@@ -178,7 +192,8 @@ export default function StoreDetails({ data }: StoreDetailsProps) {
                   )}
                 />
               </div>
-
+              {/* Store name and URL container */}
+              <div className="flex flex-col md:flex-row gap-4">
               {/* Store Name */}
               <FormField
                 control={form.control}
@@ -193,6 +208,21 @@ export default function StoreDetails({ data }: StoreDetailsProps) {
                   </FormItem>
                 )}
               />
+              {/* Store URL */}
+              <FormField
+                control={form.control}
+                name="url"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Store Url</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} placeholder="/store-url" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              </div>
               {/* Store Description */}
               <FormField
                 control={form.control}
@@ -246,47 +276,12 @@ export default function StoreDetails({ data }: StoreDetailsProps) {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="url"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Store Url</FormLabel>
-                    <FormControl>
-                      <Input type="text" {...field} placeholder="/store-url" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="featured"
-                render={({ field }) => (
-                  <FormItem className="flex-1 border p-4 rounded-md">
-                    <div className="flex items-center gap-2">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="w-5 h-5"
-                        />
-                      </FormControl>
-                      <FormLabel>Featured</FormLabel>
-                    </div>
-                    <FormDescription>
-                      This store will appear on the home page.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <Button
                 type="submit"
                 variant="primary"
+                size="lg"
                 disabled={isSubmitting}
-                className="mt-2"
+                className="mt-4"
               >
                 {isSubmitting
                   ? "Submitting..."

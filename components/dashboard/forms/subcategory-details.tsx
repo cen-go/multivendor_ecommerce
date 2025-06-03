@@ -79,26 +79,44 @@ export default function SubcategoryDetails({ data, categories }: subcategoryDeta
 
   // Submit handler for form submission
   async function onSubmit(values: z.infer<typeof SubcategoryFormSchema>) {
-    console.log(values);
-    try {
-      const response = await upsertSubcategory({
-        id: data?.id,
-        ...values,
-        image: values.image[0].url,
-      })
-      // Display success message
-      toast.success(
-        `${response.name} subcategory is ${data?.id ? "updated" : "created"}.`
-      );
+    const response = await upsertSubcategory({
+      id: data?.id,
+      ...values,
+      image: values.image[0].url,
+    });
 
-      // Redirect or refresh data
-      if (data?.id) {
-        router.refresh();
+    if (!response.success) {
+      // Show field/form errors if available
+      if (response.fieldErrors || response.formErrors) {
+        // Set these errors in form using form.setError
+        if (response.fieldErrors) {
+          Object.entries(response.fieldErrors).forEach(([field, messages]) => {
+            if (messages && messages.length > 0) {
+              form.setError(
+                field as keyof z.infer<typeof SubcategoryFormSchema>, { message: messages[0] });
+            }
+          });
+        }
+        if (response.formErrors && response.formErrors.length > 0) {
+          toast.error(response.formErrors.join(", "));
+        }
+      } else if (response.message) {
+        toast.error(response.message);
       } else {
-        router.push("/dashboard/admin/subcategories");
+        toast.error("An unknown error occurred.");
       }
-    } catch {
-      toast.error(`An error occured!`)
+      return;
+    }
+    // Display success message
+    toast.success(
+      `${response.subcategory?.name} subcategory is ${data?.id ? "updated" : "created"}.`
+    );
+
+    // Redirect or refresh data
+    if (data?.id) {
+      router.refresh();
+    } else {
+      router.push("/dashboard/admin/subcategories");
     }
   }
 
