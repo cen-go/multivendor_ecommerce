@@ -12,7 +12,7 @@ export default function UserInfo({user}: {user: User}) {
     <div>
       <div>
         <Button
-          className="w-full mt-5 mb-4 flex items-center justify-between py-10 overflow-hidden"
+          className="w-full mt-5 mb-4 flex items-center justify-between py-10 overflow-hidden ps-0"
           variant="ghost"
         >
           <div className="flex items-center text-left gap-2">

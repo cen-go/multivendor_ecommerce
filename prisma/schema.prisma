@@ -20,6 +20,7 @@ model User {
   email   String  @unique
   picture String  @db.Text
   role    Role    @default(USER)
+
   stores  Store[]
 
   createdAt DateTime @default(now())
@@ -34,6 +35,7 @@ model Category {
   featured Boolean @default(false)
 
   subCategories SubCategory[]
+  products      Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,6 +48,8 @@ model SubCategory {
   image      String
   url        String  @unique
   featured   Boolean @default(false)
+
+  products Product[]
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
@@ -80,11 +84,105 @@ model Store {
   defaultDeliveryTimeMin Int?
   defaultDeliveryTimeMax Int?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  products Product[]
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([userId])
+}
+
+model Product {
+  id          String @id @default(uuid())
+  name        String
+  description String @db.Text
+  slug        String @unique
+  brand       String
+  rating      Float  @default(0)
+
+  variants ProductVariant[]
+
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  subcategoryId String
+  subcategory   SubCategory @relation(fields: [subcategoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([subcategoryId])
+}
+
+model ProductVariant {
+  id                 String  @id @default(uuid())
+  variantName        String
+  variantDescription String
+  slug               String  @unique
+  isSale             Boolean @default(false)
+  keywords           String
+  sku                String
+
+  sizes Size[]
+  images ProductVariantImage[]
+  colors Color[]
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model Size {
+  id                 String  @id @default(uuid())
+  size String
+  quantity Int
+  price Int
+  discount Decimal @default(0)
+
+  productVariantId String
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productVariantId])
+}
+
+model ProductVariantImage {
+  id                 String  @id @default(uuid())
+  url String
+  alt String @default("")
+
+  productVariantId String
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productVariantId])
+}
+
+model Color {
+  id                 String  @id @default(uuid())
+  name String
+
+  productVariantId String
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productVariantId])
 }

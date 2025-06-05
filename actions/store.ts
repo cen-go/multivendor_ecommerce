@@ -1,8 +1,12 @@
 "use server"
 
-import db from "@/lib/db";
-import { StoreFormSchema } from "@/lib/schemas";
+// Clerk
 import { currentUser } from "@clerk/nextjs/server";
+// zod schemas
+import { StoreFormSchema } from "@/lib/schemas";
+// Database client
+import db from "@/lib/db";
+// Prisma types
 import { Role, Store } from "@prisma/client";
 
 // Function: upsertStore
@@ -101,4 +105,28 @@ export async function upsertStore(storeData: Partial<Store>) {
     console.error("error: ", error)
     return { success: false, message: "An unexpected error occurred." };
   }
+}
+
+// Function: getStoreByUrl
+// Description: Retrieves a specific store from the database.
+// Permission Level: Public
+// Parameters:
+//   - storeUrl: the slug of the store to be retrieved.
+// Returns: Details of the requested store.
+export async function getStoreByUrl(storeUrl: string) {
+  const store = await db.store.findUnique({where: {url: storeUrl}});
+  return store;
+}
+
+
+// Function: getUserStores
+// Description: Retrieves from the database all stores of a specific user.
+// Permission Level: Public
+// Parameters:
+//   - userId: the id of the user.
+// Returns: An array of the requested stores' details.
+export async function getUserStores(userId: string) {
+  const userStores = await db.store.findMany({ where: { userId, } });
+
+  return userStores;
 }

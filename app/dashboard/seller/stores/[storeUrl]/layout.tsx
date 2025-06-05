@@ -8,6 +8,7 @@ import { Role } from "@prisma/client";
 // Custom UI components
 import Header from "@/components/dashboard/header/header";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
+import { getUserStores } from "@/actions/store";
 
 export default async function SellerStoreDashboardLayout({
   children,
@@ -20,9 +21,11 @@ export default async function SellerStoreDashboardLayout({
     redirect("/");
   }
 
+  const userStores = await getUserStores(user.id);
+
   return (
       <div className="w-full h-full">
-        <Sidebar />
+        <Sidebar stores={userStores}/>
         <div className="ml-0 md:ml-[300px]">
           <Header />
           <div className="w-full mt-[75px] p-4">
