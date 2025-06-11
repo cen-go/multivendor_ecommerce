@@ -98,7 +98,7 @@ model Store {
 model Product {
   id          String @id @default(uuid())
   name        String
-  description String @db.Text
+  description String @db.LongText
   slug        String @unique
   brand       String
   rating      Float  @default(0)
@@ -125,7 +125,7 @@ model Product {
 model ProductVariant {
   id                 String  @id @default(uuid())
   variantName        String
-  variantDescription String
+  variantDescription String? @db.LongText
   slug               String  @unique
   isSale             Boolean @default(false)
   keywords           String

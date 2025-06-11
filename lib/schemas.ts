@@ -5,7 +5,7 @@ import * as z from "zod";
 const requiredString = (field: string) =>
   z.string({
     required_error: `${field} is required.`,
-    invalid_type_error: `${field} must be a string.`,
+    invalid_type_error: `${field} must be a valid string.`,
   });
 
 // Catgeory form schema
@@ -101,4 +101,102 @@ export const StoreFormSchema = z.object({
     ],
     { message: "Please select a valid store status" }
   ).optional(),
+});
+
+// Product Form Schema
+export const ProductFormSchema = z.object({
+  name: requiredString("Product name")
+    .min(2, { message: "Product name should be at least 2 characters long." })
+    .max(200, { message: "Product name cannot exceed 200 characters." })
+    .regex(
+      /^(?!.*(?:[-_ ?:,!']){2,})[^- \s_,.'][\p{L}0-9\s'&-_!?:+,.']*[^- \s_,']$/u,
+      {
+        message:
+          "Only letters, numbers, space, ?, :, !, +, -, ', _, period and comma are allowed in the product name, and consecutive occurrences of spaces and special characters are not permitted.",
+      }
+    ),
+  description: requiredString("Product description").min(200, {
+    message: "Product description should be at least 200 characters long.",
+  }),
+  variantName: requiredString("Product variant name")
+    .min(2, {
+      message: "Product variant name should be at least 2 characters long.",
+    })
+    .max(100, { message: "Product variant name cannot exceed 100 characters." })
+    .regex(
+      /^(?!.*(?:[-_ ?:,!']){2,})[^- \s_,.'][\p{L}0-9\s'&-_!?:+,.']*[^- \s_,']$/u,
+      {
+        message:
+          "Only letters, numbers, space, ?, :, !, +, -, ', _, period and comma are allowed in the product variant name, and consecutive occurrences of spaces and special characters are not permitted.",
+      }
+    ),
+  variantDescription: z.string().optional(),
+  images: z
+    .object({ url: z.string() })
+    .array()
+    .min(2, "Please provide at least 2 images for the product")
+    .max(6, "You can upload up to 6 images for the product"),
+  categoryId: z
+    .string({
+      required_error: "Product category ID is mandatory.",
+      invalid_type_error: "Product category ID must be a valid UUID.",
+    })
+    .uuid(),
+  subcategoryId: z
+    .string({
+      required_error: "Product subcategory ID is mandatory.",
+      invalid_type_error: "Product subcategory ID must be a valid UUID.",
+    })
+    .uuid(),
+  isSale: z.boolean().optional(),
+  brand: requiredString("Product brand")
+    .min(2, {
+      message: "Product brand should be at least 2 characters long.",
+    })
+    .max(50, {
+      message: "Product brand cannot exceed 50 characters.",
+    }),
+  sku: requiredString("Product SKU")
+    .min(6, {
+      message: "Product SKU should be at least 6 characters long.",
+    })
+    .max(50, {
+      message: "Product SKU cannot exceed 50 characters.",
+    }),
+  keywords: requiredString("Product keywords")
+    .array()
+    .min(3, {
+      message: "Please provide at least 5 keywords.",
+    })
+    .max(10, {
+      message: "You can provide up to 10 keywords.",
+    }),
+  colors: z
+    .object({ color: z.string() })
+    .array()
+    .min(1, "Please provide at least one color.")
+    .refine((colors) => colors.every((c) => c.color.length > 0), {
+      message: "All color inputs must be filled.",
+    }),
+  sizes: z
+    .object({
+      size: z.string(),
+      quantity: z
+        .number()
+        .min(1, { message: "Quantity must be greater than 0." }),
+      price: z
+        .number()
+        .min(0.01, "Pricce must be greater than 0.")
+        .refine((price) => Number.isInteger(price * 100), {
+          message: "Price can have at most two decimal places.",
+        }),
+      discount: z.number().min(0),
+    })
+    .array()
+    .min(1, "Please provide at least one size")
+    .refine(
+      (sizes) =>
+        sizes.every((s) => s.size.length > 0 && s.price > 0 && s.quantity > 0),
+      { message: "All size inputs must be filled correctly." }
+    ),
 });
