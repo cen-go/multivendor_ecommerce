@@ -1,29 +1,67 @@
 // React Next.js
 import Image from "next/image";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 // Placeholder image to show when no images are uploaded
 import NoProductImage from "@/public/assets/images/no_image.png"
-import { cn } from "@/lib/utils";
+// Utility functions
+import { cn, getCloudinaryPublicId, getDominantColors } from "@/lib/utils";
+// Shadcn components
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+// Server actions
+import { deleteCloudinaryImage } from "@/actions/cloudinary";
+// Icons
+import { X } from "lucide-react";
+import ColorPalette from "./color-palette";
 
 interface ImagesPreviewGridProps {
   images: {url: string}[];
   onRemove: (value: string) => void;
+  colors?: {color: string}[]; // List of colors from form
+  setColors: Dispatch<SetStateAction<{color: string}[]>>; // Setter fn for colors
 }
 
 export default function ImagesPreviewGrid({
   images,
   onRemove,
+  colors,
+  setColors,
 }: ImagesPreviewGridProps) {
-  console.log(images, images.length, typeof images.length);
-  // Map image count to Tailwind grid-cols class (supports up to 6 images)
-  const gridCols =
-    {
-      1: "grid-cols-1",
-      2: "grid-cols-2",
-      3: "grid-cols-3",
-      4: "grid-cols-4",
-      5: "grid-cols-5",
-      6: "grid-cols-6",
-    }[images.length] || "grid-cols-2"; // fallback
+
+  async function handleRemove(imageUrl: string) {
+    const publicId = getCloudinaryPublicId(imageUrl);
+    const result = await deleteCloudinaryImage(publicId);
+    if (result.success) {
+      onRemove(imageUrl); // delete from UI and local state
+    } else {
+      toast.error(result.message);
+    }
+  }
+
+  // Extract image colors
+  const [ colorPalettes, setColorPalettes ] = useState<string[][]>([]);
+
+  useEffect(() => {
+    async function fetchColors() {
+      const palettes = await Promise.all(
+        images.map(async (img) => {
+          try {
+            const colors = await getDominantColors(img.url);
+            return colors;
+          } catch {
+            return [];
+          }
+        })
+      );
+      setColorPalettes(palettes);
+    }
+
+    if (images.length > 0) {
+      fetchColors();
+    }
+  }, [images]);
+
+  console.log(colorPalettes);
 
   // If there are no images, display a placeholder image
   if (images.length === 0) {
@@ -42,21 +80,38 @@ export default function ImagesPreviewGrid({
   // If there are images, display images in a grid
   return (
     <div className="max-w-4xl">
-      <div className={cn(`grid gap-2 h-max-[300px] overflow-hidden rounded-md`, gridCols)}>
-        {images.map((i) => (
+      <div className="grid grid-cols-2 gap-2 overflow-hidden rounded-md">
+        {images.map((img, index) => (
+          // Single preview image container
           <div
-            key={i.url}
+            key={img.url}
             className={cn(
-              "relative group h-full border-2 rounded-md bg-slate-100/20 border-slate-300 overflow-hidden"
+              "relative h-full h-min-[150px] border-2 rounded-md bg-slate-100/20 border-slate-300 overflow-hidden"
             )}
           >
+            {/* Delete image btn */}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => handleRemove(img.url)}
+                  className="absolute z-10 !text-white top-2 right-2 rounded-full text-xs w-8 h-8 font-semibold bg-red-800 hover:bg-red-700"
+                >
+                  <X />
+                </Button>
+            {/* Preview image */}
             <Image
-              src={i.url}
+              src={img.url}
               alt="Product image"
               width={300}
               height={300}
               className="w-full h-full object-contain"
             />
+            {/* Actions */}
+            <div className={cn("absolute top-0 right-0 bottom-0 left-0 bg-white/55 items-center flex justify-center gap-y-3 transition-all duration-500")}>
+              {/* Color palette (extract color) */}
+              <ColorPalette colors={colors} extractedColors={colorPalettes[index]}  />
+            </div>
           </div>
         ))}
       </div>

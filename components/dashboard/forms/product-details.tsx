@@ -2,7 +2,7 @@
 
 // Next and React imports
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // useForm utilities
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,7 +46,8 @@ interface ProductDetailsProps {
 }
 
 export default function ProductDetails({ data }: ProductDetailsProps) {
-  const router = useRouter()
+  const router = useRouter();
+  const [colors, setColors] = useState<{color: string}[]>([]);
 
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof ProductFormSchema>>({
@@ -58,7 +59,11 @@ export default function ProductDetails({ data }: ProductDetailsProps) {
       description: data?.description ?? "",
       variantName: data?.variantName ?? "",
       variantDescription: data?.variantDescription ?? "",
-      images: data?.images ?? [],
+      images: data?.images ?? [
+        {url: "https://res.cloudinary.com/dkkuvgnl7/image/upload/v1748957644/ag4sk2ouuiqkwkeikfao.png"},
+        {url: "https://res.cloudinary.com/dkkuvgnl7/image/upload/v1749733438/c6m8ej3wrnkfublmhoni.jpg"},
+        {url: "https://res.cloudinary.com/dkkuvgnl7/image/upload/v1749733398/m1pmw6jmuvcdclmhaupw.jpg"},
+      ],
       categoryId: data?.categoryId ?? "",
       subcategoryId: data?.subcategoryId ?? "",
       isSale: data?.isSale ?? false,
@@ -152,6 +157,8 @@ export default function ProductDetails({ data }: ProductDetailsProps) {
                         <div>
                           <ImagesPreviewGrid
                             images={form.getValues().images}
+                            colors={colors}
+                            setColors={setColors}
                             onRemove={(cldUrl) =>
                               field.onChange(
                                 [...field.value].filter(
