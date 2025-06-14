@@ -61,8 +61,6 @@ export default function ImagesPreviewGrid({
     }
   }, [images]);
 
-  console.log(colorPalettes);
-
   // If there are no images, display a placeholder image
   if (images.length === 0) {
     return (

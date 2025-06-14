@@ -26,7 +26,7 @@ export default async function SellerStoreDashboardLayout({
   return (
       <div className="w-full h-full">
         <Sidebar stores={userStores}/>
-        <div className="ml-0 md:ml-[300px]">
+        <div className="ml-0 lg:ml-[300px]">
           <Header />
           <div className="w-full mt-[75px] p-4">
             <main>

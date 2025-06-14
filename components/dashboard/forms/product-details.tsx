@@ -38,6 +38,7 @@ import ImageUpload from "../shared/image-upload";
 // Server action
 import { upsertStore } from "@/actions/store";
 import ImagesPreviewGrid from "../shared/images-preview-grid";
+import ClickToAddInputs from "./click-to-add";
 
 interface ProductDetailsProps {
   data?: ProductWithVariantType;
@@ -47,7 +48,7 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ data }: ProductDetailsProps) {
   const router = useRouter();
-  const [colors, setColors] = useState<{color: string}[]>([]);
+  const [colors, setColors] = useState<{color: string}[]>([{color: ""}]);
 
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof ProductFormSchema>>({
@@ -84,6 +85,11 @@ export default function ProductDetails({ data }: ProductDetailsProps) {
       form.reset(data);
     }
   }, [data, form]);
+
+  // Update the form values whenever colors, sizes and keywords change
+  useEffect(() => {
+    form.setValue("colors", colors);
+  }, [colors, form]);
 
   // Submit handler for form submission
   async function onSubmit(values: z.infer<typeof ProductFormSchema>) {
@@ -178,7 +184,10 @@ export default function ProductDetails({ data }: ProductDetailsProps) {
                               if (
                                 !field.value.some((img) => img.url === cldUrl)
                               ) {
-                                form.setValue("images", [...form.getValues().images, {url: cldUrl}]);
+                                form.setValue("images", [
+                                  ...form.getValues().images,
+                                  { url: cldUrl },
+                                ]);
                               }
                             }}
                             onRemove={(cldUrl) =>
@@ -195,16 +204,14 @@ export default function ProductDetails({ data }: ProductDetailsProps) {
                   )}
                 />
                 {/* Colors */}
-                <FormField
-                  control={form.control}
-                  name="colors"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl></FormControl>
-                      <FormMessage className="text-end" />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex flex-col gap-y-3 xl:pl-5">
+                  <ClickToAddInputs<{color: string}>
+                    details={colors}
+                    setDetails={setColors}
+                    initialDetail={{ color: "", }}
+                    header="Colors"
+                  />
+                </div>
               </div>
               {/* Store name and URL container */}
               <div className="flex flex-col md:flex-row gap-4">
