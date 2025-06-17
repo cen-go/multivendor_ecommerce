@@ -1,6 +1,9 @@
 // React, Next.js
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dispatch, SetStateAction } from "react";
+import { PaintBucket } from "lucide-react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { SketchPicker } from "react-color";
 
 // Define the interface for each detail object
 export interface Detail {
@@ -13,6 +16,7 @@ interface ClickToAddInputsProps<T extends Detail> {
   setDetails: Dispatch<SetStateAction<T[]>>;
   initialDetail?: T; // Optional initial detail object
   header?: string;
+  colorPicker?: boolean; // Is color picker needed
 }
 
 export default function ClickToAddInputs<T extends Detail>({
@@ -20,7 +24,10 @@ export default function ClickToAddInputs<T extends Detail>({
   setDetails,
   header,
   initialDetail = {} as T, // Default of the initial value is an empty object
+  colorPicker,
 }: ClickToAddInputsProps<T>) {
+  // State to manage toggling color picker index
+  const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null)
 
   // Function to handle changes in detail properties
   function handleDetailsChange(index: number, key: string, value: string | number) {
@@ -114,7 +121,31 @@ export default function ClickToAddInputs<T extends Detail>({
       {details.map((detail, i) => (
         <div key={i} className="flex items-center gap-x-2">
           {Object.keys(detail).map((keyName, keyIndex) => (
-            <div key={keyIndex} className="flex items-center gap-x-4">
+            <div key={keyIndex} className="flex items-center ">
+              {/* Color picker toggle */}
+              {keyName === "color" && colorPicker && (
+                <div className="flex items-center me-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() =>
+                      setColorPickerIndex(colorPickerIndex === i ? null : i)
+                    }
+                  >
+                    <PaintBucket />
+                  </Button>
+                  <span
+                    className="w-8 h-8 rounded-md"
+                    style={{ backgroundColor: detail[keyName] as string }}
+                  />
+                </div>
+              )}
+              {keyName === "color" && colorPicker && colorPickerIndex === i && (
+                <SketchPicker
+                  color={detail[keyName] as string}
+                  onChange={(e) => handleDetailsChange(i, keyName, e.hex)}
+                />
+              )}
               <Input
                 className="w-24"
                 type={typeof detail[keyName] === "number" ? "number" : "text"}

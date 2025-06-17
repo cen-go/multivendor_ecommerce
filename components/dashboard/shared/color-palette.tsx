@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 interface ColorPaletteProps {
   extractedColors?: string[]; // Extracted colors (array of stringas)
   colors?: {color: string}[] // list of selected colors form form
-  setColors?: Dispatch<SetStateAction<{ color: string }[]>>; // Setter fn for colors
+  setColors: Dispatch<SetStateAction<{ color: string }[]>>; // Setter fn for colors
 }
 
 // ColorPalette component for displaying a color palette
@@ -32,14 +32,14 @@ export default function ColorPalette({extractedColors, colors, setColors}: Color
   const Color = ({ color }: { color: string }) => {
     return (
       <div
-        className="w-16 lg:w-20 h-[60px] cursor-pointer transition-all duration-100 ease-linear relative hover:w-[100px] hover:duration-300"
+        className="w-16 md:w-20 h-[60px] cursor-pointer transition-all duration-100 ease-linear relative hover:w-[100px] hover:duration-300"
         style={{ backgroundColor: color }}
         onMouseEnter={() => setActiveColor(color)}
         onMouseOut={() => setActiveColor("")}
         onClick={() => handleAddProductColor(color)}
       >
         {/* Color label */}
-        <div className="w-full h-8 text-center text-xs font-semibold hidden lg:block absolute -top-8 text-black">
+        <div className="w-full h-8 text-center text-xs font-semibold hidden md:block absolute -top-8 text-black">
           {color}
         </div>
       </div>
@@ -47,9 +47,9 @@ export default function ColorPalette({extractedColors, colors, setColors}: Color
   };
 
   return (
-    <div className="pt-10 w-[140px] lg:w-[210px] h-[160px] rounded-b-md overflow-hidden">
+    <div className="pt-10 w-[140px] md:w-[200px] h-[160px] rounded-b-md overflow-hidden">
       {/* Color palette container */}
-      <div className="w-[140px] lg:w-[210px] h-[180px] rounded-md perspective-1000">
+      <div className="w-[140px] md:w-[200px] h-[180px] rounded-md perspective-1000">
         {/* Active color display */}
         <div className="relative w-full flex items-center justify-center bg-white h-16 rounded-t-md">
           {/* Active color circle */}

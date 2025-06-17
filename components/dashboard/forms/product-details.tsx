@@ -269,6 +269,7 @@ export default function ProductDetails({
                       setDetails={setColors}
                       initialDetail={{ color: "" }}
                       header="Colors"
+                      colorPicker
                     />
                     {form.formState.errors.colors && (
                       <p className="text-sm font-medium text-destructive">
@@ -459,6 +460,7 @@ export default function ProductDetails({
                             }}
                           />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

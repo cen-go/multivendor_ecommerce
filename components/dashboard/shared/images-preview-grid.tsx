@@ -108,7 +108,7 @@ export default function ImagesPreviewGrid({
             {/* Actions */}
             <div className={cn("absolute top-0 right-0 bottom-0 left-0 bg-white/55 items-center flex justify-center gap-y-3 transition-all duration-500")}>
               {/* Color palette (extract color) */}
-              <ColorPalette colors={colors} extractedColors={colorPalettes[index]}  />
+              <ColorPalette colors={colors} extractedColors={colorPalettes[index]} setColors={setColors}  />
             </div>
           </div>
         ))}
