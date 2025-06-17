@@ -122,6 +122,7 @@ export default function ClickToAddInputs<T extends Detail>({
                 placeholder={keyName}
                 value={detail[keyName] as string}
                 min={typeof detail[keyName] === "number" ? 0 : undefined}
+                step={keyName === "price" ? "0.01" : "1"}
                 onChange={(e) =>
                   handleDetailsChange(
                     i,

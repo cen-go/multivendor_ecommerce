@@ -115,8 +115,8 @@ export const ProductFormSchema = z.object({
           "Only letters, numbers, space, ?, :, !, +, -, ', _, period and comma are allowed in the product name, and consecutive occurrences of spaces and special characters are not permitted.",
       }
     ),
-  description: requiredString("Product description").min(200, {
-    message: "Product description should be at least 200 characters long.",
+  description: requiredString("Product description").min(100, {
+    message: "Product description should be at least 100 characters long.",
   }),
   variantName: requiredString("Product variant name")
     .min(2, {
@@ -138,16 +138,16 @@ export const ProductFormSchema = z.object({
     .max(6, "You can upload up to 6 images for the product"),
   categoryId: z
     .string({
-      required_error: "Product category ID is mandatory.",
+      required_error: "Product category is mandatory.",
       invalid_type_error: "Product category ID must be a valid UUID.",
     })
-    .uuid(),
+    .uuid({message: "Invalid category."}),
   subcategoryId: z
     .string({
-      required_error: "Product subcategory ID is mandatory.",
+      required_error: "Product subcategory is mandatory.",
       invalid_type_error: "Product subcategory ID must be a valid UUID.",
     })
-    .uuid(),
+    .uuid({message: "Invalid subcategory."}),
   isSale: z.boolean().optional(),
   brand: requiredString("Product brand")
     .min(2, {
@@ -198,5 +198,8 @@ export const ProductFormSchema = z.object({
       (sizes) =>
         sizes.every((s) => s.size.length > 0 && s.price > 0 && s.quantity > 0),
       { message: "All size inputs must be filled correctly." }
-    ),
+    )
+    .refine((sizes) => sizes.every((s) => Number.isInteger(s.price * 100)), {
+      message: "Price can have at most two decimal places.",
+    }),
 });
