@@ -42,7 +42,7 @@ import { toast } from "sonner";
 import ImageUpload from "../shared/image-upload";
 // Server action
 import { getAllSubcategoriesOfACategory } from "@/actions/subcategory";
-import { upsertStore } from "@/actions/store";
+import { upsertProduct } from "@/actions/product";
 import ImagesPreviewGrid from "../shared/images-preview-grid";
 import ClickToAddInputs from "./click-to-add";
 import {

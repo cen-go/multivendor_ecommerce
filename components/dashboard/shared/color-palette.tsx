@@ -1,3 +1,4 @@
+// React, Next.js
 import { Dispatch, SetStateAction, useState } from "react";
 
 interface ColorPaletteProps {

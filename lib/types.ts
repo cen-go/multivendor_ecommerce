@@ -13,10 +13,10 @@ export type SubcategoryWithParentCategoryType = Prisma
 
 // Product + variant
 export type ProductWithVariantType = {
-  productId: string;
+  productId?: string;
   name: string;
   description: string;
-  variantId: string;
+  variantId?: string;
   variantName: string;
   variantDescription: string;
   images: {url: string}[];
@@ -33,6 +33,6 @@ export type ProductWithVariantType = {
     price: number;
     discount: number;
   }[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

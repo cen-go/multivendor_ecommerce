@@ -1,6 +1,11 @@
+// cn tailwind classes utility fn
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+
 import ColorThief from "colorthief"
+// prisma & db
+import { PrismaClient } from "@prisma/client";
+import db from "./db";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -40,3 +45,28 @@ export const getDominantColors = (imgUrl: string): Promise<string[]> => {
     };
   });
 };
+
+// Helper function to generate a unique slug
+export async function generateUniqueSlug(
+  baseSlug:string,
+  dbModel: keyof PrismaClient,
+  field:string = "slug",
+  separator:string = "-",
+) {
+  let slug = baseSlug;
+  let suffix = 1;
+
+  while (true) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existingRecord = await (db[dbModel] as any).findFirst({where: {[field]: slug}});
+
+    if (!existingRecord) {
+      break;
+    }
+
+    slug = `${slug}${separator}${suffix}`;
+    suffix++;
+  }
+
+  return slug;
+}

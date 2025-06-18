@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { deleteCloudinaryImage } from "@/actions/cloudinary";
 // Icons
 import { X } from "lucide-react";
+// Custom components
 import ColorPalette from "./color-palette";
 
 interface ImagesPreviewGridProps {

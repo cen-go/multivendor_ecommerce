@@ -1,8 +1,13 @@
 // React, Next.js
+import { Dispatch, SetStateAction, useState } from "react";
+// Shadcn components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+// Utilities
+import { cn } from "@/lib/utils";
+// Icons
 import { PaintBucket } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+// React color color picker
 import { SketchPicker } from "react-color";
 
 // Define the interface for each detail object
@@ -124,7 +129,11 @@ export default function ClickToAddInputs<T extends Detail>({
             <div key={keyIndex} className="flex items-center ">
               {/* Color picker toggle */}
               {keyName === "color" && colorPicker && (
-                <div className="flex items-center me-2">
+                <div className="flex items-center">
+                  <span
+                    className={cn("w-8 h-8 rounded-md", detail[keyName] === "" ? "hidden" : "")}
+                    style={{ backgroundColor: detail[keyName] as string }}
+                  />
                   <Button
                     type="button"
                     variant="ghost"
@@ -134,10 +143,6 @@ export default function ClickToAddInputs<T extends Detail>({
                   >
                     <PaintBucket />
                   </Button>
-                  <span
-                    className="w-8 h-8 rounded-md"
-                    style={{ backgroundColor: detail[keyName] as string }}
-                  />
                 </div>
               )}
               {keyName === "color" && colorPicker && colorPickerIndex === i && (
