@@ -54,7 +54,7 @@ import {
 } from "@/components/ui/select";
 
 interface ProductDetailsProps {
-  data?: ProductWithVariantType;
+  data?: Partial<ProductWithVariantType>;
   categories: Category[];
   storeUrl: string;
 }
@@ -86,17 +86,7 @@ export default function ProductDetails({
       description: data?.description ?? "",
       variantName: data?.variantName ?? "",
       variantDescription: data?.variantDescription ?? "",
-      images: data?.images ?? [
-        {
-          url: "https://res.cloudinary.com/dkkuvgnl7/image/upload/v1748957644/ag4sk2ouuiqkwkeikfao.png",
-        },
-        {
-          url: "https://res.cloudinary.com/dkkuvgnl7/image/upload/v1749733438/c6m8ej3wrnkfublmhoni.jpg",
-        },
-        {
-          url: "https://res.cloudinary.com/dkkuvgnl7/image/upload/v1749733398/m1pmw6jmuvcdclmhaupw.jpg",
-        },
-      ],
+      images: data?.images ?? [],
       categoryId: data?.categoryId ?? "",
       subcategoryId: data?.subcategoryId ?? "",
       isSale: data?.isSale ?? false,
@@ -114,7 +104,11 @@ export default function ProductDetails({
   // Reset form values when data changes
   useEffect(() => {
     if (data) {
-      form.reset(data);
+      form.setValue("name", data.name ?? "");
+      form.setValue("description", data.description ?? "");
+      form.setValue("brand", data.brand ?? "");
+      form.setValue("categoryId", data.categoryId ?? "");
+      form.setValue("subcategoryId", data.subcategoryId ?? "");
     }
   }, [data, form]);
 
@@ -149,48 +143,45 @@ export default function ProductDetails({
   // Submit handler for form submission
   async function onSubmit(values: z.infer<typeof ProductFormSchema>) {
     console.log(values);
-    // const response = await upsertStore({
-    //   id: data?.id,
-    //   ...values,
-    //   logo: values.logo[0]?.url,
-    //   cover: values.cover[0]?.url,
-    // });
+    const response = await upsertProduct({
+      productId: data?.productId,
+      variantId: data?.variantId,
+      ...values,
+    }, storeUrl);
 
-    // if (!response.success) {
-    //   // Show field/form errors if available
-    //   if (response.fieldErrors || response.formErrors) {
-    //     // Set these errors in form using form.setError
-    //     if (response.fieldErrors) {
-    //       Object.entries(response.fieldErrors).forEach(([field, messages]) => {
-    //         if (messages && messages.length > 0) {
-    //           form.setError(field as keyof z.infer<typeof ProductFormSchema>, {
-    //             message: messages[0],
-    //           });
-    //         }
-    //       });
-    //     }
-    //     if (response.formErrors && response.formErrors.length > 0) {
-    //       toast.error(response.formErrors.join(", "));
-    //     }
-    //   } else if (response.message) {
-    //     toast.error(response.message);
-    //   } else {
-    //     toast.error("An unknown error occurred.");
-    //   }
-    //   return;
-    // }
+    if (!response.success) {
+      // Show field/form errors if available
+      if (response.fieldErrors || response.formErrors) {
+        // Set these errors in form using form.setError
+        if (response.fieldErrors) {
+          Object.entries(response.fieldErrors).forEach(([field, messages]) => {
+            if (messages && messages.length > 0) {
+              form.setError(field as keyof z.infer<typeof ProductFormSchema>, {
+                message: messages[0],
+              });
+            }
+          });
+        }
+        if (response.formErrors && response.formErrors.length > 0) {
+          toast.error(response.formErrors.join(", "));
+        }
+      } else if (response.message) {
+        toast.error(response.message);
+      } else {
+        toast.error("An unknown error occurred.");
+      }
+      return;
+    }
 
-    // // Success
-    // toast.success(
-    //   `${response.store?.name} store is ${data?.productId ? "updated" : "created"}.`
-    // );
-
-    // // Redirect or refresh data
-    // if (data?.productId) {
-    //   router.refresh();
-    // } else {
-    //   router.push(`/dashboard/seller/stores/${response.store?.url}`);
-    // }
+    // Success
+    // Redirect or refresh data
+    if (data?.productId) {
+      toast.success("Product has been updated.");
+      router.refresh();
+    } else {
+      toast.success(response.message);
+      router.push(`/dashboard/seller/stores/${storeUrl}/products`);
+    }
   }
 
     return (
@@ -539,9 +530,9 @@ export default function ProductDetails({
                 >
                   {isSubmitting
                     ? "Submitting..."
-                    : data?.variantId
-                    ? "Save store information"
-                    : "Create store"}
+                    : data?.productId
+                    ? "Create variant"
+                    : "Create product"}
                 </Button>
               </form>
             </Form>

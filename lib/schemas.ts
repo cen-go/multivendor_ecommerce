@@ -130,7 +130,7 @@ export const ProductFormSchema = z.object({
           "Only letters, numbers, space, ?, :, !, +, -, ', _, period and comma are allowed in the product variant name, and consecutive occurrences of spaces and special characters are not permitted.",
       }
     ),
-  variantDescription: z.string().optional(),
+  variantDescription: z.string(),
   images: z
     .object({ url: z.string() })
     .array()
@@ -148,7 +148,7 @@ export const ProductFormSchema = z.object({
       invalid_type_error: "Product subcategory ID must be a valid UUID.",
     })
     .uuid({message: "Invalid subcategory."}),
-  isSale: z.boolean().optional(),
+  isSale: z.boolean(),
   brand: requiredString("Product brand")
     .min(2, {
       message: "Product brand should be at least 2 characters long.",

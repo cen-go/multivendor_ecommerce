@@ -102,7 +102,7 @@ export async function upsertProduct(
         create: product.sizes.map(size => ({
           size: size.size,
           quantity: size.quantity,
-          price: size.price,
+          price: size.price * 100,
           discount: size.discount,
         })),
       },
@@ -141,4 +141,27 @@ export async function upsertProduct(
     console.error(error);
     return {success: false, message: "An unexpected error occured."};
   }
+}
+
+// Function: getProductMainInfo
+// Description:  Retrieves the main information of a specific product from the database
+// Permission Level: Public
+// Parameters:
+//   - productId: the ID of the requested product
+// Returns: An object containing main information of the product or null if the product doesn't exist
+export async function getProductMainInfo(productId: string) {
+  // Retrieve the product from the database
+  const product = await db.product.findUnique({where: {id: productId}});
+  if (!product) return null;
+
+  // Return the main information of the product
+  return {
+    productId: product.id,
+    name: product.name,
+    description: product.description,
+    brand: product.brand,
+    categoryId: product.categoryId,
+    subcategoryId: product.subcategoryId,
+    storeId: product.storeId,
+  };
 }
