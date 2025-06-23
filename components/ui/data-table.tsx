@@ -23,7 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 // Icons
-import { Search, FilePlus2 } from "lucide-react"
+import { Search, PlusIcon } from "lucide-react"
 // Modal provider hook
 import { useModal } from "@/lib/modal-provider";
 import CustomModal from "../dashboard/shared/custom-modal";
@@ -101,8 +101,8 @@ export default function DataTable<TData, TValue>({
           )}
           {newTabLink && (
             <Link href={newTabLink}>
-              <Button variant="outline">
-                <FilePlus2 className="me-1" /> Create in new page
+              <Button variant="primary">
+                <PlusIcon className="me-1" /> Create New
               </Button>
             </Link>
           )}

@@ -3,7 +3,7 @@ import DataTable from "@/components/ui/data-table";
 import { columns } from "./columns";
 import SubcategoryDetails from "@/components/dashboard/forms/subcategory-details";
 import { getAllCategories } from "@/actions/category";
-import { Plus } from "lucide-react";
+import { PictureInPicture2  } from "lucide-react";
 
 export default async function AdminSubcategoriesPage() {
   // Fetch subcategories data from the database
@@ -20,8 +20,8 @@ export default async function AdminSubcategoriesPage() {
     <DataTable 
       actionButtonText={
         <>
-          <Plus size={14} />
-          Create subcategory
+          <PictureInPicture2  size={12} />
+          Create in modal
         </>
       }
       modalChildren={<SubcategoryDetails categories={categories} />}

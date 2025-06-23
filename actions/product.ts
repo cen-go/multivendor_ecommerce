@@ -1,12 +1,14 @@
 "use server"
 
 import db from "@/lib/db";
-import { ProductWithVariantType } from "@/lib/types";
+import { ProductWithVariantType, StoreProductType } from "@/lib/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { Role } from "@prisma/client";
 import slugify from "slugify"
-import { generateUniqueSlug } from "@/lib/utils";
+import { generateUniqueSlug, getCloudinaryPublicId } from "@/lib/utils";
 import { ProductFormSchema } from "@/lib/schemas";
+import { deleteCloudinaryImage } from "./cloudinary";
+import { revalidatePath } from "next/cache";
 
 // Function: upsertProduct
 // Description:  Upserts a product and it's variant into the database,
@@ -164,4 +166,96 @@ export async function getProductMainInfo(productId: string) {
     subcategoryId: product.subcategoryId,
     storeId: product.storeId,
   };
+}
+
+// Function: getAllStoreProducts
+// Description:  Retrieves all products from a specific store
+// Permission Level: Public
+// Parameters:
+//   - storeUrl: the URL of the store whose products are to be retrieved
+// Returns: An array of products from the requested store including category, subcategory and varint details
+export async function getAllStoreProducts(storeUrl: string) {
+  // retrieve store details from the database
+  const store = await db.store.findUnique({where: {url: storeUrl}});
+
+  if (!store) {
+    throw new Error("Please provide a valid store URL.");
+  }
+
+  // Retrieve all the products associated with the store
+  const products = await db.product.findMany({
+    where: {storeId: store.id},
+    include: {
+      category: true,
+      subcategory: true,
+      variants: {
+        include: {
+          images: true,
+          colors: true,
+          sizes: true,
+        }
+      },
+      store: {
+        select: {
+          id: true,
+          url: true,
+        }
+      },
+    },
+  });
+
+  return products;
+}
+
+// Function: deleteProduct
+// Description:  deletes a product from the database
+// Permission Level: Seller only
+// Parameters:
+//   - productId: the ID of the product to be deleted
+// Returns: Response indicating the success or failure of the operation
+export async function deleteProduct(product: StoreProductType) {
+  try {
+    // Get the current user
+    const user = await currentUser();
+    if (!user) {
+      return { success: false, message: "Not authenticated." };
+    }
+    // Verify the user is an seller
+    if (user.privateMetadata.role !== Role.SELLER) {
+      return {
+        success: false,
+        message: "Unauthorized Access: Seller privileges required.",
+      };
+    }
+
+    // Gather all image URLs from all variants
+    const imageUrls = product.variants.flatMap((variant) =>
+      variant.images.map((image) => image.url)
+    );
+
+    // Delete all images from Cloudinary in parallel
+    // for deleting larger batches (hundreds of images) consider sequential delete with for...of loop
+    const deleteResults = await Promise.all(
+      imageUrls.map(async (url:string) => {
+        const publicId = getCloudinaryPublicId(url);
+        return await deleteCloudinaryImage(publicId);
+      })
+    );
+
+    // Check for any failed deletions
+    // Ignore "not found" errors from Cloudinary, only fail on real errors
+    const failed = deleteResults.find(r => !r.success && r.message !== "not found")
+    if (failed) {
+      return { success: false, message: `Failed to delete some images: ${failed.message}` };
+    }
+
+    // delete the product from the database
+    const deletedProduct = await db.product.delete({where: {id: product.id}});
+
+    revalidatePath(`/dashboard/seller/stores/${product.store.url}/products`);
+    return {success: true, deletedProduct};
+  } catch (error) {
+    console.error(error);
+    return {success: false, message: "An unexpected error occured."};
+  }
 }

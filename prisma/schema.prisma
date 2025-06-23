@@ -136,7 +136,7 @@ model ProductVariant {
   colors Color[]
 
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -152,7 +152,7 @@ model Size {
   discount Int @default(0)
 
   productVariantId String
-  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -166,7 +166,7 @@ model ProductVariantImage {
   alt String @default("")
 
   productVariantId String
-  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -179,7 +179,7 @@ model Color {
   name String
 
   productVariantId String
-  productVariant ProductVariant @relation(fields: [productVariantId], references: [id])
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

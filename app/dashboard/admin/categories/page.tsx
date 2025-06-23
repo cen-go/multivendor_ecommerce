@@ -3,7 +3,7 @@ import { getAllCategories } from "@/actions/category"
 import CategoryDetails from "@/components/dashboard/forms/category-details";
 // Components
 import DataTable from "@/components/ui/data-table";
-import { Plus } from "lucide-react";
+import { PictureInPicture2  } from "lucide-react";
 import { columns } from "./columns";
 
 export default async function AdminCategoriesPage() {
@@ -18,8 +18,8 @@ export default async function AdminCategoriesPage() {
     <DataTable
       actionButtonText={
         <>
-          <Plus size={14} />
-          Create category
+          <PictureInPicture2  size={12} />
+          Create in modal
         </>
       }
       modalChildren={<CategoryDetails />}
