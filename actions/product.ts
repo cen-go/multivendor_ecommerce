@@ -52,7 +52,10 @@ export async function upsertProduct(
     }
 
     // Validate the form data at backend
-    const validatedData = ProductFormSchema.safeParse(product);
+    const validatedData = ProductFormSchema.safeParse({
+      ...product,
+      variantImage: [{url: product.variantImage}],
+    });
     if (!validatedData.success) {
       const validationErrors = validatedData.error.flatten();
       return {
@@ -85,6 +88,7 @@ export async function upsertProduct(
     const commonVariantData = {
       variantName: product.variantName,
       variantDescription: product.variantDescription,
+      variantImage: product.variantImage,
       slug: variantSlug,
       isSale: product.isSale,
       sku: product.sku,

@@ -15,13 +15,13 @@ enum Role {
 }
 
 model User {
-  id      String  @id @default(uuid())
+  id      String @id @default(uuid())
   name    String
-  email   String  @unique
-  picture String  @db.Text
-  role    Role    @default(USER)
+  email   String @unique
+  picture String @db.Text
+  role    Role   @default(USER)
 
-  stores  Store[]
+  stores Store[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -126,12 +126,13 @@ model ProductVariant {
   id                 String  @id @default(uuid())
   variantName        String
   variantDescription String? @db.LongText
+  variantImage       String
   slug               String  @unique
   isSale             Boolean @default(false)
   keywords           String
   sku                String
 
-  sizes Size[]
+  sizes  Size[]
   images ProductVariantImage[]
   colors Color[]
 
@@ -145,14 +146,14 @@ model ProductVariant {
 }
 
 model Size {
-  id                 String  @id @default(uuid())
-  size String
+  id       String @id @default(uuid())
+  size     String
   quantity Int
-  price Int
-  discount Int @default(0)
+  price    Int
+  discount Int    @default(0)
 
   productVariantId String
-  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -161,12 +162,12 @@ model Size {
 }
 
 model ProductVariantImage {
-  id                 String  @id @default(uuid())
+  id  String @id @default(uuid())
   url String
   alt String @default("")
 
   productVariantId String
-  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -175,11 +176,11 @@ model ProductVariantImage {
 }
 
 model Color {
-  id                 String  @id @default(uuid())
+  id   String @id @default(uuid())
   name String
 
   productVariantId String
-  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

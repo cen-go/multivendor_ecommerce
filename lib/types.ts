@@ -20,6 +20,7 @@ export type ProductWithVariantType = {
   variantId?: string;
   variantName: string;
   variantDescription: string;
+  variantImage: string;
   images: {url: string}[];
   categoryId: string;
   subcategoryId: string;

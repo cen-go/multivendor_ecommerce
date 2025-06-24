@@ -87,6 +87,7 @@ export default function ProductDetails({
       variantName: data?.variantName ?? "",
       variantDescription: data?.variantDescription ?? "",
       images: data?.images ?? [],
+      variantImage: data?.variantImage ? [{url: data.variantImage}] : [],
       categoryId: data?.categoryId ?? "",
       subcategoryId: data?.subcategoryId ?? "",
       isSale: data?.isSale ?? false,
@@ -104,11 +105,10 @@ export default function ProductDetails({
   // Reset form values when data changes
   useEffect(() => {
     if (data) {
-      form.setValue("name", data.name ?? "");
-      form.setValue("description", data.description ?? "");
-      form.setValue("brand", data.brand ?? "");
-      form.setValue("categoryId", data.categoryId ?? "");
-      form.setValue("subcategoryId", data.subcategoryId ?? "");
+      form.reset({
+        ...data,
+        variantImage: [{url: data.variantImage}],
+      });
     }
   }, [data, form]);
 
@@ -142,11 +142,11 @@ export default function ProductDetails({
 
   // Submit handler for form submission
   async function onSubmit(values: z.infer<typeof ProductFormSchema>) {
-    console.log(values);
     const response = await upsertProduct({
       productId: data?.productId,
       variantId: data?.variantId,
       ...values,
+      variantImage: values.variantImage[0].url,
     }, storeUrl);
 
     if (!response.success) {
@@ -433,44 +433,91 @@ export default function ProductDetails({
                     )}
                   />
                 </div>
-                {/* Keywords */}
-                <FormField
-                  control={form.control}
-                  name="keywords"
-                  render={({  }) => (
-                    <FormItem className="relative flex-1">
-                      <FormLabel>Product Keywords</FormLabel>
-                      <FormControl>
-                        <ReactTags
-                            handleAddition={handleAddKeyword}
-                            handleDelete={() => {}}
-                            placeholder="Keywords (e.g., winter jacket, warm, stylish)"
-                            classNames={{
-                              tagInputField:
-                                "bg-background border rounded-md p-2 w-full focus:outline-none",
-                            }}
-                          />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex flex-wrap gap-1">
-                    {keywords.map((k, i) => (
-                      <div
-                        key={i}
-                        className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-700 rounded-full gap-x-2"
-                      >
-                        <span>{k}</span>
-                        <span
-                          className="cursor-pointer"
-                          onClick={() => handleDeleteKeyword(i)}
-                        >
-                          x
-                        </span>
-                      </div>
-                    ))}
+                {/* Variant image + Keywords container */}
+                <div className="flex flex-col md:flex-row gap-4">
+                  {/* Variant image */}
+                  <div className="border-e pe-6">
+                    <FormField
+                      control={form.control}
+                      name="images"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="ms-8">Variant Image</FormLabel>
+                          <FormControl>
+                            <div>
+                              <ImageUpload
+                                type="profile"
+                                value={field.value.map((image) => image.url)}
+                                disabled={isSubmitting}
+                                onChange={(cldUrl) => {
+                                  // field.value is always the latest value
+                                  if (
+                                    !field.value.some(
+                                      (img) => img.url === cldUrl
+                                    )
+                                  ) {
+                                    form.setValue("variantImage", [
+                                      { url: cldUrl },
+                                    ]);
+                                  }
+                                }}
+                                onRemove={(cldUrl) =>
+                                  field.onChange(
+                                    [...field.value].filter(
+                                      (image) => image.url !== cldUrl
+                                    )
+                                  )
+                                }
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage className="!mt-4" />
+                        </FormItem>
+                      )}
+                    />
                   </div>
+
+                  {/* Keywords */}
+                  <div className="flex-1">
+                    <FormField
+                      control={form.control}
+                      name="keywords"
+                      render={({}) => (
+                        <FormItem className="relative flex-1">
+                          <FormLabel>Product Keywords</FormLabel>
+                          <FormControl>
+                            <ReactTags
+                              handleAddition={handleAddKeyword}
+                              handleDelete={() => {}}
+                              placeholder="Keywords (e.g., winter jacket, warm, stylish)"
+                              classNames={{
+                                tagInputField:
+                                  "bg-background border rounded-md p-2 w-full focus:outline-none",
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {keywords.map((k, i) => (
+                        <div
+                          key={i}
+                          className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-700 rounded-full gap-x-2"
+                        >
+                          <span>{k}</span>
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => handleDeleteKeyword(i)}
+                          >
+                            x
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
                 {/* Sizes */}
                 <div className="w-full flex flex-col gap-y-3">
