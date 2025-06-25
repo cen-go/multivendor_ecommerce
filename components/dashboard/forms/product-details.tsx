@@ -52,6 +52,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { format } from "date-fns";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
+
 
 interface ProductDetailsProps {
   data?: Partial<ProductWithVariantType>;
@@ -90,12 +93,13 @@ export default function ProductDetails({
       variantImage: data?.variantImage ? [{url: data.variantImage}] : [],
       categoryId: data?.categoryId ?? "",
       subcategoryId: data?.subcategoryId ?? "",
-      isSale: data?.isSale ?? false,
       brand: data?.brand ?? "",
       sku: data?.sku ?? "",
       keywords: data?.keywords ?? [],
       colors: data?.colors ?? [{ color: "" }],
       sizes: data?.sizes ?? [],
+      isSale: data?.isSale ?? false,
+      saleEndDate: data?.saleEndDate || format(new Date(), "yyyy-MM-dd'T'HH:mm:ss")
     },
   });
 
@@ -439,7 +443,7 @@ export default function ProductDetails({
                   <div className="border-e pe-6">
                     <FormField
                       control={form.control}
-                      name="images"
+                      name="variantImage"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="ms-8">Variant Image</FormLabel>
@@ -544,29 +548,49 @@ export default function ProductDetails({
                   )}
                 </div>
 
-                {/* Is on sale */}
-                <FormField
-                  control={form.control}
-                  name="isSale"
-                  render={({ field }) => (
-                    <FormItem className="flex-1 border p-4 rounded-md">
-                      <div className="flex items-center gap-2">
+                {/* Is Sale & date time picker container */}
+                <div className="flex flex-col md:flex-row gap-4 border p-4 rounded-md">
+                  {/* Is on sale */}
+                  <FormField
+                    control={form.control}
+                    name="isSale"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="w-5 h-5"
+                            />
+                          </FormControl>
+                          <FormLabel>Is on Sale.</FormLabel>
+                        </div>
+                        <FormDescription>
+                          Is this product listed as on sale?
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Date Time picker */}
+                  <FormField
+                    control={form.control}
+                    name="saleEndDate"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Sale End Date</FormLabel>
                         <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="w-5 h-5"
+                          <DateTimePicker
+                            value={field.value ? new Date(field.value) : undefined}
+                            onChange={(date) => field.onChange(date ? format(date, "yyyy-MM-dd'T'HH:mm:ss") : "")}
                           />
                         </FormControl>
-                        <FormLabel>Is on Sale.</FormLabel>
-                      </div>
-                      <FormDescription>
-                        Is this product listed as on sale?
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <Button
                   type="submit"

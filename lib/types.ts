@@ -25,6 +25,7 @@ export type ProductWithVariantType = {
   categoryId: string;
   subcategoryId: string;
   isSale: boolean;
+  saleEndDate?: string;
   brand: string;
   sku: string;
   keywords: string[];

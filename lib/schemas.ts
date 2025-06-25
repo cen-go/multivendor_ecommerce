@@ -152,7 +152,6 @@ export const ProductFormSchema = z.object({
       invalid_type_error: "Product subcategory ID must be a valid UUID.",
     })
     .uuid({message: "Invalid subcategory."}),
-  isSale: z.boolean(),
   brand: requiredString("Product brand")
     .min(2, {
       message: "Product brand should be at least 2 characters long.",
@@ -206,4 +205,6 @@ export const ProductFormSchema = z.object({
     .refine((sizes) => sizes.every((s) => Number.isInteger(s.price * 100)), {
       message: "Price can have at most two decimal places.",
     }),
+  isSale: z.boolean(),
+  saleEndDate: z.string().optional(),
 });
