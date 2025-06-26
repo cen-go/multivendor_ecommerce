@@ -231,6 +231,13 @@ export const ProductFormSchema = z.object({
         message: "All product variant specs inputs must be filled correctly.",
       }
     ),
+    questions: z
+    .object({
+      question: z.string(),
+      answer: z.string(),
+    })
+    .array()
+    .optional(),
   isSale: z.boolean(),
   saleEndDate: z.string().optional(),
 });

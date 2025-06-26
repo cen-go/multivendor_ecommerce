@@ -90,6 +90,11 @@ export default function ProductDetails({
     { name: string; value: string }[]
   >(data?.variant_specs ?? [{ name: "", value: "" }]);
 
+  // Local state for Product Questions
+  const [questions, setQuestions] = useState<
+    { question: string; answer: string }[]
+  >(data?.questions ?? [{ question: "", answer: "" }]);
+
   // Local State for subcategories
   const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
 
@@ -124,6 +129,7 @@ export default function ProductDetails({
       isSale: data?.isSale ?? false,
       saleEndDate:
         data?.saleEndDate || format(new Date(), "yyyy-MM-dd'T'HH:mm:ss"),
+      questions: data?.questions ?? []
     },
   });
 
@@ -149,7 +155,8 @@ export default function ProductDetails({
     form.setValue("keywords", keywords);
     form.setValue("product_specs", productSpecs);
     form.setValue("variant_specs", variantSpecs);
-  }, [colors, sizes, keywords, form, productSpecs, variantSpecs]);
+    form.setValue("questions", questions);
+  }, [colors, sizes, keywords, form, productSpecs, variantSpecs, questions]);
 
   // Update available subcategories when user selects a category
   const selectedCategoryId = form.watch().categoryId;
@@ -717,6 +724,27 @@ export default function ProductDetails({
                       </FormItem>
                     )}
                   />
+                )}
+              </div>
+
+              {/* Product Questions */}
+              <div className="w-full flex flex-col gap-y-3 mt-2">
+                <ClickToAddInputs<{
+                  question: string;
+                  answer: string;
+                }>
+                  details={questions}
+                  setDetails={setQuestions}
+                  initialDetail={{
+                    question: "",
+                    answer: "",
+                  }}
+                  header="Product Questions"
+                />
+                {form.formState.errors.questions && (
+                  <p className="text-sm font-medium text-destructive">
+                    {form.formState.errors.questions.message}
+                  </p>
                 )}
               </div>
 
