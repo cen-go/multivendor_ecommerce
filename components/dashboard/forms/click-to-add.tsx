@@ -119,7 +119,7 @@ export default function ClickToAddInputs<T extends Detail>({
   return (
     <div className="flex flex-col gap-y-4">
       {/* Header */}
-      <div>{header}</div>
+      {header && (<div>{header}</div>)}
       {/* Display Plus Button if no detail exists */}
       {details.length === 0 && <PlusButton onClick={handleAddDetail} />}
       {/* Map through details and render input fields */}

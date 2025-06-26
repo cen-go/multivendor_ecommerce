@@ -36,6 +36,8 @@ export type ProductWithVariantType = {
     price: number;
     discount: number;
   }[];
+  product_specs: {name: string; value: string;}[];
+  variant_specs: {name: string; value: string;}[];
   createdAt?: Date;
   updatedAt?: Date;
 }

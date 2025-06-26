@@ -205,6 +205,32 @@ export const ProductFormSchema = z.object({
     .refine((sizes) => sizes.every((s) => Number.isInteger(s.price * 100)), {
       message: "Price can have at most two decimal places.",
     }),
+  product_specs: z
+    .object({
+      name: z.string(),
+      value: z.string(),
+    })
+    .array()
+    .min(1, "Please provide at least one product spec.")
+    .refine(
+      (product_specs) =>
+        product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
+      { message: "All product specs inputs must be filled correctly." }
+    ),
+    variant_specs: z
+    .object({
+      name: z.string(),
+      value: z.string(),
+    })
+    .array()
+    .min(1, "Please provide at least one product variant spec.")
+    .refine(
+      (variant_specs) =>
+        variant_specs.every((s) => s.name.length > 0 && s.value.length > 0),
+      {
+        message: "All product variant specs inputs must be filled correctly.",
+      }
+    ),
   isSale: z.boolean(),
   saleEndDate: z.string().optional(),
 });
