@@ -116,12 +116,16 @@ model Product {
   subcategoryId String
   subcategory   SubCategory @relation(fields: [subcategoryId], references: [id])
 
+  offerTagId String?
+  offerTag   OfferTag? @relation(fields: [offerTagId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([storeId])
   @@index([categoryId])
   @@index([subcategoryId])
+  @@index([offerTagId])
 }
 
 model ProductVariant {
@@ -138,7 +142,7 @@ model ProductVariant {
   sizes  Size[]
   images ProductVariantImage[]
   colors Color[]
-  sğecs Spec[]
+  specs  Spec[]
 
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -222,4 +226,15 @@ model Question {
   updatedAt DateTime @updatedAt
 
   @@index([productId])
+}
+
+model OfferTag {
+  id   String @id @default(uuid())
+  name String
+  url  String
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

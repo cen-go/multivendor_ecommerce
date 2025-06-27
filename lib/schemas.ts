@@ -241,3 +241,23 @@ export const ProductFormSchema = z.object({
   isSale: z.boolean(),
   saleEndDate: z.string().optional(),
 });
+
+export const OfferTagFormSchema = z.object({
+  name: requiredString("Offer Tag name")
+    .min(2, { message: "Tag name must be at least 2 characters long." })
+    .max(50, { message: "Tag name cannot exceed 50 characters." })
+    .regex(
+      /^(?!.*(?:[-_ ?:,!']){2,})[^- \s_,.'][\p{L}0-9\s'&-_!?:+,.']*[^- \s_,']$/u,
+      {
+        message:
+          "Only letters, numbers, space, ?, :, !, +, -, ', _, period and comma are allowed in the tag name, and consecutive occurrences of spaces and special characters are not permitted.",
+      }
+    ),
+  url: requiredString("Offer Tag URL")
+    .min(2, { message: "Category url must be at least 2 characters long." })
+    .max(50, { message: "Category url cannot exceed 50 characters." })
+    .regex(/^(?!.*(?:[-_ ]){2,})[a-zA-Z0-9_-]+$/, {
+      message:
+        "Only letters, numbers, hyphen, and underscore are allowed in Offer Tag URL, and consecutive occurrences of hyphens, underscores, or spaces are not permitted.",
+    }),
+});
