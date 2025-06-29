@@ -261,3 +261,41 @@ export const OfferTagFormSchema = z.object({
         "Only letters, numbers, hyphen, and underscore are allowed in Offer Tag URL, and consecutive occurrences of hyphens, underscores, or spaces are not permitted.",
     }),
 });
+
+// Store shippind details form schema
+export const StoreShippingFormSchema = z.object({
+  returnPolicy: requiredString("Return policy").min(20, {
+    message: "Return policy must be at least 20 characters long.",
+  }),
+  defaultShippingService: requiredString("Default shipping service")
+    .min(2, {
+      message: "Shipping service name must be at least 2 characters long.",
+    })
+    .max(50, { message: "Shipping service name cannot exceed 50 characters." }),
+  defaultShippingFeePerItem: z
+    .number()
+    .min(0, "Pricce must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  defaultShippingFeePerAdditionalItem: z
+    .number()
+    .min(0, "Pricce must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  defaultShippingFeePerKg: z
+    .number()
+    .min(0, "Pricce must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  defaultShippingFeeFixed: z
+    .number()
+    .min(0, "Pricce must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  defaultDeliveryTimeMin: z.number(),
+  defaultDeliveryTimeMax: z.number(),
+});

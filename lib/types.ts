@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
 import { getAllStoreProducts } from "@/actions/product";
+import { getStoreDefaultShippingDetails } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
   label: string;
@@ -45,3 +46,7 @@ export type ProductWithVariantType = {
 
 // Store product
 export type StoreProductType = Prisma.PromiseReturnType<typeof getAllStoreProducts>[0];
+
+// Store default shipping details type
+export type StoreShippingDetailType = Prisma.PromiseReturnType<typeof getStoreDefaultShippingDetails>
+

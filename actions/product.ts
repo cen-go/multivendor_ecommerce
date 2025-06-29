@@ -1,14 +1,21 @@
 "use server"
 
-import db from "@/lib/db";
-import { ProductWithVariantType, StoreProductType } from "@/lib/types";
+// Next.js & React
+import { revalidatePath } from "next/cache";
+// Clerk
 import { currentUser } from "@clerk/nextjs/server";
+// Database client
+import db from "@/lib/db";
+// Types & Prisma
+import { ProductWithVariantType, StoreProductType } from "@/lib/types";
 import { Role } from "@prisma/client";
+// Utils
 import slugify from "slugify"
 import { generateUniqueSlug, getCloudinaryPublicId } from "@/lib/utils";
+// Validation schemas
 import { ProductFormSchema } from "@/lib/schemas";
+// Cloudinary Functions
 import { deleteCloudinaryImage } from "./cloudinary";
-import { revalidatePath } from "next/cache";
 
 // Function: upsertProduct
 // Description:  Upserts a product and it's variant into the database,
@@ -121,7 +128,7 @@ export async function upsertProduct(
         create: product.sizes.map(size => ({
           size: size.size,
           quantity: size.quantity,
-          price: size.price * 100,
+          price: Math.round(size.price * 100),
           discount: size.discount,
         })),
       },

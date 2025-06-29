@@ -83,7 +83,7 @@ interface CellActionsProps {
 }
 
 // CellActions component definition
-const CellActions: React.FC<CellActionsProps> = ({ rowData }) => {
+function CellActions({ rowData }: CellActionsProps) {
   // Hooks
   const { setOpen, setClose } = useModal();
   const [loading, setLoading] = useState(false);
