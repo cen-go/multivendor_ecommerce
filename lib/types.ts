@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, ShippingRate } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
 import { getAllStoreProducts } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
@@ -50,3 +50,9 @@ export type StoreProductType = Prisma.PromiseReturnType<typeof getAllStoreProduc
 // Store default shipping details type
 export type StoreShippingDetailType = Prisma.PromiseReturnType<typeof getStoreDefaultShippingDetails>
 
+export type StoreShippingRateForCountry  = {
+  countryId: string;
+  countryName: string;
+  countryCode: string;
+  shippingRate: ShippingRate | null;
+};

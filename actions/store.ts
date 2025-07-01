@@ -8,7 +8,7 @@ import { StoreFormSchema, StoreShippingFormSchema } from "@/lib/schemas";
 import db from "@/lib/db";
 // Types
 import { Role, Store } from "@prisma/client";
-import { StoreShippingDetailType } from "@/lib/types";
+import { StoreShippingDetailType, StoreShippingRateForCountry } from "@/lib/types";
 
 // Function: upsertStore
 // Description:  Upserts a store into the database, ensuring uniqueness of name, email, URL
@@ -244,4 +244,41 @@ export async function updateStoreDefaultShippingDetails(
     console.error(error);
     return { success: false, message: "An unexpected error occurred." };
   }
+}
+
+// Function: getStoreShippingRates
+// Description: Retrieves all countries and their shipping rates for a specific store.
+//              If a country does not have a shipping rate, it is still included in the result with a null shippingRate.
+// Permission Level: Public
+// Parameters:
+//   - storeUrl: the slug of the store to fetch shipping details.
+// Returns: Array of objects where each object contains a country and it's associated shipping rate, sorted by country name.
+export async function getStoreShippingRates(storeUrl: string) {
+    // get the store details from database, and ensure it exists
+    const store = await db.store.findUnique({ where: { url: storeUrl } });
+    if (!store) {
+      throw new Error("Store not found.");
+    }
+
+    const countries = await db.country.findMany({ orderBy: { name: "asc" } });
+
+    const storeShippingRates = await db.shippingRate.findMany({
+      where: { storeId: store.id },
+    });
+
+    // Create a map for quicek lookup of shipping rates by country Id
+    const ratesMap = new Map();
+    storeShippingRates.forEach(rate => {
+      ratesMap.set(rate.countryId, rate);
+    });
+
+    // Map countries to their shipping rates
+    const result: StoreShippingRateForCountry[] = countries.map(country => ({
+      countryId: country.id,
+      countryName: country.name,
+      countryCode: country.code,
+      shippingRate: ratesMap.get(country.id) || null,
+    }));
+
+    return result;
 }

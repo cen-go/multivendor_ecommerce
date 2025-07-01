@@ -87,7 +87,8 @@ model Store {
   defaultDeliveryTimeMin              Int         @default(7)
   defaultDeliveryTimeMax              Int         @default(31)
 
-  products Product[]
+  products      Product[]
+  shippingRates ShippingRate[]
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -247,6 +248,33 @@ model Country {
   name String @unique
   code String @unique
 
+  shippingRates ShippingRate[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ShippingRate {
+  id String @id @default(uuid())
+
+  returnPolicy                 String
+  shippingService              String
+  shippingFeePerItem           Int
+  shippingFeePerAdditionalItem Int
+  shippingFeePerKg             Int
+  shippingFeeFixed             Int
+  deliveryTimeMin              Int
+  deliveryTimeMax              Int
+
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([countryId])
+  @@index([storeId])
 }
