@@ -277,4 +277,5 @@ model ShippingRate {
 
   @@index([countryId])
   @@index([storeId])
+  @@unique([storeId, countryId])
 }

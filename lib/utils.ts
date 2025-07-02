@@ -70,3 +70,14 @@ export async function generateUniqueSlug(
 
   return slug;
 }
+
+// Util to format curencies to display on UI
+// transforms the currency stored in db as cents to dollars to display on UI
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
+  currency: "USD",
+  style: "currency",
+  minimumFractionDigits: 2,
+});
+export function formatCurrency(amount: number) {
+  return CURRENCY_FORMATTER.format(amount/100);
+}

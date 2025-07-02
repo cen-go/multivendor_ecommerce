@@ -3,12 +3,14 @@
 // Clerk
 import { currentUser } from "@clerk/nextjs/server";
 // zod schemas
-import { StoreFormSchema, StoreShippingFormSchema } from "@/lib/schemas";
+import * as z from "zod";
+import { ShippingRateFormSchema, StoreFormSchema, StoreShippingFormSchema } from "@/lib/schemas";
 // Database client
 import db from "@/lib/db";
 // Types
 import { Role, Store } from "@prisma/client";
-import { StoreShippingDetailType, StoreShippingRateForCountry } from "@/lib/types";
+import { StoreShippingDetailType, StoreShippingRateForCountryType } from "@/lib/types";
+import { revalidatePath } from "next/cache";
 
 // Function: upsertStore
 // Description:  Upserts a store into the database, ensuring uniqueness of name, email, URL
@@ -199,7 +201,7 @@ export async function updateStoreDefaultShippingDetails(
 
     const shippingDetails = validatedData.data;
 
-    // Check if the store exists and it's actually the store of current user
+    // Check if the store exists and it's actually the owned by current user
     const existingStore = await db.store.findUnique({
       where: { url: storeUrl },
     });
@@ -273,7 +275,7 @@ export async function getStoreShippingRates(storeUrl: string) {
     });
 
     // Map countries to their shipping rates
-    const result: StoreShippingRateForCountry[] = countries.map(country => ({
+    const result: StoreShippingRateForCountryType[] = countries.map(country => ({
       countryId: country.id,
       countryName: country.name,
       countryCode: country.code,
@@ -281,4 +283,102 @@ export async function getStoreShippingRates(storeUrl: string) {
     }));
 
     return result;
+}
+
+// Function: upsertShippingRate
+// Description: Upserts a shipping rate for a specific country, updating if it exists or creating a new one.
+// Permission Level: Seller
+// Parameters:
+//   - storeUrl: Url of the store you are trying to update.
+//   - shippingRate: ShippingRate object containing the details of the shipping rate to be upserted.
+// Returns: Updated or newly created shipping rate details.
+export async function upsertShippingRate(storeUrl:string, shippingRate: z.infer<typeof ShippingRateFormSchema>) {
+  try {
+    // Get the current user
+    const user = await currentUser();
+    if (!user) {
+      return { success: false, message: "Unauthenticated!" };
+    }
+
+    // Verify the user is an seller
+    if (user.privateMetadata.role !== Role.SELLER) {
+      return {
+        success: false,
+        message: "Unauthorized Access: Seller privileges required.",
+      };
+    }
+
+    // Validate the form data
+    const validatedData = ShippingRateFormSchema.safeParse(shippingRate);
+
+    if (!validatedData.success) {
+      const validationError = validatedData.error.flatten();
+      return {
+        success: false,
+        fieldErrors: validationError.fieldErrors,
+        formErrors: validationError.formErrors,
+        message: "Validation failed.",
+      };
+    }
+
+    const shippingRateData = validatedData.data;
+
+    // Check if the store exists and it's actually the owned by current user
+    const existingStore = await db.store.findUnique({
+      where: { url: storeUrl },
+    });
+
+    if (!existingStore) {
+      return { success: false, message: "Store not found." };
+    }
+
+    if (existingStore.userId !== user.id) {
+      return {
+        success: false,
+        message:
+          "Make sure you have permission to update this store's details.",
+      };
+    }
+
+    // Prepare data to be upserted into database
+    const data = {
+      shippingService: shippingRateData.shippingService,
+      returnPolicy: shippingRateData.returnPolicy,
+      shippingFeePerItem: Math.round(shippingRateData.shippingFeePerItem * 100),
+      shippingFeePerAdditionalItem: Math.round(
+        shippingRateData.shippingFeePerAdditionalItem * 100
+      ),
+      shippingFeePerKg: Math.round(shippingRateData.shippingFeePerKg * 100),
+      shippingFeeFixed: Math.round(shippingRateData.shippingFeeFixed * 100),
+      deliveryTimeMin: shippingRateData.deliveryTimeMin,
+      deliveryTimeMax: shippingRateData.deliveryTimeMax,
+    };
+
+    // update or create in database with Prisma's upsert method
+    const shippingRateResult = await db.shippingRate.upsert({
+      where: {
+        storeId_countryId: {
+          storeId: existingStore.id,
+          countryId: shippingRateData.countryId,
+        },
+      },
+      update: data,
+      create: {
+        ...data,
+        storeId: existingStore.id,
+        countryId: shippingRateData.countryId,
+      },
+    });
+
+    revalidatePath(`/dashboard/seller/stores/${storeUrl}/shipping`);
+
+    return {
+      success: true,
+      message: `Shipping rates for ${shippingRateData.countryName} successfully updated.`,
+      data: shippingRateResult,
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "An unexpected error occurred." };
+  }
 }

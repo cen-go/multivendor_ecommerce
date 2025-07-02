@@ -50,7 +50,7 @@ export type StoreProductType = Prisma.PromiseReturnType<typeof getAllStoreProduc
 // Store default shipping details type
 export type StoreShippingDetailType = Prisma.PromiseReturnType<typeof getStoreDefaultShippingDetails>
 
-export type StoreShippingRateForCountry  = {
+export type StoreShippingRateForCountryType  = {
   countryId: string;
   countryName: string;
   countryCode: string;

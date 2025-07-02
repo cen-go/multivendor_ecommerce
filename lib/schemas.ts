@@ -262,7 +262,7 @@ export const OfferTagFormSchema = z.object({
     }),
 });
 
-// Store shippind details form schema
+// Store default shipping details form schema
 export const StoreShippingFormSchema = z.object({
   returnPolicy: requiredString("Return policy").min(20, {
     message: "Return policy must be at least 20 characters long.",
@@ -274,28 +274,68 @@ export const StoreShippingFormSchema = z.object({
     .max(50, { message: "Shipping service name cannot exceed 50 characters." }),
   defaultShippingFeePerItem: z
     .number()
-    .min(0, "Pricce must be greater than 0.")
+    .min(0, "Price must be greater than 0.")
     .refine((price) => Number.isInteger(price * 100), {
       message: "Price can have at most two decimal places.",
     }),
   defaultShippingFeePerAdditionalItem: z
     .number()
-    .min(0, "Pricce must be greater than 0.")
+    .min(0, "Price must be greater than 0.")
     .refine((price) => Number.isInteger(price * 100), {
       message: "Price can have at most two decimal places.",
     }),
   defaultShippingFeePerKg: z
     .number()
-    .min(0, "Pricce must be greater than 0.")
+    .min(0, "Price must be greater than 0.")
     .refine((price) => Number.isInteger(price * 100), {
       message: "Price can have at most two decimal places.",
     }),
   defaultShippingFeeFixed: z
     .number()
-    .min(0, "Pricce must be greater than 0.")
+    .min(0, "Price must be greater than 0.")
     .refine((price) => Number.isInteger(price * 100), {
       message: "Price can have at most two decimal places.",
     }),
   defaultDeliveryTimeMin: z.number(),
   defaultDeliveryTimeMax: z.number(),
+});
+
+// Store shipping Rate details
+export const ShippingRateFormSchema = z.object({
+  countryId: z.string().uuid(),
+  countryName: z.string(),
+  returnPolicy: requiredString("Return policy").min(10, {
+    message: "Return policy must be at least 10 characters long.",
+  }),
+  shippingService: requiredString("Default shipping service")
+    .min(2, {
+      message: "Shipping service name must be at least 2 characters long.",
+    })
+    .max(50, { message: "Shipping service name cannot exceed 50 characters." }),
+  shippingFeePerItem: z
+    .number()
+    .min(0, "Price must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  shippingFeePerAdditionalItem: z
+    .number()
+    .min(0, "Price must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  shippingFeePerKg: z
+    .number()
+    .min(0, "Price must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  shippingFeeFixed: z
+    .number()
+    .min(0, "Price must be greater than 0.")
+    .refine((price) => Number.isInteger(price * 100), {
+      message: "Price can have at most two decimal places.",
+    }),
+  deliveryTimeMin: z.number(),
+  deliveryTimeMax: z.number(),
 });
