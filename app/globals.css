@@ -80,6 +80,13 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --orange-background: #FD384F;
+  --orange-hover: #e23246;
+  --orange-primary: #FA6338;
+  --orange-secondary: #d3031c;
+  --orange-border: #ffe6e7;
+  --main-primary: oklch(21.34% 0.000 0);
+  --main-secondary: oklch(56.24% 0.000 0);
 }
 
 .dark {
@@ -114,6 +121,11 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --orange-background: #FD384F;
+  --orange-hover: #e23246;
+  --orange-primary: #FA6338;
+  --orange-secondary: #d3031c;
+  --orange-border: #ffe6e7;
 }
 
 @layer base {
@@ -125,6 +137,14 @@
   }
 }
 
+
+
 .perspective-1000 {
   perspective: 1000px;
+}
+
+/* User Clerk avatar */
+.user-avatar .cl-avatarBox {
+  width: 70px !important;
+  height: 70px !important;
 }
