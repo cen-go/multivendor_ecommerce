@@ -1,5 +1,5 @@
 export default function DownloadApp() {
   return (
-    <div>DownloadApp</div>
+    <div className="">DownloadApp</div>
   )
 }

@@ -7,7 +7,8 @@ import UserMenu from "./userMenu/user-menu";
 import Cart from "./cart";
 import DownloadApp from "./download-app";
 
-export default function StoreHeader() {
+export default async function StoreHeader() {
+
   return (
     <header className="bg-gradient-to-r from-slate-500 to-slate-800">
       <div className="h-full w-full lg:flex text-white px-4 lg:px-12">
