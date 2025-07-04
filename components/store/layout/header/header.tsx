@@ -4,6 +4,8 @@ import Link from "next/link";
 import { APP_NAME } from "@/lib/constants";
 // Components
 import UserMenu from "./userMenu/user-menu";
+import Cart from "./cart";
+import DownloadApp from "./download-app";
 
 export default function StoreHeader() {
   return (
@@ -16,9 +18,18 @@ export default function StoreHeader() {
             </Link>
             <div className="flex lg:hidden">
               <UserMenu />
-              <div className="w-12"></div>
+              <Cart />
             </div>
           </div>
+          {/* Search Input */}
+        </div>
+        <div className="hidden lg:flex w-full lg:w-fit lg:mt-2 justify-end mt-1.5 pl-6">
+          <div className="lg:flex">
+            <DownloadApp />
+          </div>
+          {/* Country Selector */}
+          <UserMenu />
+          <Cart />
         </div>
       </div>
     </header>

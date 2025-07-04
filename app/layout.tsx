@@ -5,7 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 // Modal provider
 import ModalProvider from "@/lib/modal-provider";
 // Fonts
-import { Inter, Barlow } from "next/font/google";
+import { Inter, Barlow, Geologica } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 import { APP_NAME } from "@/lib/constants";
@@ -16,6 +16,11 @@ const barlowFont = Barlow({
   subsets: ["latin"],
   weight: ["500", "700"],
   variable: "--font-barlow",
+});
+const geologica = Geologica({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-geologica",
 });
 
 // Metadata
@@ -37,7 +42,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${interFont.className} ${barlowFont.variable} antialiased`}
+          className={`${interFont.className} ${barlowFont.variable} ${geologica.variable} antialiased`}
         >
           <ThemeProvider
             attribute="class"

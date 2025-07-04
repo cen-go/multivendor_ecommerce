@@ -1,15 +1,17 @@
 // React & Next.js
 import Image from "next/image";
+import Link from "next/link";
 // Clerk authentication
 import { currentUser } from "@clerk/nextjs/server"
+import { SignOutButton, UserButton } from "@clerk/nextjs";
 // Icons
 import { ChevronDownIcon, UserIcon } from "lucide-react";
 import { MessageIcon, OrderIcon, WishlistIcon } from "@/components/store/icons";
+// Utils
 import { cn } from "@/lib/utils";
-import { SignOutButton, UserButton } from "@clerk/nextjs";
+// UI components
 import { Button } from "@/components/store/ui/button";
 import { Button as DefaultButton } from "@/components/ui/button";
-import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 
 export default async function UserMenu() {
@@ -68,7 +70,7 @@ export default async function UserMenu() {
                     </Button>
                     <Link
                       href="/sign-up"
-                      className="h-10 text-sm hover:underline flex items-center justify-center cursor-pointer"
+                      className="h-10 text-sm text-primary hover:underline flex items-center justify-center cursor-pointer"
                     >
                       Register
                     </Link>
