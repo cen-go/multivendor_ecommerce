@@ -6,6 +6,7 @@ import { APP_NAME } from "@/lib/constants";
 import UserMenu from "./userMenu/user-menu";
 import Cart from "./cart";
 import DownloadApp from "./download-app";
+import Search from "./search/search";
 
 export default async function StoreHeader() {
 
@@ -22,7 +23,7 @@ export default async function StoreHeader() {
               <Cart />
             </div>
           </div>
-          {/* Search Input */}
+          <Search />
         </div>
         <div className="hidden lg:flex w-full lg:w-fit lg:mt-2 justify-end mt-1.5 pl-6">
           <div className="lg:flex">
