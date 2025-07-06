@@ -3,6 +3,7 @@ import Image from "next/image";
 import { AppIcon } from "../../icons"
 import AppStoreImg from "@/public/assets/icons/app-store.webp"
 import PlayStoreImg from "@/public/assets/icons/google-play.webp"
+import { APP_NAME } from "@/lib/constants";
 
 export default function DownloadApp() {
   return (
@@ -14,7 +15,7 @@ export default function DownloadApp() {
         </span>
         <div className="ml-1">
           <b className="max-w-[90px] inline-block font-medium text-xs text-white">
-            Download the GoShop app
+            Download the {APP_NAME} app
           </b>
         </div>
       </div>
@@ -28,7 +29,7 @@ export default function DownloadApp() {
             <div className="flex">
               <div className="mx-3">
                 <h3 className="font-semibold text-[18px] text-main-primary m-0 max-w-40 mx-auto">
-                  Download the GoShop app
+                  Download the {APP_NAME} app
                 </h3>
                 <div className="mt-4 flex items-center gap-x-2">
                   <Link

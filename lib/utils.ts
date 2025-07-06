@@ -6,6 +6,7 @@ import ColorThief from "colorthief"
 // prisma & db
 import { PrismaClient } from "@prisma/client";
 import db from "./db";
+import { UserCountry } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -80,4 +81,30 @@ const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
 });
 export function formatCurrency(amount: number) {
   return CURRENCY_FORMATTER.format(amount/100);
+}
+
+// Helper function to get the user country
+// Default country for the cases there is an issue with the service
+const DEFAULT_COUNTRY: UserCountry = {
+  name: "United States",
+  code: "US",
+};
+
+export async function getUserCountry(): Promise<UserCountry> {
+  let userCountry = DEFAULT_COUNTRY;
+  try {
+    const response = await fetch(
+      `https://api.ipinfo.io/lite/me?token=${process.env.IPINFO_TOKEN}`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      userCountry = {
+        name: data.country,
+        code: data.country_code,
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching the user country: ", error);
+  }
+  return userCountry;
 }

@@ -32,6 +32,7 @@ export default function UserMenu() {
         onMouseEnter={() => {
           setOpen(true);
         }}
+        aria-label="User menu button"
       >
         {user && isSignedIn ? (
           <Image

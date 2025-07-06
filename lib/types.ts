@@ -56,3 +56,8 @@ export type StoreShippingRateForCountryType  = {
   countryCode: string;
   shippingRate: ShippingRate | null;
 };
+
+export type UserCountry = {
+  name: string;
+  code: string;
+}
