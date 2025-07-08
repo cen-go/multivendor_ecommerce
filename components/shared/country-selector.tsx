@@ -140,7 +140,7 @@ export default function CountrySelector({
                         role="option"
                         aria-selected={selectedValue.name === value.name}
                         onClick={() => {
-                          onChange(value.name);
+                          onChange(value.code);
                           setQuery("");
                           onToggle();
                         }}

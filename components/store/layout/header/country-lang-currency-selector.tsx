@@ -2,6 +2,7 @@
 
 // React, Next.js
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 // Types
 import { SelectMenuOption, UserCountry } from "@/lib/types";
 // Icons
@@ -17,10 +18,40 @@ export default function CountryLanguageCurrencySelector({
 }: {
   userCountry: UserCountry;
 }) {
+  const router = useRouter()
   // State for opening and closing the modal
   const [open, setOpen] = useState(false);
   // State for opening and closing the modal
   const [countryOptionsOpen, setCountryOptionsOpen] = useState(false);
+
+  async function handleCountryClick(countryCode:string) {
+    // Find the country data based on the selected country code
+    const countryData = COUNTRIES.find(c => countryCode === c.code)
+
+    if (countryData) {
+      const data: UserCountry = {
+        name: countryData.name,
+        code: countryData.code,
+      };
+
+      try {
+        // Send a POST request to the API endpoint to set the cookies
+        const response = await fetch("/api/setUserCountryInCookies", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({userCountry: data}),
+        });
+
+        if (response.ok) {
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Error while changing country: ", error)
+      }
+    }
+  }
 
   return (
     <div className="relative inline-block">
@@ -69,7 +100,7 @@ export default function CountryLanguageCurrencySelector({
                     id={"countries"}
                     open={countryOptionsOpen}
                     onToggle={() => setCountryOptionsOpen(!countryOptionsOpen)}
-                    onChange={(val) => {return val}} //setCountry(val)
+                    onChange={(val) => handleCountryClick(val)} //setCountry(val)
                     // We use this type assertion because we are always sure this find will return a value but need to let TS know since it could technically return null
                     selectedValue={
                       COUNTRIES.find(
