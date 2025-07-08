@@ -1,14 +1,31 @@
 // React Next.js
 import Link from "next/link";
+import { cookies } from "next/headers";
 // Constants
 import { APP_NAME } from "@/lib/constants";
 // Components
 import UserMenu from "./userMenu/user-menu";
 import Cart from "./cart";
-import DownloadApp from "./download-app";
+import CountryLanguageCurrencySelector from "./country-lang-currency-selector";
+// import DownloadApp from "./download-app";
 import Search from "./search/search";
+// Types
+import { UserCountry } from "@/lib/types";
 
 export default async function StoreHeader() {
+  const storeCookies = await cookies();
+  const userCountryCookie = storeCookies.get("userCountry");
+
+  // Default country if the cookie is missing
+  let userCountry: UserCountry = {
+    name: "United States",
+    code: "US",
+  };
+
+  // If cookie exists update the user country
+  if (userCountryCookie) {
+    userCountry = JSON.parse(userCountryCookie.value);
+  }
 
   return (
     <header className="bg-gradient-to-r from-slate-500 to-slate-800">
@@ -18,7 +35,9 @@ export default async function StoreHeader() {
             <Link href="/">
               <h1 className="font-extrabold text-3xl font-mono">{APP_NAME}</h1>
             </Link>
-            <div className="flex lg:hidden">
+            <div className="flex lg:hidden gap-1">
+              {/* <DownloadApp /> */}
+              <CountryLanguageCurrencySelector userCountry={userCountry} />
               <UserMenu />
               <Cart />
             </div>
@@ -26,10 +45,7 @@ export default async function StoreHeader() {
           <Search />
         </div>
         <div className="hidden lg:flex w-full lg:w-fit lg:mt-2 justify-end mt-1.5 pl-6">
-          <div className="lg:flex">
-            <DownloadApp />
-          </div>
-          {/* Country Selector */}
+          <CountryLanguageCurrencySelector userCountry={userCountry} />
           <UserMenu />
           <Cart />
         </div>

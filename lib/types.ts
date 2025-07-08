@@ -61,3 +61,7 @@ export type UserCountry = {
   name: string;
   code: string;
 }
+
+import countries from "@/lib/data/countries.json";
+
+export type SelectMenuOption = (typeof countries)[number];

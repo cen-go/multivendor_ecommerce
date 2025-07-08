@@ -17,7 +17,7 @@ export default function Cart() {
           </span>
         </div>
 
-        <b className="text-sm text-wrap">Cart</b>
+        <b className="text-sm text-wrap hidden md:block">Cart</b>
       </Link>
     </div>
   );
