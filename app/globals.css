@@ -155,3 +155,14 @@
   width: 70px !important;
   height: 70px !important;
 }
+
+/*---Custom scrollbar---*/
+.scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Define the thumb style */
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 5px;
+}

@@ -99,7 +99,7 @@ export const getAllOfferTags = async (storeUrl?: string) => {
   }
 
   // Retrieve all offer tags from the database
-  const offerTgas = await db.offerTag.findMany({
+  const offerTags = await db.offerTag.findMany({
     where: storeId
       ? {
           products: {
@@ -122,7 +122,7 @@ export const getAllOfferTags = async (storeUrl?: string) => {
       },
     },
   });
-  return offerTgas;
+  return offerTags;
 };
 
 // Function: getOfferTag
