@@ -8,7 +8,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import db from "@/lib/db";
 // Types & Prisma
 import { ProductWithVariantType, StoreProductType } from "@/lib/types";
-import { Role } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 // Utils
 import slugify from "slugify"
 import { generateUniqueSlug, getCloudinaryPublicId } from "@/lib/utils";
@@ -288,4 +288,61 @@ export async function deleteProduct(product: StoreProductType) {
     console.error(error);
     return {success: false, message: "An unexpected error occured."};
   }
+}
+
+// Function: getProducts
+// Description: Fetches products based on various filters and
+//              returns only variants that match the filters. Supports pagination.
+// Permission Level: Public
+// Parameters:
+//   - Filters: An object containing filter options (category, subcategory, offerTag, size, onSale, onDiscount, brand, color)
+//   - sortBy: sort the filtered results (most popular, new arrivals, top rated, price...)
+//   - page: the current page number for pagination. (default = 1)
+//   - pageSize: the number of products per page (default = 10)
+// Returns: An object containing paginated products, filtered variants, and pagination metadata (totalPages, currentPage, pageSize)
+export async function getProducts(
+  filters: any = {},
+  sortBy: string = "",
+  page: number = 1,
+  pageSize: number = 10
+) {
+  // Default values related ro pagination
+  const currentPage = page;
+  const skip = pageSize * (currentPage - 1);
+
+  // Construct the base query
+  const whereClause: Prisma.ProductWhereInput = {
+    AND: [],
+  };
+
+  // Get all filtered and sorted products
+  const products = await db.product.findMany({
+    where: whereClause,
+    orderBy: {},
+    skip: skip,
+    take: pageSize,
+    include: {
+      variants: {
+        include: {
+          sizes: true,
+          images: true,
+          colors: true,
+        },
+      },
+    },
+  });
+
+  // the count of the products matching the filters
+  const totalCount = products.length;
+  // Calculate the total number of pages
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  // Return the products data anad Pagination metadata
+  return {
+    products,
+    totalPages,
+    currentPage,
+    pageSize,
+    totalCount,
+  };
 }

@@ -3,7 +3,7 @@
 import db from "@/lib/db";
 import { SubcategoryFormSchema } from "@/lib/schemas";
 import { currentUser } from "@clerk/nextjs/server";
-import { SubCategory, Role } from "@prisma/client";
+import { SubCategory, Role, Prisma } from "@prisma/client";
 
 // Function: upsertSubcategory
 // Description:  Upserts a subcategory into the database, updating if it exists or creating a new one
@@ -151,4 +151,37 @@ export async function deleteSubcategory(subcategoryId: string) {
     console.error("error: ", error)
     return {success: false, message: "An unexpected error occurred." };
   }
+}
+
+// Function: getRandomSubcategories
+// Description: Retrieves subcategories from the database, with options for limiting results and random selection.
+// Permission Level: public
+// Parameters:
+//   - limit: Number indicating the maximum number of subcategories to retrieve.
+//   - random: Boolean indicating if the returned subcategories will be randomly selected.
+// Returns: Returns subcategories based on the privided options.
+export async function getRandomSubcategories(
+  limit: number | null,
+  random: boolean = false
+): Promise<SubCategory[]> {
+  // Define query options
+  const queryOptions = {
+    take: limit || undefined,
+    orderBy: {id: Prisma.SortOrder.desc},
+  };
+
+  // if random selection is required, use a random query to randomize
+  if (random) {
+    const subcategories = await db.$queryRaw<SubCategory[]>`
+    SELECT * FROM SubCategory
+    ORDER BY RAND()
+    LIMIT ${limit || 8}
+    `;
+
+    return subcategories;
+  } else {
+    const subcategories = await db.subCategory.findMany(queryOptions);
+    return subcategories;
+  }
+
 }
