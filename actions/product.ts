@@ -7,7 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma
-import { ProductWithVariantType, StoreProductType } from "@/lib/types";
+import { ProductWithVariantType, StoreProductType, VariantImage, VariantSimplified } from "@/lib/types";
 import { Prisma, Role } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -44,12 +44,12 @@ export async function upsertProduct(
     }
     // Ensure product data is provided
     if (!product) {
-      return {success: false, message: "Please privide product data."}
+      return {success: false, message: "Please provide product data."}
     }
 
     // Check id product already exists
-    const existingProduct = await db.product.findFirst({
-      where: {id: product.productId}
+    const existingProduct = await db.product.findUnique({
+      where: {id: product.productId ?? ""}
     });
 
     // Find the store by URL
@@ -332,6 +332,39 @@ export async function getProducts(
     },
   });
 
+  // Transform products with filtered variants into ProductCardType structure
+  const productsWithFilteredVariants = products.map(product => {
+    // filter the variants based on the filters
+    const filteredVariants = product.variants;
+
+    // Transform the filtered variants into the VariantSimplified structure
+    const variants: VariantSimplified[] = filteredVariants.map((variant) => ({
+      variantId: variant.id,
+      variantSlug: variant.slug,
+      variantName: variant.variantName,
+      images: variant.images,
+      sizes: variant.sizes,
+    }));
+
+    //extract variant images from the product
+    const variantImages: VariantImage[] = filteredVariants.map((variant) => ({
+      variantUrl: `/product/${product.slug}/${variant.slug}`,
+      imageUrl: variant.variantImage,
+    }));
+
+    // Return the product in ProductCardType structure
+    return {
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      rating: product.rating,
+      sales: product.sales,
+      variants,
+      variantImages,
+    }
+  });
+
+
   // the count of the products matching the filters
   const totalCount = products.length;
   // Calculate the total number of pages
@@ -339,7 +372,7 @@ export async function getProducts(
 
   // Return the products data anad Pagination metadata
   return {
-    products,
+    products: productsWithFilteredVariants,
     totalPages,
     currentPage,
     pageSize,

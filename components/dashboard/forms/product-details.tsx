@@ -220,7 +220,7 @@ export default function ProductDetails({
     // Success
     // Redirect or refresh data
     if (data?.productId) {
-      toast.success("Product has been updated.");
+      toast.success("Product variant has been created.");
       router.refresh();
     } else {
       toast.success(response.message);

@@ -1,6 +1,6 @@
-import { Prisma, ShippingRate } from "@prisma/client";
+import { Prisma, ProductVariantImage, ShippingRate, Size } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
-import { getAllStoreProducts } from "@/actions/product";
+import { getAllStoreProducts, getProducts } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
@@ -65,3 +65,17 @@ export type UserCountry = {
 import countries from "@/lib/data/countries.json";
 
 export type SelectMenuOption = (typeof countries)[number];
+
+export type ProductType = Prisma.PromiseReturnType<typeof getProducts>["products"][0];
+
+export type VariantSimplified = {
+  variantId: string;
+  variantSlug: string;
+  variantName: string;
+  images: ProductVariantImage[];
+  sizes: Size[];
+}
+export type VariantImage = {
+  variantUrl: string;
+  imageUrl: string;
+}

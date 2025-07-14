@@ -106,6 +106,7 @@ model Product {
   slug        String @unique
   brand       String
   rating      Float  @default(0)
+  sales       Int    @default(0)
 
   variants  ProductVariant[]
   specs     Spec[]
@@ -142,6 +143,7 @@ model ProductVariant {
   saleEndDate        String?
   keywords           String
   sku                String
+  sales              Int     @default(0)
 
   sizes  Size[]
   images ProductVariantImage[]
@@ -275,7 +277,7 @@ model ShippingRate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([storeId, countryId])
   @@index([countryId])
   @@index([storeId])
-  @@unique([storeId, countryId])
 }
