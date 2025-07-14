@@ -7,7 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma
-import { ProductWithVariantType, StoreProductType, VariantImage, VariantSimplified } from "@/lib/types";
+import { ProductWithVariantType, StoreProductType, VariantImageType, VariantSimplified } from "@/lib/types";
 import { Prisma, Role } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -347,7 +347,7 @@ export async function getProducts(
     }));
 
     //extract variant images from the product
-    const variantImages: VariantImage[] = filteredVariants.map((variant) => ({
+    const variantImages: VariantImageType[] = filteredVariants.map((variant) => ({
       variantUrl: `/product/${product.slug}/${variant.slug}`,
       imageUrl: variant.variantImage,
     }));

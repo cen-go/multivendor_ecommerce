@@ -75,7 +75,8 @@ export type VariantSimplified = {
   images: ProductVariantImage[];
   sizes: Size[];
 }
-export type VariantImage = {
+export type VariantImageType = {
   variantUrl: string;
   imageUrl: string;
 }
+

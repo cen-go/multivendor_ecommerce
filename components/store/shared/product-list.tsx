@@ -2,6 +2,7 @@ import { ProductType } from "@/lib/types"
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import ProductCard from "../cards/product/product-card";
 
 interface Props {
   products: ProductType[];
@@ -41,7 +42,7 @@ export default function ProductList({products, title, link, arrow}: Props) {
           )}
         >
           {products.map(product => (
-            <h2 key={product.id}>{product.name}</h2>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       ) : (

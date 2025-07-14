@@ -50,6 +50,7 @@
   --color-orange-primary: #FA6338;
   --color-orange-secondary: #d3031c;
   --color-orange-border: #ffe6e7;
+  --color-orange-border-dark: #ffbcbe;
   --color-main-primary: oklch(21.34% 0.000 0);
   --color-main-secondary: oklch(56.24% 0.000 0);
 }
@@ -92,6 +93,7 @@
   --orange-primary: #FA6338;
   --orange-secondary: #d3031c;
   --orange-border: #ffe6e7;
+  --orange-border-dark: #ffbcbe;
   --main-primary: oklch(21.34% 0.000 0);
   --main-secondary: oklch(56.24% 0.000 0);
 }
@@ -133,6 +135,7 @@
   --orange-primary: #FA6338;
   --orange-secondary: #d3031c;
   --orange-border: #ffe6e7;
+  --orange-border-dark: #ffbcbe;
 }
 
 @layer base {
