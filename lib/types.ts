@@ -79,4 +79,3 @@ export type VariantImageType = {
   variantUrl: string;
   imageUrl: string;
 }
-

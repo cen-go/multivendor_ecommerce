@@ -20,7 +20,7 @@ export default function VariantSwitcher({images, variants, selectedVariant, setV
               key={img.imageUrl}
               onClick={() => setVariant(variants[index])}
               className={cn(
-                "p-0.5 rounded-full border-2 border-transparent overflow-hidden",
+                "p-0.5 rounded-full border-2 border-transparent overflow-hidden cursor-pointer",
                 {"border-orange-border-dark": variants[index] === selectedVariant}
               )}
             >

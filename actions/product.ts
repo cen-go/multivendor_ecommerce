@@ -6,8 +6,8 @@ import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
-// Types & Prisma
-import { ProductWithVariantType, StoreProductType, VariantImageType, VariantSimplified } from "@/lib/types";
+// Types & Prisma types
+import { ProductPageDataType, ProductWithVariantType, StoreProductType, VariantImageType, VariantSimplified } from "@/lib/types";
 import { Prisma, Role } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -379,3 +379,95 @@ export async function getProducts(
     totalCount,
   };
 }
+
+// Function: getProductPageData
+// Description: Fetches details of a specific product variant from the database.
+// Permission Level: Public
+// Parameters:
+//   - ProductSlug: the slug of the product which the variant belongs to
+//   - variantSlug: the slug of the variant to be retrşeved
+// Returns: Details of the requested product variant.
+export async function getProductPageData(ProductSlug: string, variantSlug: string) {
+  // Fetch product variant details form the database
+  const product = await retrieveProductDetails(ProductSlug, variantSlug);
+  return formatProductResponse(product);
+}
+
+// Helper functions
+async function retrieveProductDetails(
+  productSlug: string,
+  variantSlug: string
+) {
+  return await db.product.findUnique({
+    where: { slug: productSlug },
+    include: {
+      category: true,
+      subcategory: true,
+      specs: true,
+      store: true,
+      offerTag: true,
+      questions: true,
+      variants: {
+        where: { slug: variantSlug },
+        include: {
+          images: true,
+          colors: true,
+          sizes: true,
+          specs: true,
+        },
+      },
+    },
+  });
+}
+
+function formatProductResponse(
+  product: Prisma.PromiseReturnType<typeof retrieveProductDetails>
+) {
+  if (!product) return;
+  const variant = product.variants[0];
+  const { store } = product;
+
+  return {
+    productId: product.id,
+    variantId: variant.id,
+    productSlug: product.slug,
+    variantSlug: variant.slug,
+    name: product.name,
+    brand: product.brand,
+    description: product.description,
+    variantName: variant.variantName,
+    variantDescription: variant.variantDescription,
+    images: variant.images,
+    category: product.category,
+    subcategory: product.subcategory,
+    offerTag: product.offerTag,
+    isSale: variant.isSale,
+    saleEndDate: variant.saleEndDate,
+    sku: variant.sku,
+    colors: variant.colors,
+    sizes: variant.sizes,
+    specs: {
+      productSpecs: product.specs,
+      variantSpecs: variant.specs,
+    },
+    questions: product.questions,
+    rating: product.rating,
+    reviews: [],
+    numReviews: 43,
+    reviewStatistics: {
+      ratingStatistics: [],
+      reviewWithImagesCount: 4,
+    },
+    shippingDetails: {},
+    relatedProducts: [],
+    store: {
+      id: store.id,
+      url: store.url,
+      name: store.name,
+      logo: store.logo,
+      followersCount: 10,
+      isUserFollowingStore: true,
+    },
+  };
+}
+
