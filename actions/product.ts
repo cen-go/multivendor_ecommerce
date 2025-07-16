@@ -7,7 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma types
-import { ProductPageDataType, ProductWithVariantType, StoreProductType, VariantImageType, VariantSimplified } from "@/lib/types";
+import { ProductWithVariantType, StoreProductType, VariantImageType, VariantSimplified } from "@/lib/types";
 import { Prisma, Role } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -16,6 +16,7 @@ import { generateUniqueSlug, getCloudinaryPublicId } from "@/lib/utils";
 import { ProductFormSchema } from "@/lib/schemas";
 // Cloudinary Functions
 import { deleteCloudinaryImage } from "./cloudinary";
+import { notFound, redirect } from "next/navigation";
 
 // Function: upsertProduct
 // Description:  Upserts a product and it's variant into the database,
@@ -390,6 +391,7 @@ export async function getProducts(
 export async function getProductPageData(ProductSlug: string, variantSlug: string) {
   // Fetch product variant details form the database
   const product = await retrieveProductDetails(ProductSlug, variantSlug);
+
   return formatProductResponse(product);
 }
 
@@ -423,7 +425,7 @@ async function retrieveProductDetails(
 function formatProductResponse(
   product: Prisma.PromiseReturnType<typeof retrieveProductDetails>
 ) {
-  if (!product) return;
+  if (!product || product.variants.length === 0) return;
   const variant = product.variants[0];
   const { store } = product;
 
