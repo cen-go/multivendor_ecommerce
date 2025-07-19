@@ -1,12 +1,16 @@
 "use client"
 
-import { ProductType, VariantSimplified } from "@/lib/types";
+// React & Next.js
 import Link from "next/link";
 import { useState } from "react";
+// Types
+import { ProductType, VariantSimplified } from "@/lib/types";
+// Components
 import RatingStars from "@/components/store/shared/rating-stars";
+import { Button } from "@/components/store/ui/button";
 import ProductCardImageSwiper from "./swiper";
 import VariantSwitcher from "./variant-switcher";
-import { Button } from "@/components/store/ui/button";
+// Icons
 import { HeartIcon } from "lucide-react";
 
 export default function ProductCard({product}: {product: ProductType}) {

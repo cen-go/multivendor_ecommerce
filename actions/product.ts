@@ -16,7 +16,6 @@ import { generateUniqueSlug, getCloudinaryPublicId } from "@/lib/utils";
 import { ProductFormSchema } from "@/lib/schemas";
 // Cloudinary Functions
 import { deleteCloudinaryImage } from "./cloudinary";
-import { notFound, redirect } from "next/navigation";
 
 // Function: upsertProduct
 // Description:  Upserts a product and it's variant into the database,
@@ -462,6 +461,7 @@ function formatProductResponse(
     },
     shippingDetails: {},
     relatedProducts: [],
+    variantImages: [],
     store: {
       id: store.id,
       url: store.url,

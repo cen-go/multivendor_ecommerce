@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import StoreHeader from "@/components/store/layout/header/header";
 import CategoriesHeader from "@/components/store/layout/categories-header/categories-header";
 import Footer from "@/components/store/layout/footer/footer";
+import { Toaster } from "react-hot-toast";
 
 export default function StoreLayout({children}: {children: ReactNode}) {
   return (
@@ -16,6 +17,7 @@ export default function StoreLayout({children}: {children: ReactNode}) {
       <footer>
         <Footer />
       </footer>
+      <Toaster position="top-center" />
     </div>
   );
 }

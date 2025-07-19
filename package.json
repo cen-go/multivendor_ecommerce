@@ -61,6 +61,8 @@
     "react-day-picker": "^9.7.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.3",
+    "react-hot-toast": "^2.5.2",
+    "react-image-zooom": "^1.4.1",
     "react-resizable-panels": "^3.0.2",
     "react-responsive": "^10.0.1",
     "react-tag-input": "^6.10.6",

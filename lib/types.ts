@@ -1,6 +1,6 @@
 import { Prisma, ProductVariantImage, ShippingRate, Size } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
-import { getAllStoreProducts, getProducts } from "@/actions/product";
+import { getAllStoreProducts, getProductPageData, getProducts } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
@@ -79,3 +79,5 @@ export type VariantImageType = {
   variantUrl: string;
   imageUrl: string;
 }
+
+export type ProductPageDataType = Prisma.PromiseReturnType<typeof getProductPageData>;

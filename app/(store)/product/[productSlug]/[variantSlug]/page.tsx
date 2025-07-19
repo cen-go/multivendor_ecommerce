@@ -1,5 +1,11 @@
-import { getProductPageData } from "@/actions/product";
+// React & Next.js
 import { notFound, redirect } from "next/navigation";
+// Server actions, db queries
+import { getProductPageData } from "@/actions/product";
+// Components
+import ProductPageContainer from "@/components/store/product-page/container";
+// UI components
+import { Separator } from "@/components/ui/separator";
 
 export default async function ProductVariantPage({
   params,
@@ -17,7 +23,7 @@ export default async function ProductVariantPage({
     return notFound();
   }
 
-  const { sizes } = productData;
+  const { sizes, specs, questions } = productData;
 
   if (sizeId) {
     //check if the sizeId valid by comparing it to available sizes
@@ -30,9 +36,42 @@ export default async function ProductVariantPage({
     redirect(`/product/${productSlug}/${variantSlug}?size=${sizes[0].id}`);
   }
 
+  const relatedProducts = {
+    products: [],
+  };
+
   return (
     <div>
-      {productData?.name} - {productData?.variantName} - Price:
+      <div className="max-w-[1650px] mx-auto p-4 overflow-x-hidden">
+        <ProductPageContainer productData={productData} sizeId={sizeId}>
+          {relatedProducts.products && (
+            <>
+              <Separator />
+              {/* Related products */}
+            </>
+          )}
+          <Separator className="mt-6" />
+          {/* Product reviews */}
+          <Separator className="mt-6" />
+          {/* Product description */}
+          {specs.productSpecs.length > 0 ||
+            (specs.variantSpecs.length > 0 && (
+              <>
+                <Separator className="mt-6" />
+                {/* Specs Table */}
+              </>
+            ))}
+          {questions.length > 0 && (
+            <>
+              <Separator className="mt-6" />
+              {/* Product Questions */}
+            </>
+          )}
+          <Separator className="mt-6" />
+          {/* Store Card */}
+          {/* Store Products */}
+        </ProductPageContainer>
+      </div>
     </div>
   );
 }
