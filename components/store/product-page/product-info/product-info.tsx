@@ -1,9 +1,9 @@
 import { ProductPageDataType } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import toast from "react-hot-toast";
 import Sku from "./sku";
 import RatingStars from "../../shared/rating-stars";
+import ProductPrice, { SimplifiedSize } from "./product-price";
 
 interface Props {
   productData: ProductPageDataType;
@@ -31,6 +31,14 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
     numReviews,
   } = productData;
 
+  const simplifiedSizes: SimplifiedSize[] = sizes.map(size => ({
+    id: size.id,
+    size: size.size,
+    price: size.price,
+    quantity: size.quantity,
+    discount: size.discount,
+  }));
+
   return (
     <div className="relative w-full xl:w-[540px]">
       {/* Title */}
@@ -40,7 +48,7 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
         </h1>
       </div>
       {/* Sku - Rating - Number of reviews */}
-      <div className="flex items-center text-xs mt-2">
+      <div className="flex items-center text-xs mt-2 gap-1">
         {/* Store details */}
         <Link
           href={`/store/${store.url}`}
@@ -54,7 +62,7 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
               height={30}
               className="w-8 h-8 rounded-full object-cover"
             />
-            <p>{store.name}</p>
+            <p className="text-sm">{store.name}</p>
           </div>
         </Link>
         <Sku sku={sku} />
@@ -70,6 +78,10 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
             )
           </Link>
         </div>
+      </div>
+      {/* Price */}
+      <div className="my-6 relative flex flex-col sm:flex-row justify-between">
+        <ProductPrice sizeId={sizeId} sizes={simplifiedSizes} />
       </div>
     </div>
   );

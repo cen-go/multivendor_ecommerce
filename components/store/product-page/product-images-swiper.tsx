@@ -20,10 +20,10 @@ export default function ProductImageSwiper({
   );
 
   return (
-    <div className="relative">
-      <div className="relative w-full flex flex-col lg:flex-row gap-2">
+    <div className="relative mb-4">
+      <div className="relative w-full flex flex-col xl:flex-row gap-2">
         {/* Thumbnails */}
-        <div className="flex flex-wrap lg:flex-col gap-3">
+        <div className="flex flex-wrap xl:flex-col gap-3">
           {images.map((img) => (
             <div
               key={img.id}
