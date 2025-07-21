@@ -4,6 +4,9 @@ import Link from "next/link";
 import Sku from "./sku";
 import RatingStars from "../../shared/rating-stars";
 import ProductPrice, { SimplifiedSize } from "./product-price";
+import Countdown from "../../shared/countdown";
+import { Separator } from "@/components/ui/separator";
+import ProductVariantSelector from "./variant-selector";
 
 interface Props {
   productData: ProductPageDataType;
@@ -19,13 +22,14 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
   const {
     productId,
     name,
+    brand,
     sku,
-    colors,
     variantImages,
     sizes,
     isSale,
     saleEndDate,
     variantName,
+    variantSlug,
     store,
     rating,
     numReviews,
@@ -44,11 +48,12 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
       {/* Title */}
       <div>
         <h1 className="text-main-primary inline text-xl font-bold leading-5">
-          {name} - {variantName}
+          <span className="text-orange-background">{brand}</span> {name} -{" "}
+          {variantName}
         </h1>
       </div>
       {/* Sku - Rating - Number of reviews */}
-      <div className="flex items-center text-xs mt-2 gap-1">
+      <div className="flex sm:items-center flex-col sm:flex-row text-xs mt-2 gap-1">
         {/* Store details */}
         <Link
           href={`/store/${store.url}`}
@@ -66,7 +71,7 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
           </div>
         </Link>
         <Sku sku={sku} />
-        <div className="flex items-center gap-x-2 flex-1 ml-6 whitespace-nowrap">
+        <div className="flex items-center gap-x-2 flex-1 sm:ml-6 whitespace-nowrap">
           <RatingStars value={rating} />
           <Link href="#reviews" className="text-gray-500 hover:underline">
             (
@@ -82,6 +87,27 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
       {/* Price */}
       <div className="my-6 relative flex flex-col sm:flex-row justify-between">
         <ProductPrice sizeId={sizeId} sizes={simplifiedSizes} />
+        {isSale && saleEndDate && (
+          <div className="mt-4 pb-2">
+            <Countdown targetDate={saleEndDate} />
+          </div>
+        )}
+      </div>
+      <Separator />
+      {/* Variant switcher */}
+      <div className="mt-4 space-y-2">
+        {variantImages.length > 0 && (
+          <ProductVariantSelector
+            variants={variantImages}
+            currentVariantSlug={variantSlug}
+          />
+        )}
+      </div>
+      {/* Size Selector */}
+      <div className="space-y-2 pb-2 mt-1">
+        <div>
+          <h1 className="text-main-primary font-bold">Size</h1>
+        </div>
       </div>
     </div>
   );

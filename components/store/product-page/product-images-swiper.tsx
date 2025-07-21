@@ -49,7 +49,7 @@ export default function ProductImageSwiper({
         </div>
         {/* Main Image */}
         <div className="relative rounded-lg overflow-hidden w-full lg:h-[600px] lg:w-[600px]">
-          <ImageZoom src={activeImage.url} alt={activeImage.alt} className="!w-full rounded-lg" />
+          <ImageZoom src={activeImage.url} alt={activeImage.alt} className="!w-full !h-full rounded-lg" />
         </div>
       </div>
     </div>

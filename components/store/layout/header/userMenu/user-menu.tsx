@@ -43,12 +43,11 @@ export default function UserMenu() {
             className="rounded-full cursor-pointer"
           />
         ) : (
-          <div className="flex h-11 items-center py-0 mx-2 cursor-pointer">
+          <div className="flex h-11 items-center py-0 cursor-pointer">
             <span className="text-2xl">
               <UserIcon />
             </span>
             <div className="ml-1">
-              <p className="text-xs text-white leading-3">Welcome</p>
               <b className="text-xs text-white leading-4 flex items-center gap-1">
                 <span>Sign in / Register</span>
                 <span>

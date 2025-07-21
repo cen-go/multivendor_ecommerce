@@ -20,7 +20,7 @@ export default function CategoriesMenu({
     setOpen(state);
     // Delay Showing the dropdown menu intil the trigger's animation is finished
     if (state) {
-      setTimeout(() => setDropdownVisible(true), 100);
+      setDropdownVisible(true);
     } else {
       setDropdownVisible(false);
     }
@@ -78,6 +78,7 @@ export default function CategoriesMenu({
         <ul className={cn("absolute top-10 left-0 w-[256px] bg-[#f5f5f5] shadow-lg transition-all duration-100 ease-in-out z-50 overflow-y-auto scrollbar", {
           "opacity-100 max-h-[523px]": dropdownVisible,
           "opacity-0 max-h-0": !dropdownVisible,
+          "delay-100": open,
         })}>
           {categories.map(ctg => (
             <Link href={`/browse?category=${ctg.url}`} key={ctg.id}>

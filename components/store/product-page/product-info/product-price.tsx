@@ -1,5 +1,3 @@
-"use client"
-
 import { cn, formatCurrency } from "@/lib/utils";
 
 export interface SimplifiedSize {
@@ -26,7 +24,7 @@ export default function ProductPrice({sizeId, sizes, isCard}: Props) {
   // If no sizeId passed, calculate a price range for all the sizes available
   if (!sizeId) {
     const discountedPrices = sizes.map(
-      (size) => size.price * (1 - size.discount / 100)
+      (size) => Math.round(size.price * (1 - size.discount / 100))
     );
 
     const totalQuantity = sizes.reduce(
@@ -81,7 +79,7 @@ export default function ProductPrice({sizeId, sizes, isCard}: Props) {
   if (!selectedSize) return <div></div>;
 
   // Calculate the price after discount if there is an active discount
-  const discountedPrice = selectedSize.price * (1 - selectedSize.discount / 100);
+  const discountedPrice = Math.round(selectedSize.price * (1 - selectedSize.discount / 100));
 
   return (
     <div>

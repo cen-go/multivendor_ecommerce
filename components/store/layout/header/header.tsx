@@ -35,7 +35,7 @@ export default async function StoreHeader() {
             <Link href="/">
               <h1 className="font-extrabold text-3xl font-mono">{APP_NAME}</h1>
             </Link>
-            <div className="flex lg:hidden gap-1">
+            <div className="flex lg:hidden sm:gap-1">
               {/* <DownloadApp /> */}
               <CountryLanguageCurrencySelector userCountry={userCountry} />
               <UserMenu />

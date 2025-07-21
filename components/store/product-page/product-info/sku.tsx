@@ -16,7 +16,7 @@ export default function Sku({ sku }: { sku: string }) {
 
   return (
     <div className="whitespace-nowrap flex items-center">
-      <span className="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap text-gray-500">
+      <span className="sm:flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap text-gray-500">
         SKU: {sku}
       </span>
       <span

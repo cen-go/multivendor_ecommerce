@@ -61,17 +61,17 @@ export default function CountryLanguageCurrencySelector({
           <span className="mr-0.5 h-[33px] grid place-items-center">
             <span className={`fi fi-${userCountry.code.toLocaleLowerCase()}`} />
           </span>
-          <div className="ml-1">
+          <div className="ml-1 hidden sm:block">
             <div className="text-xs text-white leading-3 mt-2">
-              {userCountry.name} / EN
+              {userCountry.name}
             </div>
             <b className="text-xs font-bold text-white">
               USD{" "}
+            </b>
+          </div>
               <span className="scale-[60%] align-middle inline-block">
                 <ChevronDownIcon />
               </span>
-            </b>
-          </div>
         </div>
       </div>
       {/* Modal */}
