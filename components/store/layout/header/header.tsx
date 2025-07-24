@@ -13,8 +13,8 @@ import Search from "./search/search";
 import { UserCountry } from "@/lib/types";
 
 export default async function StoreHeader() {
-  const storeCookies = await cookies();
-  const userCountryCookie = storeCookies.get("userCountry");
+  const cookiesStore = await cookies();
+  const userCountryCookie = cookiesStore.get("userCountry");
 
   // Default country if the cookie is missing
   let userCountry: UserCountry = {

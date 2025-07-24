@@ -8,6 +8,7 @@ import Countdown from "../../shared/countdown";
 import { Separator } from "@/components/ui/separator";
 import ProductVariantSelector from "./variant-selector";
 import SizeSelector from "./size-selector";
+import ProductAssurancePolicy from "./assurance-policy";
 
 interface Props {
   productData: ProductPageDataType;
@@ -111,6 +112,9 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
         </div>
         <SizeSelector sizes={sizes} sizeId={sizeId} />
       </div>
+      {/* Product assurance */}
+      <Separator className="mt-4" />
+      <ProductAssurancePolicy />
     </div>
   );
 }

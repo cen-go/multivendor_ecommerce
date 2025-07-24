@@ -7,8 +7,8 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma types
-import { ProductWithVariantType, StoreProductType, VariantImageType, VariantSimplified } from "@/lib/types";
-import { Prisma, Role } from "@prisma/client";
+import { ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
+import { Prisma, Role, ShippingFeeMethod, Store } from "@prisma/client";
 // Utils
 import slugify from "slugify"
 import { generateUniqueSlug, getCloudinaryPublicId } from "@/lib/utils";
@@ -16,6 +16,7 @@ import { generateUniqueSlug, getCloudinaryPublicId } from "@/lib/utils";
 import { ProductFormSchema } from "@/lib/schemas";
 // Cloudinary Functions
 import { deleteCloudinaryImage } from "./cloudinary";
+import { cookies } from "next/headers";
 
 // Function: upsertProduct
 // Description:  Upserts a product and it's variant into the database,
@@ -390,6 +391,16 @@ export async function getProducts(
 export async function getProductPageData(ProductSlug: string, variantSlug: string) {
   // Fetch product variant details form the database
   const product = await retrieveProductDetails(ProductSlug, variantSlug);
+  if (!product) return null;
+
+  const userCountry = await getUserCountry();
+
+  // Calculate and retrieve the shipping details
+  const productShippingDetails = await getShippingDetails(
+    product.shippingFeeMethod,
+    userCountry,
+    product.store
+  );
 
   return formatProductResponse(product);
 }
@@ -491,3 +502,101 @@ function formatProductResponse(
   };
 }
 
+async function getUserCountry() {
+  const cookieStore = await cookies();
+  const userCountryCookie = cookieStore.get("userCountry");
+
+  const defaultCountry: UserCountry = {
+    name: "United States",
+    code: "US",
+  };
+
+  if (!userCountryCookie) {
+    return defaultCountry;
+  } else {
+    const parsedCountry = JSON.parse(userCountryCookie.value);
+    if (
+      parsedCountry &&
+      typeof parsedCountry === "object" &&
+      "name" in parsedCountry &&
+      "code" in parsedCountry
+    ) {
+      return parsedCountry as UserCountry;
+    } else {
+      return defaultCountry;
+    }
+  }
+}
+
+// Function: getShippingDetails
+// Description: retrieves and calculate shipping details based on user country and product
+// Permission Level: Public
+// Parameters:
+//   - shippingFeeMethod: the shipping fee method of the product
+//   - userCountry: the parsed userCountry object from the cookie
+//   - store: Store details
+// Returns: Calculated shipping details.
+export async function getShippingDetails(
+  shippingFeeMethod: ShippingFeeMethod,
+  userCountry: UserCountry,
+  store: Store
+) {
+
+  const country = await db.country.findUnique({
+    where: {code: userCountry.code},
+  });
+
+  if (country) {
+    const shippingRate = await db.shippingRate.findUnique({
+      where: {
+        storeId_countryId: { storeId: store.id, countryId: country.id },
+      },
+    });
+
+    const returnPolicy = shippingRate?.returnPolicy || store.returnPolicy;
+    const shippingService =
+      shippingRate?.shippingService || store.defaultShippingService;
+    const shippingFeePerItem =
+      shippingRate?.shippingFeePerItem || store.defaultShippingFeePerItem;
+    const shippingFeePerAdditionalItem =
+      shippingRate?.shippingFeePerAdditionalItem ||
+      store.defaultShippingFeePerAdditionalItem;
+    const shippingFeePerKg =
+      shippingRate?.shippingFeePerKg || store.defaultShippingFeePerKg;
+    const shippingFeeFixed =
+      shippingRate?.shippingFeeFixed || store.defaultShippingFeeFixed;
+    const deliveryTimeMin =
+      shippingRate?.deliveryTimeMin || store.defaultDeliveryTimeMin;
+    const deliveryTimeMax =
+      shippingRate?.deliveryTimeMax || store.defaultDeliveryTimeMax;
+
+    const shippingDetails = {
+      shippingFeeMethod,
+      shippingService,
+      shippingFee: 0,
+      extraShippingFee: 0, // Shipping fee for additional items
+      deliveryTimeMin,
+      deliveryTimeMax,
+      returnPolicy,
+      countryCode: userCountry.code,
+      countryName: userCountry.name,
+    };
+
+    switch (shippingFeeMethod) {
+      case ShippingFeeMethod.ITEM:
+        shippingDetails.shippingFee = shippingFeePerItem;
+        shippingDetails.extraShippingFee = shippingFeePerAdditionalItem;
+        break;
+      case ShippingFeeMethod.WEIGHT:
+        shippingDetails.shippingFee = shippingFeePerKg;
+        break;
+      case ShippingFeeMethod.FIXED:
+        shippingDetails.shippingFee = shippingFeeFixed;
+        break;
+      default:
+        break;
+    }
+  return shippingDetails;
+  } // end of if clasue
+  return null;
+}

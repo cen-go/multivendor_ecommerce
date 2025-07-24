@@ -41,15 +41,6 @@ export default function ProductPrice({sizeId, sizes, isCard}: Props) {
         ? formatCurrency(minPrice)
         : `${formatCurrency(minPrice)} - ${formatCurrency(maxPrice)}`;
 
-    // If a discount exists when minPrice=maxPrice
-    let discount = 0;
-    if(minPrice === maxPrice) {
-      const checkDiscount = sizes.find(size => size.discount > 0);
-      if (checkDiscount) {
-        discount = checkDiscount.discount;
-      }
-    }
-
     return (
       <div>
         <div className="font-bold text-orange-primary inline-block mr-2.5">

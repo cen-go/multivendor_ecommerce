@@ -10,9 +10,9 @@ import RatingStars from "@/components/store/shared/rating-stars";
 import { Button } from "@/components/store/ui/button";
 import ProductCardImageSwiper from "./swiper";
 import VariantSwitcher from "./variant-switcher";
+import ProductPrice from "../../product-page/product-info/product-price";
 // Icons
 import { HeartIcon } from "lucide-react";
-import ProductPrice from "../../product-page/product-info/product-price";
 
 export default function ProductCard({product}: {product: ProductType}) {
   const { name, slug, rating, sales, variants, variantImages } = product;
