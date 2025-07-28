@@ -45,7 +45,7 @@ export default function ProductPrice({sizeId, sizes, isCard}: Props) {
       <div>
         <div className="font-bold text-orange-primary inline-block mr-2.5">
           <span
-            className={cn("inline-block text-4xl text-nowrap", {
+            className={cn("inline-block text-3xl lg:text-4xl text-nowrap", {
               "text-lg": isCard,
             })}
           >

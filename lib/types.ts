@@ -1,6 +1,6 @@
 import { Prisma, ProductVariantImage, ShippingRate, Size } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
-import { getAllStoreProducts, getProductPageData, getProducts } from "@/actions/product";
+import { getAllStoreProducts, getProductPageData, getProducts, getShippingDetails } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
@@ -29,6 +29,7 @@ export type ProductWithVariantType = {
   saleEndDate?: string;
   brand: string;
   sku: string;
+  weight: number | null;
   keywords: string[];
   colors: {color: string}[];
   sizes: {
@@ -81,3 +82,5 @@ export type VariantImageType = {
 }
 
 export type ProductPageDataType = Prisma.PromiseReturnType<typeof getProductPageData>;
+
+export type ProductShippingDetailsType = Prisma.PromiseReturnType<typeof getShippingDetails>;

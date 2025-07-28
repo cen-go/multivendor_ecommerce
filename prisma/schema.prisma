@@ -141,16 +141,17 @@ model Product {
 }
 
 model ProductVariant {
-  id                 String  @id @default(uuid())
+  id                 String   @id @default(uuid())
   variantName        String
-  variantDescription String? @db.LongText
+  variantDescription String?  @db.LongText
   variantImage       String
-  slug               String  @unique
-  isSale             Boolean @default(false)
+  slug               String   @unique
+  isSale             Boolean  @default(false)
   saleEndDate        String?
   keywords           String
   sku                String
-  sales              Int     @default(0)
+  sales              Int      @default(0)
+  weight             Decimal? @db.Decimal(8, 3)
 
   sizes  Size[]
   images ProductVariantImage[]

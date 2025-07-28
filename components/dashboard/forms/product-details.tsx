@@ -127,6 +127,7 @@ export default function ProductDetails({
       product_specs: data?.product_specs ?? [],
       variant_specs: data?.variant_specs ?? [],
       isSale: data?.isSale ?? false,
+      weight: data?.weight,
       saleEndDate:
         data?.saleEndDate || format(new Date(), "yyyy-MM-dd'T'HH:mm:ss"),
       questions: data?.questions ?? []
@@ -472,7 +473,7 @@ export default function ProductDetails({
                 />
               </div>
 
-              {/* BRAND & SKU */}
+              {/* BRAND & Weight */}
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Brand */}
                 <FormField
@@ -497,6 +498,32 @@ export default function ProductDetails({
                       <FormLabel>Product SKU</FormLabel>
                       <FormControl>
                         <Input type="text" {...field} placeholder="Sku" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* Weight */}
+                <FormField
+                  control={form.control}
+                  name="weight"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Product Weight (kg)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step={0.001}
+                          min={0}
+                          {...field}
+                          placeholder="weight"
+                          value={field.value ?? 0}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

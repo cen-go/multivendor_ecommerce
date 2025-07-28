@@ -145,13 +145,13 @@ export const ProductFormSchema = z.object({
       required_error: "Product category is mandatory.",
       invalid_type_error: "Product category ID must be a valid UUID.",
     })
-    .uuid({message: "Invalid category."}),
+    .uuid({ message: "Invalid category." }),
   subcategoryId: z
     .string({
       required_error: "Product subcategory is mandatory.",
       invalid_type_error: "Product subcategory ID must be a valid UUID.",
     })
-    .uuid({message: "Invalid subcategory."}),
+    .uuid({ message: "Invalid subcategory." }),
   brand: requiredString("Product brand")
     .min(2, {
       message: "Product brand should be at least 2 characters long.",
@@ -165,6 +165,12 @@ export const ProductFormSchema = z.object({
     })
     .max(50, {
       message: "Product SKU cannot exceed 50 characters.",
+    }),
+  weight: z
+    .number()
+    .nullable()
+    .refine((weight) => {if (weight) {return Number.isInteger(weight * 1000)} else {return true}}, {
+      message: "weight can have at most three decimal places.",
     }),
   keywords: requiredString("Product keywords")
     .array()
@@ -217,7 +223,7 @@ export const ProductFormSchema = z.object({
         product_specs.every((s) => s.name.length > 0 && s.value.length > 0),
       { message: "All product specs inputs must be filled correctly." }
     ),
-    variant_specs: z
+  variant_specs: z
     .object({
       name: z.string(),
       value: z.string(),
@@ -231,7 +237,7 @@ export const ProductFormSchema = z.object({
         message: "All product variant specs inputs must be filled correctly.",
       }
     ),
-    questions: z
+  questions: z
     .object({
       question: z.string(),
       answer: z.string(),

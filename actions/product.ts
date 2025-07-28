@@ -7,7 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma types
-import { ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
+import { ProductShippingDetailsType, ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
 import { Prisma, Role, ShippingFeeMethod, Store } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -113,6 +113,7 @@ export async function upsertProduct(
       isSale: product.isSale,
       saleEndDate: product.isSale ? product.saleEndDate : null,
       sku: product.sku,
+      weight: product.weight,
       keywords: product.keywords.join(","),
       images: {
         create: product.images.map((image) => ({
@@ -235,7 +236,15 @@ export async function getAllStoreProducts(storeUrl: string) {
     },
   });
 
-  return products;
+  const plainProducts = products.map(product => ({
+      ...product,
+      variants: product.variants.map(variant => ({
+        ...variant,
+        weight: variant.weight ? variant.weight.toNumber() : null,
+      })),
+    }))
+
+  return plainProducts;
 }
 
 // Function: deleteProduct
@@ -402,7 +411,7 @@ export async function getProductPageData(ProductSlug: string, variantSlug: strin
     product.store
   );
 
-  return formatProductResponse(product);
+  return formatProductResponse(product, productShippingDetails);
 }
 
 // Helper functions
@@ -451,7 +460,8 @@ async function retrieveProductDetails(
 }
 
 function formatProductResponse(
-  product: Prisma.PromiseReturnType<typeof retrieveProductDetails>
+  product: Prisma.PromiseReturnType<typeof retrieveProductDetails>,
+  shippingDetails: ProductShippingDetailsType,
 ) {
   if (!product || product.variants.length === 0) return;
   const variant = product.variants[0];
@@ -474,6 +484,7 @@ function formatProductResponse(
     isSale: variant.isSale,
     saleEndDate: variant.saleEndDate,
     sku: variant.sku,
+    weight: variant.weight,
     colors: variant.colors,
     sizes: variant.sizes,
     specs: {
@@ -488,7 +499,7 @@ function formatProductResponse(
       ratingStatistics: [],
       reviewWithImagesCount: 4,
     },
-    shippingDetails: {},
+    shippingDetails: shippingDetails,
     relatedProducts: [],
     variantImages: product.variantImages,
     store: {
@@ -541,6 +552,17 @@ export async function getShippingDetails(
   userCountry: UserCountry,
   store: Store
 ) {
+  let shippingDetails = {
+      shippingFeeMethod,
+      shippingService: store.defaultShippingService,
+      shippingFee: 0,
+      extraShippingFee: 0, // Shipping fee for additional items
+      deliveryTimeMin: store.defaultDeliveryTimeMin,
+      deliveryTimeMax: store.defaultDeliveryTimeMax,
+      returnPolicy: store.returnPolicy,
+      countryCode: userCountry.code,
+      countryName: userCountry.name,
+    };
 
   const country = await db.country.findUnique({
     where: {code: userCountry.code},
@@ -570,7 +592,7 @@ export async function getShippingDetails(
     const deliveryTimeMax =
       shippingRate?.deliveryTimeMax || store.defaultDeliveryTimeMax;
 
-    const shippingDetails = {
+    shippingDetails = {
       shippingFeeMethod,
       shippingService,
       shippingFee: 0,
@@ -596,7 +618,6 @@ export async function getShippingDetails(
       default:
         break;
     }
-  return shippingDetails;
   } // end of if clasue
-  return null;
+  return shippingDetails;
 }
