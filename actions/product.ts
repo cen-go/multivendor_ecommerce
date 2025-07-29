@@ -7,7 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma types
-import { ProductShippingDetailsType, ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
+import { CountriesWithFreeShippingType, ProductShippingDetailsType, ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
 import { Prisma, Role, ShippingFeeMethod, Store } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -408,7 +408,8 @@ export async function getProductPageData(ProductSlug: string, variantSlug: strin
   const productShippingDetails = await getShippingDetails(
     product.shippingFeeMethod,
     userCountry,
-    product.store
+    product.store,
+    product.freeShipping
   );
 
   return formatProductResponse(product, productShippingDetails);
@@ -435,6 +436,11 @@ async function retrieveProductDetails(
           colors: true,
           sizes: true,
           specs: true,
+        },
+      },
+      freeShipping: {
+        include: {
+          eligibleCountries: true,
         },
       },
     },
@@ -550,18 +556,20 @@ async function getUserCountry() {
 export async function getShippingDetails(
   shippingFeeMethod: ShippingFeeMethod,
   userCountry: UserCountry,
-  store: Store
+  store: Store,
+  freeShipping: CountriesWithFreeShippingType | null,
 ) {
   let shippingDetails = {
       shippingFeeMethod,
-      shippingService: store.defaultShippingService,
+      shippingService: "",
       shippingFee: 0,
       extraShippingFee: 0, // Shipping fee for additional items
-      deliveryTimeMin: store.defaultDeliveryTimeMin,
-      deliveryTimeMax: store.defaultDeliveryTimeMax,
-      returnPolicy: store.returnPolicy,
+      deliveryTimeMin: 0,
+      deliveryTimeMax: 0,
+      returnPolicy: "",
       countryCode: userCountry.code,
       countryName: userCountry.name,
+      freeShipping: false,
     };
 
   const country = await db.country.findUnique({
@@ -592,32 +600,45 @@ export async function getShippingDetails(
     const deliveryTimeMax =
       shippingRate?.deliveryTimeMax || store.defaultDeliveryTimeMax;
 
-    shippingDetails = {
-      shippingFeeMethod,
-      shippingService,
-      shippingFee: 0,
-      extraShippingFee: 0, // Shipping fee for additional items
-      deliveryTimeMin,
-      deliveryTimeMax,
-      returnPolicy,
-      countryCode: userCountry.code,
-      countryName: userCountry.name,
-    };
+      shippingDetails = {
+        shippingFeeMethod,
+        shippingService,
+        shippingFee: 0,
+        extraShippingFee: 0, // Shipping fee for additional items
+        deliveryTimeMin,
+        deliveryTimeMax,
+        returnPolicy,
+        countryCode: userCountry.code,
+        countryName: userCountry.name,
+        freeShipping: false,
+      };
 
-    switch (shippingFeeMethod) {
-      case ShippingFeeMethod.ITEM:
-        shippingDetails.shippingFee = shippingFeePerItem;
-        shippingDetails.extraShippingFee = shippingFeePerAdditionalItem;
-        break;
-      case ShippingFeeMethod.WEIGHT:
-        shippingDetails.shippingFee = shippingFeePerKg;
-        break;
-      case ShippingFeeMethod.FIXED:
-        shippingDetails.shippingFee = shippingFeeFixed;
-        break;
-      default:
-        break;
+    // Check for free shipping
+    if (freeShipping) {
+      const freeShippingCountries = freeShipping.eligibleCountries;
+      const checkFreeShipping = freeShippingCountries.find(
+        (c) => c.countryId === country.id
+      );
+
+      if (checkFreeShipping) {
+        shippingDetails.freeShipping = true;
+      } else {
+      switch (shippingFeeMethod) {
+        case ShippingFeeMethod.ITEM:
+          shippingDetails.shippingFee = shippingFeePerItem;
+          shippingDetails.extraShippingFee = shippingFeePerAdditionalItem;
+          break;
+        case ShippingFeeMethod.WEIGHT:
+          shippingDetails.shippingFee = shippingFeePerKg;
+          break;
+        case ShippingFeeMethod.FIXED:
+          shippingDetails.shippingFee = shippingFeeFixed;
+          break;
+        default:
+          break;
+      }
     }
-  } // end of if clasue
+    } // end of free shipping if check
+  } // end of if clause for (country)
   return shippingDetails;
 }

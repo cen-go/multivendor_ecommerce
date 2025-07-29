@@ -3,8 +3,9 @@
 import { ProductShippingDetailsType } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
 import { ShippingFeeMethod } from "@prisma/client";
-import { TruckIcon } from "lucide-react";
+import { ChevronRight, TruckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import ProductShippingFee from "./shipping-fee";
 
 interface Props {
   shippingDetails: ProductShippingDetailsType;
@@ -25,6 +26,7 @@ export default function ShippingDetails({
     shippingFee,
     extraShippingFee,
     shippingFeeMethod,
+    freeShipping,
   } = shippingDetails;
 
   const [shippingTotal, setShippingTotal] = useState<number>(0);
@@ -53,15 +55,30 @@ export default function ShippingDetails({
     <div className="space-y-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-1">
-          <TruckIcon className="w-4" />
-          <span className="text-sm font-bold flex items-center">
-            <p>
-              Shipping to&nbsp;<span>{countryName}</span>
-            </p>
-            <span>&nbsp;{formatCurrency(shippingTotal)}</span>
+          <TruckIcon className="w-4 pb-0.5" />
+          <span className="text-sm font-bold">
+            {freeShipping ? (
+              <p>Free shipping to&nbsp;{countryName}</p>
+            ) : (
+              <p>
+                Shipping to&nbsp;{countryName}&nbsp;for&nbsp;
+                {formatCurrency(shippingTotal)}
+              </p>
+            )}
           </span>
         </div>
+        <ChevronRight className="w-4" />
       </div>
+      {/* Product shipping fee */}
+      {!freeShipping && (
+        <ProductShippingFee
+        method={shippingFeeMethod}
+        fee={shippingFee}
+        extraFee={extraShippingFee}
+        weight={weight}
+        quantity={3}
+      />
+      )}
     </div>
   );
 }

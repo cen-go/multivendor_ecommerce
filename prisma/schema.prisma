@@ -115,9 +115,10 @@ model Product {
   sales             Int               @default(0)
   shippingFeeMethod ShippingFeeMethod @default(ITEM)
 
-  variants  ProductVariant[]
-  specs     Spec[]
-  questions Question[]
+  variants     ProductVariant[]
+  specs        Spec[]
+  questions    Question[]
+  freeShipping FreeShipping?
 
   storeId String
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
@@ -258,7 +259,8 @@ model Country {
   name String @unique
   code String @unique
 
-  shippingRates ShippingRate[]
+  shippingRates         ShippingRate[]
+  freeShippingCountries FreeShippingCountry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -288,4 +290,31 @@ model ShippingRate {
   @@unique([storeId, countryId])
   @@index([countryId])
   @@index([storeId])
+}
+
+model FreeShipping {
+  id        String  @id @default(uuid())
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  eligibleCountries FreeShippingCountry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FreeShippingCountry {
+  id String @id @default(uuid())
+
+  freeShippingId String
+  freeShipping   FreeShipping @relation(fields: [freeShippingId], references: [id], onDelete: Cascade)
+
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@index([freeShippingId])
+  @@index([countryId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

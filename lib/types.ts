@@ -1,4 +1,4 @@
-import { Prisma, ProductVariantImage, ShippingRate, Size } from "@prisma/client";
+import { FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, ShippingRate, Size } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
 import { getAllStoreProducts, getProductPageData, getProducts, getShippingDetails } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
@@ -84,3 +84,7 @@ export type VariantImageType = {
 export type ProductPageDataType = Prisma.PromiseReturnType<typeof getProductPageData>;
 
 export type ProductShippingDetailsType = Prisma.PromiseReturnType<typeof getShippingDetails>;
+
+export type CountriesWithFreeShippingType = FreeShipping & {
+  eligibleCountries : FreeShippingCountry[];
+};
