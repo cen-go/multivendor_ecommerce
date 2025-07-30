@@ -108,3 +108,23 @@ export async function getUserCountry(): Promise<UserCountry> {
   }
   return userCountry;
 }
+
+// Calculate the sipping date range based on min and max delivery
+const ShippingDateTimeFormatter = new Intl.DateTimeFormat("en-US", {dateStyle: 'long'});
+export function calculateShippingDateRange(
+  minDays: number,
+  maxDays: number
+): { minDate: string; maxDate: string } {
+  const currentDate = new Date();
+
+  const minDate = new Date(currentDate);
+  minDate.setDate(currentDate.getDate() + minDays);
+
+  const maxDate = new Date(currentDate);
+  maxDate.setDate(currentDate.getDate() + maxDays);
+
+  return {
+    minDate: ShippingDateTimeFormatter.format(minDate),
+    maxDate: ShippingDateTimeFormatter.format(maxDate),
+  };
+}

@@ -65,13 +65,11 @@ export default function CountryLanguageCurrencySelector({
             <div className="text-xs text-white leading-3 mt-2">
               {userCountry.name}
             </div>
-            <b className="text-xs font-bold text-white">
-              USD{" "}
-            </b>
+            <b className="text-xs font-bold text-white">USD </b>
           </div>
-              <span className="scale-[60%] align-middle inline-block">
-                <ChevronDownIcon />
-              </span>
+          <span className="scale-[60%] align-middle inline-block">
+            <ChevronDownIcon />
+          </span>
         </div>
       </div>
       {/* Modal */}
@@ -88,19 +86,32 @@ export default function CountryLanguageCurrencySelector({
             tabIndex={-1}
           />
           <div className="absolute top-0 cursor-pointer">
-            <div className="relative mt-12 -ml-32 w-[300px] text-main-primary pt-2 px-6 pb-6 z-50 bg-white
-             rounded-3xl shadow-lg">
+            <div
+              className="relative mt-12 -ml-32 w-[300px] text-main-primary pt-2 px-6 pb-6 z-50 bg-white
+             rounded-3xl shadow-lg"
+              onMouseLeave={() => {
+                setOpen(false);
+                setCountryOptionsOpen(false);
+              }}
+            >
               {/* Triangle */}
               <div className="w-0 h-0 absolute left-[149px] -top-1.5 right-24 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-white"></div>
               {/* Content */}
-              <div className="mt-4 leading-6 text-lg font-semibold"> Ship to</div>
+              <div className="mt-4 leading-6 text-lg font-semibold">
+                {" "}
+                Ship to
+              </div>
               <div className="mt-2">
                 <div className="relative text-main-primary bg-indigo-300 rounded-lg">
                   <CountrySelector
                     id={"countries"}
                     open={countryOptionsOpen}
                     onToggle={() => setCountryOptionsOpen(!countryOptionsOpen)}
-                    onChange={(val) => handleCountryClick(val)} //setCountry(val)
+                    onChange={(val) => {
+                      handleCountryClick(val);
+                      setOpen(false);
+                      setCountryOptionsOpen(false);
+                    }} //setCountry(val)
                     // We use this type assertion because we are always sure this find will return a value but need to let TS know since it could technically return null
                     selectedValue={
                       COUNTRIES.find(

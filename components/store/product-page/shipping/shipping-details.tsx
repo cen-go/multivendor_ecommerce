@@ -1,9 +1,9 @@
 "use client";
 
 import { ProductShippingDetailsType } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+import { calculateShippingDateRange, formatCurrency } from "@/lib/utils";
 import { ShippingFeeMethod } from "@prisma/client";
-import { ChevronRight, TruckIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, TruckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import ProductShippingFee from "./shipping-fee";
 
@@ -22,7 +22,6 @@ export default function ShippingDetails({
     deliveryTimeMax,
     deliveryTimeMin,
     returnPolicy,
-    shippingService,
     shippingFee,
     extraShippingFee,
     shippingFeeMethod,
@@ -30,6 +29,7 @@ export default function ShippingDetails({
   } = shippingDetails;
 
   const [shippingTotal, setShippingTotal] = useState<number>(0);
+  const [showTable, setShowTable] = useState<boolean>(false);
 
   useEffect(() => {
     switch (shippingFeeMethod) {
@@ -38,7 +38,7 @@ export default function ShippingDetails({
         break;
       case ShippingFeeMethod.WEIGHT:
         if (!weight) {
-          setShippingTotal(0)
+          setShippingTotal(0);
         } else {
           setShippingTotal(weight * shippingFee);
         }
@@ -49,10 +49,22 @@ export default function ShippingDetails({
       default:
         break;
     }
-  }, [quantity, extraShippingFee, shippingFee, shippingFeeMethod, weight]);
+  }, [
+    quantity,
+    extraShippingFee,
+    shippingFee,
+    shippingFeeMethod,
+    weight,
+    countryName,
+  ]);
+
+  const shippingDateRange = calculateShippingDateRange(
+    deliveryTimeMin,
+    deliveryTimeMax
+  );
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 pb-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-1">
           <TruckIcon className="w-4 pb-0.5" />
@@ -69,15 +81,37 @@ export default function ShippingDetails({
         </div>
         <ChevronRight className="w-4" />
       </div>
+      <div className="flex items-center text-sm ml-5">
+        Delivery:&nbsp;
+        <span className="font-semibold">
+          {shippingDateRange.minDate} - {shippingDateRange.maxDate}
+        </span>
+      </div>
       {/* Product shipping fee */}
-      {!freeShipping && (
+      {!freeShipping && showTable && (
         <ProductShippingFee
-        method={shippingFeeMethod}
-        fee={shippingFee}
-        extraFee={extraShippingFee}
-        weight={weight}
-        quantity={3}
-      />
+          method={shippingFeeMethod}
+          fee={shippingFee}
+          extraFee={extraShippingFee}
+          weight={weight}
+          quantity={3}
+        />
+      )}
+      {!showTable && !freeShipping && (
+        <div
+          className="text-center text-xs cursor-pointer text-main-secondary mb-1 hover:underline"
+          onClick={() => setShowTable(true)}
+        >
+          Show details <ChevronDown className="inline-block w-3.5" />
+        </div>
+      )}
+      {showTable && !freeShipping && (
+        <div
+          className="text-center text-xs cursor-pointer text-main-secondary mb-1 hover:underline"
+          onClick={() => setShowTable(false)}
+        >
+          Hide details <ChevronUp className="inline-block w-3.5" />
+        </div>
       )}
     </div>
   );
