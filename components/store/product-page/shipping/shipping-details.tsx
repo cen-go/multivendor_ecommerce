@@ -21,7 +21,6 @@ export default function ShippingDetails({
     countryName,
     deliveryTimeMax,
     deliveryTimeMin,
-    returnPolicy,
     shippingFee,
     extraShippingFee,
     shippingFeeMethod,
@@ -64,7 +63,7 @@ export default function ShippingDetails({
   );
 
   return (
-    <div className="space-y-1 pb-1">
+    <div className="space-y-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-1">
           <TruckIcon className="w-4 pb-0.5" />
@@ -99,7 +98,7 @@ export default function ShippingDetails({
       )}
       {!showTable && !freeShipping && (
         <div
-          className="text-center text-xs cursor-pointer text-main-secondary mb-1 hover:underline"
+          className="text-center text-xs cursor-pointer text-main-secondary hover:underline"
           onClick={() => setShowTable(true)}
         >
           Show details <ChevronDown className="inline-block w-3.5" />
@@ -107,7 +106,7 @@ export default function ShippingDetails({
       )}
       {showTable && !freeShipping && (
         <div
-          className="text-center text-xs cursor-pointer text-main-secondary mb-1 hover:underline"
+          className="text-center text-xs cursor-pointer text-main-secondary hover:underline"
           onClick={() => setShowTable(false)}
         >
           Hide details <ChevronUp className="inline-block w-3.5" />

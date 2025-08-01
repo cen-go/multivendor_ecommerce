@@ -6,7 +6,7 @@ import ColorThief from "colorthief"
 // prisma & db
 import { PrismaClient } from "@prisma/client";
 import db from "./db";
-import { UserCountry } from "./types";
+import { CartProductType, UserCountry } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -127,4 +127,50 @@ export function calculateShippingDateRange(
     minDate: ShippingDateTimeFormatter.format(minDate),
     maxDate: ShippingDateTimeFormatter.format(maxDate),
   };
+}
+
+// Function to validate product data before adding it to the cart
+export function isProductValidToAdd(product:CartProductType): boolean {
+  const {
+    deliveryTimeMax,
+    deliveryTimeMin,
+    image,
+    name,
+    price,
+    productId,
+    productSlug,
+    quantity,
+    shippingMethod,
+    size,
+    sizeId,
+    stock,
+    variantId,
+    variantImage,
+    variantName,
+    variantSlug,
+  } = product;
+
+  // Ensure all necessary fields have values
+  if (
+    !productId ||
+    !variantId ||
+    !productSlug ||
+    !variantSlug ||
+    name ||
+    variantName ||
+    image ||
+    !variantImage ||
+    !shippingMethod ||
+    quantity <=0 ||
+    price <= 0 ||
+    !sizeId ||
+    !size ||
+    stock <= 0 ||
+    deliveryTimeMin < 0 ||
+    deliveryTimeMax <0
+  ) {
+    return false;
+  }
+
+  return true;
 }

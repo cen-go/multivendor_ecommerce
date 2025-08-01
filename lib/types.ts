@@ -88,3 +88,27 @@ export type ProductShippingDetailsType = Prisma.PromiseReturnType<typeof getShip
 export type CountriesWithFreeShippingType = FreeShipping & {
   eligibleCountries : FreeShippingCountry[];
 };
+
+export type CartProductType = {
+  productId: string;
+  variantId: string;
+  productSlug: string;
+  variantSlug: string;
+  name: string;
+  variantName: string;
+  image: string;
+  variantImage: string;
+  sizeId: string;
+  size: string;
+  quantity: number;
+  price: number;
+  stock: number;
+  weight: number | null;
+  shippingMethod: string;
+  shippingService: string;
+  shippingFee: number;
+  extraShippingFee: number;
+  deliveryTimeMin: number;
+  deliveryTimeMax: number;
+  freeShipping: boolean;
+}

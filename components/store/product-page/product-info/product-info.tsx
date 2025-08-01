@@ -16,13 +16,12 @@ interface Props {
   sizeId: string | undefined;
 }
 
-export default function ProductInfo({ productData, sizeId, quantity }: Props) {
+export default function ProductInfo({ productData, sizeId }: Props) {
   if (!productData) {
     return null;
   }
 
   const {
-    productId,
     name,
     brand,
     sku,
@@ -46,7 +45,7 @@ export default function ProductInfo({ productData, sizeId, quantity }: Props) {
   }));
 
   return (
-    <div className="relative w-full xl:w-[540px]">
+    <div className="relative w-full">
       {/* Title */}
       <div>
         <h1 className="text-main-primary inline text-xl font-bold leading-5">
