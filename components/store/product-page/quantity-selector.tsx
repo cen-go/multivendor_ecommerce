@@ -1,7 +1,10 @@
+// React Next.js
+import { useEffect } from "react";
+// Types
 import { CartProductType } from "@/lib/types";
 import { Size } from "@prisma/client";
+// Icons
 import { MinusIcon, PlusIcon } from "lucide-react";
-import { useEffect } from "react";
 
 interface Props {
   productId: string;

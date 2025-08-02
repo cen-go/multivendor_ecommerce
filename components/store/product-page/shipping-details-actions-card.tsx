@@ -1,13 +1,17 @@
 "use client"
 
+// React Next.js
+import { useEffect, useState } from "react";
+// Types
 import { CartProductType, ProductShippingDetailsType } from "@/lib/types";
+import { Size } from "@prisma/client";
+// Utils
+import { isProductValidToAdd } from "@/lib/utils";
+// Components
 import ShipTo from "./shipping/ship-to";
 import ShippingDetails from "./shipping/shipping-details";
 import ReturnPrivacySecurityCard from "./returns-security-privacy-card";
-import { useEffect, useState } from "react";
-import { isProductValidToAdd } from "@/lib/utils";
 import QuantitySelector from "./quantity-selector";
-import { Size } from "@prisma/client";
 import { Button } from "../ui/button";
 
 interface Props {

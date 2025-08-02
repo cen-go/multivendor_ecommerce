@@ -7,7 +7,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 // Types
 import { ProductVariantImage } from "@prisma/client";
-
+// react-image-zoom library
 import ImageZoom from "react-image-zooom";
 
 export default function ProductImageSwiper({

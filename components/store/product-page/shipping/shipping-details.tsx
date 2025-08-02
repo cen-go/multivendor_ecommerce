@@ -1,10 +1,15 @@
 "use client";
 
-import { ProductShippingDetailsType } from "@/lib/types";
-import { calculateShippingDateRange, formatCurrency } from "@/lib/utils";
-import { ShippingFeeMethod } from "@prisma/client";
-import { ChevronDown, ChevronRight, ChevronUp, TruckIcon } from "lucide-react";
+// React Next.js
 import { useEffect, useState } from "react";
+// Types
+import { ShippingFeeMethod } from "@prisma/client";
+import { ProductShippingDetailsType } from "@/lib/types";
+// Utils
+import { calculateShippingDateRange, formatCurrency } from "@/lib/utils";
+// Icons
+import { ChevronDown, ChevronRight, ChevronUp, TruckIcon } from "lucide-react";
+// Components
 import ProductShippingFee from "./shipping-fee";
 
 interface Props {

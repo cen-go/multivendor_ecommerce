@@ -1,11 +1,12 @@
 // React & Next.js
 import { notFound, redirect } from "next/navigation";
 // Server actions, db queries
-import { getProductPageData } from "@/actions/product";
+import { getProductPageData, getProducts } from "@/actions/product";
 // Components
 import ProductPageContainer from "@/components/store/product-page/container";
 // UI components
 import { Separator } from "@/components/ui/separator";
+import RelatedProducts from "@/components/store/product-page/related-products";
 
 export default async function ProductVariantPage({
   params,
@@ -23,7 +24,7 @@ export default async function ProductVariantPage({
     return notFound();
   }
 
-  const { sizes, specs, questions } = productData;
+  const { sizes, specs, questions, category } = productData;
 
   if (sizeId) {
     //check if the sizeId valid by comparing it to available sizes
@@ -36,9 +37,7 @@ export default async function ProductVariantPage({
     redirect(`/product/${productSlug}/${variantSlug}?size=${sizes[0].id}`);
   }
 
-  const relatedProducts = {
-    products: [],
-  };
+  const relatedProducts = await getProducts({category: category.url});
 
   return (
     <div>
@@ -48,6 +47,7 @@ export default async function ProductVariantPage({
             <>
               <Separator />
               {/* Related products */}
+              <RelatedProducts products={relatedProducts.products} />
             </>
           )}
           <Separator className="mt-6" />

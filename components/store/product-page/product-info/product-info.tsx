@@ -1,6 +1,9 @@
-import { ProductPageDataType } from "@/lib/types";
+// React Next.js
 import Image from "next/image";
 import Link from "next/link";
+// Types
+import { ProductPageDataType } from "@/lib/types";
+// Components
 import Sku from "./sku";
 import RatingStars from "../../shared/rating-stars";
 import ProductPrice, { SimplifiedSize } from "./product-price";

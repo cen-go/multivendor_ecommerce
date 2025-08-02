@@ -7,7 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma types
-import { CountriesWithFreeShippingType, ProductShippingDetailsType, ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
+import { CountriesWithFreeShippingType, ProductQueryFiltersType, ProductShippingDetailsType, ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
 import { Prisma, Role, ShippingFeeMethod, Store } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -311,7 +311,7 @@ export async function deleteProduct(product: StoreProductType) {
 //   - pageSize: the number of products per page (default = 10)
 // Returns: An object containing paginated products, filtered variants, and pagination metadata (totalPages, currentPage, pageSize)
 export async function getProducts(
-  filters: any = {},
+  filters: ProductQueryFiltersType = {},
   sortBy: string = "",
   page: number = 1,
   pageSize: number = 10
@@ -324,6 +324,28 @@ export async function getProducts(
   const whereClause: Prisma.ProductWhereInput = {
     AND: [],
   };
+
+  // Apply category filter using category URL
+  if (filters.category) {
+    const category = await db.category.findUnique({
+      where: { url: filters.category },
+      select: {id: true},
+    });
+    if (category) {
+      (whereClause.AND as Prisma.ProductWhereInput[]).push({categoryId: category.id});
+    }
+  }
+
+  // Apply subcategory filter using category URL
+  if (filters.subcategory) {
+    const subcategory = await db.subCategory.findUnique({
+      where: { url: filters.subcategory },
+      select: {id: true},
+    });
+    if (subcategory) {
+      (whereClause.AND as Prisma.ProductWhereInput[]).push({subcategoryId: subcategory.id});
+    }
+  }
 
   // Get all filtered and sorted products
   const products = await db.product.findMany({

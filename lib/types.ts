@@ -112,3 +112,8 @@ export type CartProductType = {
   deliveryTimeMax: number;
   freeShipping: boolean;
 }
+
+export type ProductQueryFiltersType = {
+  category?: string;
+  subcategory?: string;
+}
