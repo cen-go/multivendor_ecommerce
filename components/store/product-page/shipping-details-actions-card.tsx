@@ -1,22 +1,23 @@
 "use client"
 
-import { CartProductType, ProductPageDataType, ProductShippingDetailsType } from "@/lib/types";
+import { CartProductType, ProductShippingDetailsType } from "@/lib/types";
 import ShipTo from "./shipping/ship-to";
 import ShippingDetails from "./shipping/shipping-details";
 import ReturnPrivacySecurityCard from "./returns-security-privacy-card";
 import { useEffect, useState } from "react";
 import { isProductValidToAdd } from "@/lib/utils";
+import QuantitySelector from "./quantity-selector";
 import { Size } from "@prisma/client";
+import { Button } from "../ui/button";
 
 interface Props {
-  productData: ProductPageDataType;
   sizeId: string | undefined;
   shippingDetails: ProductShippingDetailsType;
   cartProductData: CartProductType;
-  //currentSize: Size | undefined;
+  sizes: Size[];
 }
 
-export default function ShippingAndActionsCard({productData, sizeId, shippingDetails, cartProductData, }: Props) {
+export default function ShippingAndActionsCard({ sizeId, shippingDetails, cartProductData, sizes }: Props) {
 // Local state to manage products' state before adding to the cart
 const [productToAddToCart, setProductToAddToCart] = useState<CartProductType>(cartProductData);
 // state to validate the product before adding to the cart
@@ -24,7 +25,7 @@ const [isProductValid, setIsProductValid] = useState<boolean>(false);
 
 
 useEffect(() => {
-  const currentSize = productData?.sizes.find(size => sizeId === size.id);
+  const currentSize = sizes.find(size => sizeId === size.id);
 
   if (currentSize) {
     const discountedPrice = Math.round(currentSize.price * (1 - currentSize.discount / 100));
@@ -33,17 +34,12 @@ useEffect(() => {
     handleChange("size", currentSize.size);
     handleChange("stock", currentSize.quantity);
   }
-}, [sizeId, productData]);
+}, [sizeId, sizes]);
 
 useEffect(() => {
   const check  = isProductValidToAdd(productToAddToCart);
   setIsProductValid(check);
-  console.log("is product valit to add to cart", check);
 }, [productToAddToCart])
-
-if (!productData) {
-  return null;
-}
 
 function handleChange(property: keyof CartProductType, value: number | string | boolean | undefined) {
   setProductToAddToCart((prevProduct) => ({
@@ -51,11 +47,6 @@ function handleChange(property: keyof CartProductType, value: number | string | 
     [property]: value,
   }))
 }
-
-console.log("Product to add cart ", productToAddToCart);
-
-
-
 
   return (
     <div className="w-[390px]">
@@ -71,7 +62,7 @@ console.log("Product to add cart ", productToAddToCart);
               <div className="mt-3">
                 <ShippingDetails
                   shippingDetails={shippingDetails}
-                  quantity={1}
+                  quantity={productToAddToCart.quantity}
                   weight={cartProductData.weight}
                 />
               </div>
@@ -80,6 +71,30 @@ console.log("Product to add cart ", productToAddToCart);
           <ReturnPrivacySecurityCard
             returnPolicy={shippingDetails.returnPolicy}
           />
+          {/* Action buttons */}
+          <div className="mt-5 bg-white bottom-0 pb-4 space-y-3 sticky">
+            {/* Quantity selector */}
+            {sizeId && (
+              <div className="w-full flex justify-end mt-4">
+                <QuantitySelector
+                  productId={productToAddToCart.productId}
+                  variantId={productToAddToCart.variantId}
+                  sizeId={productToAddToCart.sizeId}
+                  quantity={productToAddToCart.quantity}
+                  handleChange={handleChange}
+                  sizes={sizes}
+                  stock={productToAddToCart.stock}
+                />
+              </div>
+            )}
+            {/* Action Buttons */}
+            <Button variant="default" disabled={!isProductValid} className={!isProductValid ? "cursor-not-allowed" : ""}>
+              <span>Buy Now</span>
+            </Button>
+            <Button variant="pink" disabled={!isProductValid} className={!isProductValid ? "cursor-not-allowed" : ""}>
+              <span>Add to cart</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

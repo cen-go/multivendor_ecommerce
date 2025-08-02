@@ -156,9 +156,9 @@ export function isProductValidToAdd(product:CartProductType): boolean {
     !variantId ||
     !productSlug ||
     !variantSlug ||
-    name ||
-    variantName ||
-    image ||
+    !name ||
+    !variantName ||
+    !image ||
     !variantImage ||
     !shippingMethod ||
     quantity <=0 ||

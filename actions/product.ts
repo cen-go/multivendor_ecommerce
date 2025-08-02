@@ -561,20 +561,20 @@ export async function getShippingDetails(
   freeShipping: CountriesWithFreeShippingType | null,
 ) {
   let shippingDetails = {
-      shippingFeeMethod,
-      shippingService: "",
-      shippingFee: 0,
-      extraShippingFee: 0, // Shipping fee for additional items
-      deliveryTimeMin: 0,
-      deliveryTimeMax: 0,
-      returnPolicy: "",
-      countryCode: userCountry.code,
-      countryName: userCountry.name,
-      freeShipping: false,
-    };
+    shippingFeeMethod,
+    shippingService: "",
+    shippingFee: 0,
+    extraShippingFee: 0, // Shipping fee for additional items
+    deliveryTimeMin: 0,
+    deliveryTimeMax: 0,
+    returnPolicy: "",
+    countryCode: userCountry.code,
+    countryName: userCountry.name,
+    freeShipping: false,
+  };
 
   const country = await db.country.findUnique({
-    where: {code: userCountry.code},
+    where: { code: userCountry.code },
   });
 
   if (country) {
@@ -601,18 +601,18 @@ export async function getShippingDetails(
     const deliveryTimeMax =
       shippingRate?.deliveryTimeMax || store.defaultDeliveryTimeMax;
 
-      shippingDetails = {
-        shippingFeeMethod,
-        shippingService,
-        shippingFee: 0,
-        extraShippingFee: 0, // Shipping fee for additional items
-        deliveryTimeMin,
-        deliveryTimeMax,
-        returnPolicy,
-        countryCode: userCountry.code,
-        countryName: userCountry.name,
-        freeShipping: false,
-      };
+    shippingDetails = {
+      shippingFeeMethod,
+      shippingService,
+      shippingFee: 0,
+      extraShippingFee: 0, // Shipping fee for additional items
+      deliveryTimeMin,
+      deliveryTimeMax,
+      returnPolicy,
+      countryCode: userCountry.code,
+      countryName: userCountry.name,
+      freeShipping: false,
+    };
 
     // Check for free shipping
     if (freeShipping) {
@@ -623,23 +623,24 @@ export async function getShippingDetails(
 
       if (checkFreeShipping) {
         shippingDetails.freeShipping = true;
-      } else {
-      switch (shippingFeeMethod) {
-        case ShippingFeeMethod.ITEM:
-          shippingDetails.shippingFee = shippingFeePerItem;
-          shippingDetails.extraShippingFee = shippingFeePerAdditionalItem;
-          break;
-        case ShippingFeeMethod.WEIGHT:
-          shippingDetails.shippingFee = shippingFeePerKg;
-          break;
-        case ShippingFeeMethod.FIXED:
-          shippingDetails.shippingFee = shippingFeeFixed;
-          break;
-        default:
-          break;
+        return shippingDetails;
       }
     }
-    } // end of free shipping if check
+
+    switch (shippingFeeMethod) {
+      case ShippingFeeMethod.ITEM:
+        shippingDetails.shippingFee = shippingFeePerItem;
+        shippingDetails.extraShippingFee = shippingFeePerAdditionalItem;
+        break;
+      case ShippingFeeMethod.WEIGHT:
+        shippingDetails.shippingFee = shippingFeePerKg;
+        break;
+      case ShippingFeeMethod.FIXED:
+        shippingDetails.shippingFee = shippingFeeFixed;
+        break;
+      default:
+        break;
+    }
   } // end of if clause for (country)
   return shippingDetails;
 }

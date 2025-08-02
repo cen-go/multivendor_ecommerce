@@ -93,7 +93,7 @@ export default function ShippingDetails({
           fee={shippingFee}
           extraFee={extraShippingFee}
           weight={weight}
-          quantity={3}
+          quantity={quantity}
         />
       )}
       {!showTable && !freeShipping && (

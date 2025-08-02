@@ -17,7 +17,7 @@ export default function ProductPageContainer({children, productData, sizeId}: Pr
     return null;
   }
 
-  const { shippingDetails, weight } = productData;
+  const { shippingDetails, weight, sizes } = productData;
 
   const cartProductData: CartProductType = {
     productId: productData.productId,
@@ -53,10 +53,10 @@ export default function ProductPageContainer({children, productData, sizeId}: Pr
           <ProductInfo productData={productData} sizeId={sizeId} />
           {/* Shipping details - Buy actions buttons */}
           <ShippingAndActionsCard
-            productData={productData}
             sizeId={sizeId}
             shippingDetails={shippingDetails}
             cartProductData={cartProductData}
+            sizes={sizes}
           />
         </div>
       </div>
