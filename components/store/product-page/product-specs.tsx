@@ -12,7 +12,7 @@ export default function ProductSpecs({
   specs: { productSpecs, variantSpecs },
 }: Props) {
   return (
-    <div className="pt-6">
+    <div className="pt-6 pb-4">
       {/* Title */}
       <div className="h-12">
         <h2 className="text-main-primary text-2xl font-bold">Specifications</h2>
@@ -20,7 +20,7 @@ export default function ProductSpecs({
       {/* Product Specs Table */}
       <SpecTable data={productSpecs} />
       {/* Variant Specs Table */}
-      <SpecTable data={variantSpecs} />
+      <SpecTable data={variantSpecs} noTopBorder />
     </div>
   );
 }
@@ -33,16 +33,13 @@ const SpecTable = ({
   noTopBorder?: boolean;
 }) => {
   return (
-    <ul className="border-b border-x grid xl:grid-cols-2">
+    <ul className={cn("border-x xl:border-r-0 border-t grid xl:grid-cols-2", {
+      "border-t-0": noTopBorder ,
+    }) }>
       {data.map((spec) => (
         <li
           key={spec.id}
-          className={cn(
-            "border-t grid grid-cols-2 xl:border-r text-main-primary",
-            {
-              "border-t-0": noTopBorder,
-            }
-          )}
+          className="border-b grid grid-cols-2 xl:border-r text-main-primary text-sm"
         >
           <div className="bg-gray-50 px-4 py-2 flex items-center">
             {spec.name}

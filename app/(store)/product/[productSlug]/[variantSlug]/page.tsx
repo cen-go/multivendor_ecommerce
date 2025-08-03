@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import RelatedProducts from "@/components/store/product-page/related-products";
 import ProductDescription from "@/components/store/product-page/product-description";
 import ProductSpecs from "@/components/store/product-page/product-specs";
+import ProductQuestions from "@/components/store/product-page/product-questions";
 
 export async function generateMetadata({
   params,
@@ -94,6 +95,7 @@ export default async function ProductVariantPage({
             <>
               <Separator className="mt-6" />
               {/* Product Questions */}
+              <ProductQuestions questions={questions} />
             </>
           )}
           <Separator className="mt-6" />
