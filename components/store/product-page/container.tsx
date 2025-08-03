@@ -45,7 +45,7 @@ export default function ProductPageContainer({children, productData, sizeId}: Pr
 
   return (
     <div className="relative w-full">
-      <div className="w-full lg:flex lg:gap-4">
+      <div className="w-full lg:flex lg:gap-8">
         {/* Product image swiper */}
         <ProductImageSwiper images={productData.images} />
         <div className="w-full mt-4 md:mt-0 flex flex-col gap-4 md:flex-row">
@@ -60,7 +60,7 @@ export default function ProductPageContainer({children, productData, sizeId}: Pr
           />
         </div>
       </div>
-      <div className="w-[calc(100%-390px)] mt-6 pb-16">{children}</div>
+      <div className="w-full lg:w-[calc(100%-390px)] mt-6 pb-16">{children}</div>
     </div>
   );
 }

@@ -53,7 +53,7 @@ function handleChange(property: keyof CartProductType, value: number | string | 
 }
 
   return (
-    <div className="w-[390px]">
+    <div className="w-[340px] sm:w-[390px]">
       <div className="z-20">
         <div className="bg-white border rounded-md overflow-hidden overflow-y-auto p-4 pb-2">
           {/* Ship to */}

@@ -57,25 +57,29 @@ export default function ProductInfo({ productData, sizeId }: Props) {
         </h1>
       </div>
       {/* Sku - Rating - Number of reviews */}
-      <div className="flex sm:items-center flex-col sm:flex-row text-xs mt-2 gap-1">
+      <div className="flex sm:items-center flex-col sm:flex-row justify-between flex-wrap text-xs mt-2 gap-3">
         {/* Store details */}
-        <Link
-          href={`/store/${store.url}`}
-          className="inline-block mr-2 hover:underline"
-        >
-          <div className="flex items-center w-full gap-1">
-            <Image
-              src={store.logo}
-              alt="store logo"
-              width={30}
-              height={30}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-            <p className="text-sm">{store.name}</p>
-          </div>
-        </Link>
-        <Sku sku={sku} />
-        <div className="flex items-center gap-x-2 flex-1 sm:ml-6 whitespace-nowrap">
+        <div className="flex sm:items-center">
+          <Link
+            href={`/store/${store.url}`}
+            className="inline-block mr-2 hover:underline"
+          >
+            <div className="flex items-center gap-1">
+              <Image
+                src={store.logo}
+                alt="store logo"
+                width={30}
+                height={30}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              <p className="text-sm">{store.name}</p>
+            </div>
+          </Link>
+          <Sku sku={sku} />
+        </div>
+
+        {/* Rating Stars */}
+        <div className="flex items-center gap-x-2">
           <RatingStars value={rating} />
           <Link href="#reviews" className="text-gray-500 hover:underline">
             (
@@ -89,7 +93,7 @@ export default function ProductInfo({ productData, sizeId }: Props) {
         </div>
       </div>
       {/* Price */}
-      <div className="my-6 relative flex flex-col sm:flex-row justify-between">
+      <div className="my-6 relative flex flex-col sm:flex-row flex-wrap justify-between">
         <ProductPrice sizeId={sizeId} sizes={simplifiedSizes} />
         {isSale && saleEndDate && (
           <div className="mt-4 pb-2">
