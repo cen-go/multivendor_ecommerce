@@ -12,6 +12,7 @@ import RelatedProducts from "@/components/store/product-page/related-products";
 import ProductDescription from "@/components/store/product-page/product-description";
 import ProductSpecs from "@/components/store/product-page/product-specs";
 import ProductQuestions from "@/components/store/product-page/product-questions";
+import StoreCard from "@/components/store/cards/store-card";
 
 export async function generateMetadata({
   params,
@@ -52,7 +53,15 @@ export default async function ProductVariantPage({
     return notFound();
   }
 
-  const { sizes, specs, questions, category, description, variantDescription } = productData;
+  const {
+    sizes,
+    specs,
+    questions,
+    category,
+    description,
+    variantDescription,
+    store,
+  } = productData;
 
   if (sizeId) {
     //check if the sizeId valid by comparing it to available sizes
@@ -100,6 +109,7 @@ export default async function ProductVariantPage({
           )}
           <Separator className="mt-6" />
           {/* Store Card */}
+          <StoreCard store={store} />
           {/* Store Products */}
         </ProductPageContainer>
       </div>
