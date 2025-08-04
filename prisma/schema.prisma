@@ -21,7 +21,8 @@ model User {
   picture String @db.Text
   role    Role   @default(USER)
 
-  stores Store[]
+  stores    Store[]
+  following Store[] @relation("UserFollowingStore")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,6 +90,7 @@ model Store {
 
   products      Product[]
   shippingRates ShippingRate[]
+  followers     User[]         @relation("UserFollowingStore")
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -312,9 +314,9 @@ model FreeShippingCountry {
   countryId String
   country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
 
-  @@index([freeShippingId])
-  @@index([countryId])
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([freeShippingId])
+  @@index([countryId])
 }

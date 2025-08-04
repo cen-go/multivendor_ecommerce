@@ -420,6 +420,8 @@ export async function getProducts(
 //   - variantSlug: the slug of the variant to be retrşeved
 // Returns: Details of the requested product variant.
 export async function getProductPageData(ProductSlug: string, variantSlug: string) {
+  // Get current user
+  const user = await currentUser();
   // Fetch product variant details form the database
   const product = await retrieveProductDetails(ProductSlug, variantSlug);
   if (!product) return null;
@@ -434,7 +436,13 @@ export async function getProductPageData(ProductSlug: string, variantSlug: strin
     product.freeShipping
   );
 
-  return formatProductResponse(product, productShippingDetails);
+  // get store followers count
+  const storeFollowersCount = await getStoreFollowersCount(product.storeId);
+
+  // Check if user is following the store
+  const isUserFollowingStore = await checkIfUserFollowingStore(product.storeId, user?.id)
+
+  return formatProductResponse(product, productShippingDetails, storeFollowersCount, isUserFollowingStore);
 }
 
 // Helper functions
@@ -490,6 +498,8 @@ async function retrieveProductDetails(
 function formatProductResponse(
   product: Prisma.PromiseReturnType<typeof retrieveProductDetails>,
   shippingDetails: ProductShippingDetailsType,
+  storeFollowersCount: number | undefined,
+  isUserFollowingStore: boolean,
 ) {
   if (!product || product.variants.length === 0) return;
   const variant = product.variants[0];
@@ -536,10 +546,43 @@ function formatProductResponse(
       url: store.url,
       name: store.name,
       logo: store.logo,
-      followersCount: 10,
-      isUserFollowingStore: true,
+      followersCount: storeFollowersCount ?? 0,
+      isUserFollowingStore: isUserFollowingStore,
     },
   };
+}
+
+async function getStoreFollowersCount(storeId: string) {
+  const storeFollowersCount = await db.store.findUnique({
+    where: { id: storeId },
+    select: {
+      _count: {
+        select: { followers: true },
+      },
+    },
+  });
+
+  return storeFollowersCount?._count.followers;
+}
+
+export async function checkIfUserFollowingStore(storeId: string, userId: string | undefined) {
+  let isUserFollowing = false;
+  if (userId) {
+    const storeFollowerCheck = await db.store.findUnique({
+      where: { id: storeId },
+      select: {
+        followers: {
+          where: { id: userId },
+          select: { id: true },
+        },
+      },
+    });
+
+    if (storeFollowerCheck && storeFollowerCheck.followers.length > 0) {
+      isUserFollowing = true;
+    }
+  }
+  return isUserFollowing;
 }
 
 async function getUserCountry() {
@@ -666,3 +709,4 @@ export async function getShippingDetails(
   } // end of if clause for (country)
   return shippingDetails;
 }
+
