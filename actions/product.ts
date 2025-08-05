@@ -347,6 +347,17 @@ export async function getProducts(
     }
   }
 
+  // Apply Store filter using store URL
+  if (filters.storeUrl) {
+    const store = await db.store.findUnique({
+      where: { url: filters.storeUrl },
+      select: {id: true},
+    });
+    if (store) {
+      (whereClause.AND as Prisma.ProductWhereInput[]).push({storeId: store.id});
+    }
+  }
+
   // Get all filtered and sorted products
   const products = await db.product.findMany({
     where: whereClause,

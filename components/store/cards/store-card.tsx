@@ -1,13 +1,18 @@
 "use client";
 
-import { followStore } from "@/actions/user";
-import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/nextjs";
-import { CheckIcon, MessageSquareMoreIcon, PlusIcon } from "lucide-react";
+// React Next.js
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+// Clerk client side hook
+import { useUser } from "@clerk/nextjs";
+// Server Actions
+import { followStore } from "@/actions/user";
+// Utils
+import { cn } from "@/lib/utils";
+// Icons
+import { CheckIcon, MessageSquareMoreIcon, PlusIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Props {
@@ -27,12 +32,14 @@ export default function StoreCard({
   const [following, setFollowing] = useState<boolean>(isUserFollowingStore);
   const [count, setCount] = useState<number>(followersCount);
   const router = useRouter();
-  // Get the current user
+  // Get the current user.
   const user = useUser();
+  // geth pathname to use as redirect URL after sign-in
   const pathname = usePathname();
 
   async function handleStoreFollow() {
     if (!user.isSignedIn) {
+      // encode and add pathname to redirect to the same page after login
       router.push(`/sign-in?redirect_url=${encodeURIComponent(pathname)}`);
     }
     const res = await followStore(id);

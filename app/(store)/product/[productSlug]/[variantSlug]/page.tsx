@@ -13,6 +13,7 @@ import ProductDescription from "@/components/store/product-page/product-descript
 import ProductSpecs from "@/components/store/product-page/product-specs";
 import ProductQuestions from "@/components/store/product-page/product-questions";
 import StoreCard from "@/components/store/cards/store-card";
+import StoreProducts from "@/components/store/product-page/store-products";
 
 export async function generateMetadata({
   params,
@@ -111,6 +112,7 @@ export default async function ProductVariantPage({
           {/* Store Card */}
           <StoreCard store={store} />
           {/* Store Products */}
+          <StoreProducts storeUrl={store.url} limit={6} />
         </ProductPageContainer>
       </div>
     </div>

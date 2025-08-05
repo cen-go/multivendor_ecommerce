@@ -116,4 +116,5 @@ export type CartProductType = {
 export type ProductQueryFiltersType = {
   category?: string;
   subcategory?: string;
+  storeUrl?: string;
 }
