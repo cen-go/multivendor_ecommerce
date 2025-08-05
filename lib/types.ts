@@ -1,6 +1,6 @@
 import { FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, ShippingRate, Size } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
-import { getAllStoreProducts, getProductPageData, getProducts, getShippingDetails } from "@/actions/product";
+import { getAllStoreProducts, getProductPageData, getProducts, getRatingStatistics, getShippingDetails } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
@@ -118,3 +118,5 @@ export type ProductQueryFiltersType = {
   subcategory?: string;
   storeUrl?: string;
 }
+
+export type RatingStatisticsType = Prisma.PromiseReturnType<typeof getRatingStatistics>

@@ -7,7 +7,7 @@ import { currentUser } from "@clerk/nextjs/server";
 // Database client
 import db from "@/lib/db";
 // Types & Prisma types
-import { CountriesWithFreeShippingType, ProductQueryFiltersType, ProductShippingDetailsType, ProductWithVariantType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
+import { CountriesWithFreeShippingType, ProductQueryFiltersType, ProductShippingDetailsType, ProductWithVariantType, RatingStatisticsType, StoreProductType, UserCountry, VariantImageType, VariantSimplified } from "@/lib/types";
 import { Prisma, Role, ShippingFeeMethod, Store } from "@prisma/client";
 // Utils
 import slugify from "slugify"
@@ -453,7 +453,15 @@ export async function getProductPageData(ProductSlug: string, variantSlug: strin
   // Check if user is following the store
   const isUserFollowingStore = await checkIfUserFollowingStore(product.storeId, user?.id)
 
-  return formatProductResponse(product, productShippingDetails, storeFollowersCount, isUserFollowingStore);
+  const ratingStatistics = await getRatingStatistics(product.id)
+
+  return formatProductResponse(
+    product,
+    productShippingDetails,
+    storeFollowersCount,
+    isUserFollowingStore,
+    ratingStatistics
+  );
 }
 
 // Helper functions
@@ -511,6 +519,7 @@ function formatProductResponse(
   shippingDetails: ProductShippingDetailsType,
   storeFollowersCount: number | undefined,
   isUserFollowingStore: boolean,
+  ratingStatistics: RatingStatisticsType,
 ) {
   if (!product || product.variants.length === 0) return;
   const variant = product.variants[0];
@@ -544,11 +553,7 @@ function formatProductResponse(
     questions: product.questions,
     rating: product.rating,
     reviews: [],
-    numReviews: 43,
-    reviewStatistics: {
-      ratingStatistics: [],
-      reviewWithImagesCount: 4,
-    },
+    reviewStatistics: ratingStatistics,
     shippingDetails: shippingDetails,
     relatedProducts: [],
     variantImages: product.variantImages,
@@ -620,6 +625,38 @@ async function getUserCountry() {
       return defaultCountry;
     }
   }
+}
+
+export async function getRatingStatistics(productId: string) {
+  const ratingstats = await db.review.groupBy({
+    by: ["rating"],
+    where : {productId},
+    _count: {rating: true},
+  });
+  
+  // Calculate the total number of reviews
+  const totalReviews = ratingstats.reduce((sum, stat) => sum + stat._count.rating ,0);
+
+  const ratingCounts = Array(5).fill(0);
+  ratingstats.forEach((rt) => (ratingCounts[rt.rating - 1] = rt._count.rating));
+
+  // Get the count of reviews with images
+  const reviewsWithImages = await db.review.count({
+    where: {
+      productId,
+      images: { some: {} },  //find the reviews with at least something in images field
+    },
+  });
+
+  return {
+    ratingStatistics: ratingCounts.map((count, index) => ({
+      rating: index + 1,
+      numReviews: count,
+      percentage: totalReviews > 0 ?  (count / totalReviews) * 100 : 0,
+    })),
+    reviewsWithImages,
+    totalReviews,
+  };
 }
 
 // Function: getShippingDetails

@@ -36,7 +36,7 @@ export default function ProductInfo({ productData, sizeId }: Props) {
     variantSlug,
     store,
     rating,
-    numReviews,
+    reviewStatistics,
   } = productData;
 
   const simplifiedSizes: SimplifiedSize[] = sizes.map(size => ({
@@ -83,11 +83,11 @@ export default function ProductInfo({ productData, sizeId }: Props) {
           <RatingStars value={rating} />
           <Link href="#reviews" className="text-gray-500 hover:underline">
             (
-            {numReviews === 0
+            {reviewStatistics.totalReviews === 0
               ? "No reviews yet"
-              : numReviews === 1
+              : reviewStatistics.totalReviews === 1
               ? "1 review"
-              : `${numReviews} reviews`}
+              : `${reviewStatistics.totalReviews} reviews`}
             )
           </Link>
         </div>

@@ -22,7 +22,8 @@ model User {
   role    Role   @default(USER)
 
   stores    Store[]
-  following Store[] @relation("UserFollowingStore")
+  following Store[]  @relation("UserFollowingStore")
+  reviews   Review[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -121,6 +122,7 @@ model Product {
   specs        Spec[]
   questions    Question[]
   freeShipping FreeShipping?
+  reviews      Review[]
 
   storeId String
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
@@ -319,4 +321,42 @@ model FreeShippingCountry {
 
   @@index([freeShippingId])
   @@index([countryId])
+}
+
+model Review {
+  id      String @id @default(uuid())
+  variant String
+  review  String
+  rating  Float
+  color   String
+  size    String
+  likes   Int    @default(0)
+
+  images ReviewImage[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model ReviewImage {
+  id  String @id @default(uuid())
+  url String
+  alt String @default("")
+
+  reviewId String
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reviewId])
 }

@@ -23,7 +23,7 @@ export default function StoreProducts({ storeUrl, limit }: Props) {
   }, [storeUrl, limit])
 
   return (
-      <div className="mt-4 space-y-1">
+      <div className="mt-4 space-y-1 px-4">
         <ProductList products={products} title="Recommended from this seller" />
       </div>
     )

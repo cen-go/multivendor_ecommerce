@@ -40,8 +40,8 @@ export default function ProductImageSwiper({
               <Image
                 src={img.url}
                 alt={img.alt}
-                width={80}
-                height={80}
+                width={90}
+                height={90}
                 className="object-cover rounded-md"
               />
             </div>
