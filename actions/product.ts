@@ -478,6 +478,9 @@ async function retrieveProductDetails(
       store: true,
       offerTag: true,
       questions: true,
+      reviews: {
+        include: { images: true, user: true },
+      },
       variants: {
         where: { slug: variantSlug },
         include: {
@@ -552,7 +555,7 @@ function formatProductResponse(
     },
     questions: product.questions,
     rating: product.rating,
-    reviews: [],
+    reviews: product.reviews,
     reviewStatistics: ratingStatistics,
     shippingDetails: shippingDetails,
     relatedProducts: [],

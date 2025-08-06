@@ -1,4 +1,4 @@
-import { FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, ShippingRate, Size } from "@prisma/client";
+import { FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, Review, ReviewImage, ShippingRate, Size, User } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
 import { getAllStoreProducts, getProductPageData, getProducts, getRatingStatistics, getShippingDetails } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
@@ -120,3 +120,8 @@ export type ProductQueryFiltersType = {
 }
 
 export type RatingStatisticsType = Prisma.PromiseReturnType<typeof getRatingStatistics>
+
+export type ReviewWithImagesType = Review & {
+  images: ReviewImage[];
+  user: User;
+}

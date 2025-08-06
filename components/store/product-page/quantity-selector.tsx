@@ -20,8 +20,6 @@ interface Props {
 }
 
 export default function QuantitySelector({
-  productId,
-  variantId,
   sizeId,
   quantity,
   handleChange,
