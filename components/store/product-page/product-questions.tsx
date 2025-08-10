@@ -15,7 +15,7 @@ export default function ProductQuestions({questions}: Props) {
       {/* Questions list */}
       <div className="mt-4">
         {questions.map(q => (
-          <div key={q.id} className="relative mb-2 border px-4 py-2 rounded-xl">
+          <div key={q.id} className="relative mb-3 border px-4 py-3 rounded-xl max-w-3xl">
             <div className="space-y-1">
               <div className="flex items-center gap-x-2">
                 <MessageCircleQuestionIcon className="w-4" />

@@ -125,3 +125,5 @@ export type ReviewWithImagesType = Review & {
   images: ReviewImage[];
   user: User;
 }
+
+export type ReviewSortOptionType = "latest" | "oldest" | "highest" | "lowest";

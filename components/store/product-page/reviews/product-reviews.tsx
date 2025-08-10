@@ -1,12 +1,13 @@
 "use client"
 
-import { RatingStatisticsType, ReviewWithImagesType } from "@/lib/types";
+import { RatingStatisticsType, ReviewSortOptionType, ReviewWithImagesType } from "@/lib/types";
 import RatingCard from "../../cards/product-rating";
 import RatingStatisticsCard from "../../cards/rating-statistics";
 import { useCallback, useEffect, useState } from "react";
 import ReviewCard from "../../cards/review-card";
 import { getProductFilteredReviews } from "@/actions/product";
 import ReviewsFilters from "./filters";
+import ReviewsSort from "./sort";
 
 interface Props {
   productId: string;
@@ -32,7 +33,7 @@ export default function ProductReviews({
   const [filters, setFilters] = useState<ReviewFilterType>({})
 
   // Local state for filters
-  const [sortBy, setSortBy] = useState<"latest" | "oldest" | "highest" | "lowest">("latest");
+  const [sortBy, setSortBy] = useState<ReviewSortOptionType>("latest");
 
   // Local state for Pagination
   const [page, setPage] = useState<number>(1);
@@ -80,9 +81,10 @@ export default function ProductReviews({
               setPage={setPage}
             />
             {/* Review sorting */}
+            <ReviewsSort sort={sortBy} setSort={setSortBy} setPage={setPage} />
           </div>
           {/* Reviews */}
-          <div className="mt-10 min-h-72 grid xl:grid-cols-2 gap-6">
+          <div className="mt-5 min-h-72 flex flex-col max-w-3xl gap-6">
             {data.length > 0 ? (
               data.map((review) => (
                 <ReviewCard key={review.id} review={review} />
