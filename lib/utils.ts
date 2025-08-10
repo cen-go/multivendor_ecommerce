@@ -214,3 +214,12 @@ export const formatDateTime = (dateString: Date) => {
     timeOnly: formattedTime,
   };
 };
+
+// Function to sensor names
+export function censorName(firstName:string, lastName:string,): string {
+  const censor = (name: string) => {
+    const firstChar = name[0];
+    return `${firstChar}${"*".repeat(name.length - 1)}`;
+  }
+  return `${censor(firstName)} ${censor(lastName)}`.toUpperCase();
+}

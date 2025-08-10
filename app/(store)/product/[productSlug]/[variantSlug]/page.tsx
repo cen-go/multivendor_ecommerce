@@ -91,14 +91,6 @@ export default async function ProductVariantPage({
             </>
           )}
           <Separator className="mt-6" />
-          {/* Product reviews */}
-          <ProductReviews
-            productId={productData.productId}
-            statistics={productData.reviewStatistics}
-            rating={productData.rating}
-            reviews={reviews}
-          />
-          <Separator className="mt-6" />
           {/* Product description */}
           <ProductDescription
             description={[description, variantDescription ?? ""]}
@@ -111,6 +103,14 @@ export default async function ProductVariantPage({
               <ProductSpecs specs={specs} />
             </>
           )}
+          <Separator className="mt-6" />
+          {/* Product reviews */}
+          <ProductReviews
+            productId={productData.productId}
+            statistics={productData.reviewStatistics}
+            rating={productData.rating}
+            reviews={reviews}
+          />
           {questions.length > 0 && (
             <>
               <Separator className="mt-6" />

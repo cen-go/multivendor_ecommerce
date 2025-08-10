@@ -480,6 +480,8 @@ async function retrieveProductDetails(
       questions: true,
       reviews: {
         include: { images: true, user: true },
+        take: 2,
+        orderBy: {createdAt: "desc"},
       },
       variants: {
         where: { slug: variantSlug },
@@ -760,4 +762,68 @@ export async function getShippingDetails(
   } // end of if clause for (country)
   return shippingDetails;
 }
+
+// Function: getProductFilteredReviews
+// Description: Fetches filtered and sorted reviews for a product from the database, with the pagination.
+// Permission Level: Public
+// Parameters:
+//   - ProductId
+//   - Filters: An object containing filter options such as rating or reviews with images.
+//   - sortBy: An object defining the sort order, such as latest, oldest or highest-lowest rating
+//   - page: the current page number for pagination. (default = 1)
+//   - pageSize: the number of reviews to be fetched per page.
+// Returns: An object containing a list of sorted and filtered reviews.
+export async function getProductFilteredReviews({
+  productId,
+  filters,
+  sortBy,
+  page = 1,
+  pageSize = 2,
+}: {
+  productId: string;
+  filters?: { rating?: number; hasImages?: boolean};
+  sortBy?: "latest" | "oldest" | "highest" | "lowest";
+  page?: number;
+  pageSize?: number
+}) {
+  // define the filter for db query if filtering data is provided
+  const reviewFilter: Prisma.ReviewWhereInput = {
+    productId,
+  };
+
+  if (filters?.rating) {
+    reviewFilter.rating = filters.rating
+  }
+
+  if (filters?.hasImages) {
+    reviewFilter.images = {some: {}};
+  }
+
+  // define the orderBy object for prisma query
+  let orderBy: Prisma.ReviewOrderByWithRelationInput = {createdAt: "desc"}; // default: latest
+
+  if (sortBy === "oldest") {
+    orderBy = { createdAt: "asc" };
+  } else if (sortBy === "highest") {
+    orderBy = { rating: "desc" };
+  } else if (sortBy === "lowest") {
+    orderBy = { rating: "asc" };
+  }
+
+  const filteredReviews = await db.review.findMany({
+    where: reviewFilter,
+    include: {
+      images: true,
+      user: true,
+    },
+    orderBy,
+    skip: pageSize * (page - 1),
+    take: pageSize,
+  });
+
+  return filteredReviews;
+}
+
+
+
 
