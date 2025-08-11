@@ -8,6 +8,8 @@ import ReviewCard from "../../cards/review-card";
 import { getProductFilteredReviews } from "@/actions/product";
 import ReviewsFilters from "./filters";
 import ReviewsSort from "./sort";
+import Pagination from "@/components/shared/pagination";
+import { DEFAULT_REVIEWS_PAGE_SIZE } from "@/lib/constants";
 
 interface Props {
   productId: string;
@@ -38,10 +40,16 @@ export default function ProductReviews({
   // Local state for Pagination
   const [page, setPage] = useState<number>(1);
 
+  const pageSize = DEFAULT_REVIEWS_PAGE_SIZE;
+  // Local state for total pages
+  const [totalPages, setTotalPages] = useState<number>(Math.ceil(statistics.totalReviews / pageSize));
+
+
   const handleReviews = useCallback(
     async () => {
       const res = await getProductFilteredReviews({productId, filters, sortBy, page });
-    setData(res);
+    setData(res.reviews);
+    setTotalPages(res.totalPages);
     },
     [productId, filters, sortBy, page],
   );
@@ -53,6 +61,8 @@ export default function ProductReviews({
 
     fetchReviews();
   }, [filters, sortBy, page, handleReviews]);
+
+  console.log(data.length, statistics.totalReviews)
 
   return (
     <div id="reviews" className="mt-6">
@@ -84,7 +94,7 @@ export default function ProductReviews({
             <ReviewsSort sort={sortBy} setSort={setSortBy} setPage={setPage} />
           </div>
           {/* Reviews */}
-          <div className="mt-5 min-h-72 flex flex-col max-w-3xl gap-6">
+          <div className="mt-5 min-h-72 flex flex-col max-w-3xl gap-5">
             {data.length > 0 ? (
               data.map((review) => (
                 <ReviewCard key={review.id} review={review} />
@@ -93,7 +103,13 @@ export default function ProductReviews({
               <div>No reviews yet.</div>
             )}
           </div>
-          {/* Pagination */}
+          {totalPages > 0 && (
+            <Pagination
+            page={page}
+            totalPages={totalPages}
+            setPage={setPage}
+          />
+          )}
         </>
       )}
     </div>

@@ -17,6 +17,7 @@ import { ProductFormSchema } from "@/lib/schemas";
 // Cloudinary Functions
 import { deleteCloudinaryImage } from "./cloudinary";
 import { cookies } from "next/headers";
+import { DEFAULT_REVIEWS_PAGE_SIZE } from "@/lib/constants";
 
 // Function: upsertProduct
 // Description:  Upserts a product and it's variant into the database,
@@ -480,7 +481,7 @@ async function retrieveProductDetails(
       questions: true,
       reviews: {
         include: { images: true, user: true },
-        take: 2,
+        take: DEFAULT_REVIEWS_PAGE_SIZE,
         orderBy: {createdAt: "desc"},
       },
       variants: {
@@ -778,7 +779,7 @@ export async function getProductFilteredReviews({
   filters,
   sortBy,
   page = 1,
-  pageSize = 2,
+  pageSize = DEFAULT_REVIEWS_PAGE_SIZE,
 }: {
   productId: string;
   filters?: { rating?: number; hasImages?: boolean};
@@ -810,6 +811,10 @@ export async function getProductFilteredReviews({
     orderBy = { rating: "asc" };
   }
 
+  const filteredReviewCount = await db.review.count({
+    where: reviewFilter,
+  });
+
   const filteredReviews = await db.review.findMany({
     where: reviewFilter,
     include: {
@@ -821,7 +826,10 @@ export async function getProductFilteredReviews({
     take: pageSize,
   });
 
-  return filteredReviews;
+  return {
+    reviews: filteredReviews,
+    totalPages: Math.ceil(filteredReviewCount / pageSize),
+  };
 }
 
 
