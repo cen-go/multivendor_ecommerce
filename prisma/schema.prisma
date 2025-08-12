@@ -115,6 +115,7 @@ model Product {
   slug              String            @unique
   brand             String
   rating            Float             @default(0)
+  numReviews        Int               @default(0)
   sales             Int               @default(0)
   shippingFeeMethod ShippingFeeMethod @default(ITEM)
 

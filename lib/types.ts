@@ -127,3 +127,13 @@ export type ReviewWithImagesType = Review & {
 }
 
 export type ReviewSortOptionType = "latest" | "oldest" | "highest" | "lowest";
+
+export type ReviewDetailsType = {
+  id: string;
+  review: string;
+  rating: number;
+  images: {url: string}[];
+  variant: string;
+  size: string;
+  color: string;
+}
