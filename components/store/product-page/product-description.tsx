@@ -10,8 +10,6 @@ export default function ProductDescription({description}: Props) {
   const sanitizedDescription1 = DOMPurify.sanitize(description[0]);
   const sanitizedDescription2 = DOMPurify.sanitize(description[1]);
 
-  console.log(sanitizedDescription1)
-
   return (
     <div className="pt-6">
       {/* Title */}

@@ -120,9 +120,6 @@ export default function SubcategoryDetails({ data, categories }: subcategoryDeta
     }
   }
 
-  const formdata = form.watch();
-  console.log(formdata);
-
   return (
     <AlertDialog>
       <Card>

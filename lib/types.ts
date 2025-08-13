@@ -1,4 +1,4 @@
-import { FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, Review, ReviewImage, ShippingRate, Size, User } from "@prisma/client";
+import { Color, FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, Review, ReviewImage, ShippingRate, Size, User } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
 import { getAllStoreProducts, getProductPageData, getProducts, getRatingStatistics, getShippingDetails } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
@@ -137,3 +137,12 @@ export type ReviewDetailsType = {
   size: string;
   color: string;
 }
+
+export type VariantInfoType = {
+  variantUrl: string;
+  image: string;
+  variantSlug: string;
+  variantName: string;
+  sizes: Size[];
+  colors: Partial<Color>[];
+};

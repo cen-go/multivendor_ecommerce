@@ -28,7 +28,7 @@ export default function ProductInfo({ productData, sizeId }: Props) {
     name,
     brand,
     sku,
-    variantImages,
+    variantsInfo,
     sizes,
     isSale,
     saleEndDate,
@@ -104,9 +104,9 @@ export default function ProductInfo({ productData, sizeId }: Props) {
       <Separator />
       {/* Variant switcher */}
       <div className="mt-4 space-y-2">
-        {variantImages.length > 0 && (
+        {variantsInfo.length > 0 && (
           <ProductVariantSelector
-            variants={variantImages}
+            variants={variantsInfo}
             currentVariantSlug={variantSlug}
           />
         )}

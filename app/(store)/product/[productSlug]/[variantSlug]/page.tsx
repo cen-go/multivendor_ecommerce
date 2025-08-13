@@ -6,8 +6,6 @@ import db from "@/lib/db";
 import { getProductPageData, getProducts } from "@/actions/product";
 // Components
 import ProductPageContainer from "@/components/store/product-page/container";
-// UI components
-import { Separator } from "@/components/ui/separator";
 import RelatedProducts from "@/components/store/product-page/related-products";
 import ProductDescription from "@/components/store/product-page/product-description";
 import ProductSpecs from "@/components/store/product-page/product-specs";
@@ -15,6 +13,8 @@ import ProductQuestions from "@/components/store/product-page/product-questions"
 import StoreCard from "@/components/store/cards/store-card";
 import StoreProducts from "@/components/store/product-page/store-products";
 import ProductReviews from "@/components/store/product-page/reviews/product-reviews";
+// UI components
+import { Separator } from "@/components/ui/separator";
 
 export async function generateMetadata({
   params,
@@ -63,7 +63,8 @@ export default async function ProductVariantPage({
     description,
     variantDescription,
     store,
-    reviews
+    reviews,
+    variantsInfo
   } = productData;
 
   if (sizeId) {
@@ -110,6 +111,7 @@ export default async function ProductVariantPage({
             statistics={productData.reviewStatistics}
             rating={productData.rating}
             reviews={reviews}
+            variantsInfo={variantsInfo}
           />
           {questions.length > 0 && (
             <>
@@ -118,7 +120,7 @@ export default async function ProductVariantPage({
               <ProductQuestions questions={questions} />
             </>
           )}
-          <Separator className="mt-6" />
+          <Separator className="mt-6 mb-8" />
           {/* Store Card */}
           <StoreCard store={store} />
           {/* Store Products */}

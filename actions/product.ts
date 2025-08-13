@@ -504,18 +504,26 @@ async function retrieveProductDetails(
   if (!product) return null;
 
   // Get variant Images
-  const variantImages = await db.productVariant.findMany({
-    where: {productId: product.id},
-    select: {variantImage: true, slug: true, variantName: true},
+  const variantsInfo = await db.productVariant.findMany({
+    where: { productId: product.id },
+    select: {
+      variantImage: true,
+      slug: true,
+      variantName: true,
+      sizes: true,
+      colors: true,
+    },
   });
 
   return {
     ... product,
-    variantImages: variantImages.map(img => ({
-      variantUrl: `/product/${product.slug}/${img.slug}`,
-      image: img.variantImage,
-      variantSlug: img.slug,
-      variantName: img.variantName,
+    variantsInfo: variantsInfo.map(variant => ({
+      variantUrl: `/product/${product.slug}/${variant.slug}`,
+      image: variant.variantImage,
+      variantSlug: variant.slug,
+      variantName: variant.variantName,
+      sizes: variant.sizes,
+      colors: variant.colors,
     }))
   };
 }
@@ -562,7 +570,7 @@ function formatProductResponse(
     reviewStatistics: ratingStatistics,
     shippingDetails: shippingDetails,
     relatedProducts: [],
-    variantImages: product.variantImages,
+    variantsInfo: product.variantsInfo,
     store: {
       id: store.id,
       url: store.url,

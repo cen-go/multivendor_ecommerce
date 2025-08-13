@@ -345,3 +345,20 @@ export const ShippingRateFormSchema = z.object({
   deliveryTimeMin: z.number(),
   deliveryTimeMax: z.number(),
 });
+
+// Add review schema
+export const AddReviewSchema = z.object({
+  variantName: z.string().min(1, "Variant is required."),
+  rating: z
+    .number()
+    .int()
+    .min(1, "Rating must be between 1 and 5.")
+    .max(5, "Rating must be between 1 and 5."),
+  size: z.string().min(1, "Please select a size."),
+  review: requiredString("Review").min(
+    1,
+    "Your feedback matters! Please write a review."
+  ),
+  images: z.object({ url: z.string() }).array().max(3, "You can upload up to 3 images per review."),
+  color: requiredString("Color"),
+});

@@ -1,6 +1,11 @@
-"use client"
+"use client";
 
-import { RatingStatisticsType, ReviewSortOptionType, ReviewWithImagesType } from "@/lib/types";
+import {
+  RatingStatisticsType,
+  ReviewSortOptionType,
+  ReviewWithImagesType,
+  VariantInfoType,
+} from "@/lib/types";
 import RatingCard from "../../cards/product-rating";
 import RatingStatisticsCard from "../../cards/rating-statistics";
 import { useCallback, useEffect, useState } from "react";
@@ -10,12 +15,14 @@ import ReviewsFilters from "./filters";
 import ReviewsSort from "./sort";
 import Pagination from "@/components/shared/pagination";
 import { DEFAULT_REVIEWS_PAGE_SIZE } from "@/lib/constants";
+import AddReview from "./add-review";
 
 interface Props {
   productId: string;
   rating: number;
   statistics: RatingStatisticsType;
   reviews: ReviewWithImagesType[];
+  variantsInfo: VariantInfoType[];
 }
 
 export interface ReviewFilterType {
@@ -28,11 +35,12 @@ export default function ProductReviews({
   rating,
   statistics,
   reviews,
+  variantsInfo,
 }: Props) {
   const [data, setData] = useState<ReviewWithImagesType[]>(reviews);
 
   // Local state for filters
-  const [filters, setFilters] = useState<ReviewFilterType>({})
+  const [filters, setFilters] = useState<ReviewFilterType>({});
 
   // Local state for filters
   const [sortBy, setSortBy] = useState<ReviewSortOptionType>("latest");
@@ -42,17 +50,20 @@ export default function ProductReviews({
 
   const pageSize = DEFAULT_REVIEWS_PAGE_SIZE;
   // Local state for total pages
-  const [totalPages, setTotalPages] = useState<number>(Math.ceil(statistics.totalReviews / pageSize));
+  const [totalPages, setTotalPages] = useState<number>(
+    Math.ceil(statistics.totalReviews / pageSize)
+  );
 
-
-  const handleReviews = useCallback(
-    async () => {
-      const res = await getProductFilteredReviews({productId, filters, sortBy, page });
+  const handleReviews = useCallback(async () => {
+    const res = await getProductFilteredReviews({
+      productId,
+      filters,
+      sortBy,
+      page,
+    });
     setData(res.reviews);
     setTotalPages(res.totalPages);
-    },
-    [productId, filters, sortBy, page],
-  );
+  }, [productId, filters, sortBy, page]);
 
   useEffect(() => {
     async function fetchReviews() {
@@ -61,8 +72,6 @@ export default function ProductReviews({
 
     fetchReviews();
   }, [filters, sortBy, page, handleReviews]);
-
-  console.log(data.length, statistics.totalReviews)
 
   return (
     <div id="reviews" className="mt-6">
@@ -104,14 +113,17 @@ export default function ProductReviews({
             )}
           </div>
           {totalPages > 0 && (
-            <Pagination
-            page={page}
-            totalPages={totalPages}
-            setPage={setPage}
-          />
+            <Pagination page={page} totalPages={totalPages} setPage={setPage} />
           )}
         </>
       )}
+      <div className="mt-6">
+        <AddReview
+          productId={productId}
+          reviews={data}
+          variantsInfo={variantsInfo}
+        />
+      </div>
     </div>
   );
 }
