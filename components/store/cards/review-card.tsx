@@ -1,6 +1,10 @@
-import { ReviewWithImagesType } from "@/lib/types";
+// React Next.js
 import Image from "next/image";
+// Components
 import RatingStars from "../shared/rating-stars";
+// Types
+import { ReviewWithImagesType } from "@/lib/types";
+// Utils
 import { censorName, formatDateTime } from "@/lib/utils";
 
 export default function ReviewCard({review}: {review: ReviewWithImagesType}) {

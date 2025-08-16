@@ -348,7 +348,7 @@ export const ShippingRateFormSchema = z.object({
 
 // Add review schema
 export const AddReviewSchema = z.object({
-  variantName: z.string().min(1, "Variant is required."),
+  variant: z.string().min(1, "Variant is required."),
   rating: z
     .number()
     .int()

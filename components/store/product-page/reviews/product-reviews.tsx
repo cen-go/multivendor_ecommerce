@@ -1,21 +1,26 @@
 "use client";
 
+// React Next.js
+import { useCallback, useEffect, useState } from "react";
+// Types
 import {
   RatingStatisticsType,
   ReviewSortOptionType,
   ReviewWithImagesType,
   VariantInfoType,
 } from "@/lib/types";
+// Components
 import RatingCard from "../../cards/product-rating";
 import RatingStatisticsCard from "../../cards/rating-statistics";
-import { useCallback, useEffect, useState } from "react";
 import ReviewCard from "../../cards/review-card";
-import { getProductFilteredReviews } from "@/actions/product";
 import ReviewsFilters from "./filters";
 import ReviewsSort from "./sort";
 import Pagination from "@/components/shared/pagination";
-import { DEFAULT_REVIEWS_PAGE_SIZE } from "@/lib/constants";
 import AddReview from "./add-review";
+// Server Action & db queries
+import { getProductFilteredReviews } from "@/actions/review";
+// Constants
+import { DEFAULT_REVIEWS_PAGE_SIZE } from "@/lib/constants";
 
 interface Props {
   productId: string;
@@ -103,7 +108,7 @@ export default function ProductReviews({
             <ReviewsSort sort={sortBy} setSort={setSortBy} setPage={setPage} />
           </div>
           {/* Reviews */}
-          <div className="mt-5 min-h-72 flex flex-col max-w-3xl gap-5">
+          <div className="mt-5 flex flex-col max-w-3xl gap-5">
             {data.length > 0 ? (
               data.map((review) => (
                 <ReviewCard key={review.id} review={review} />
@@ -117,13 +122,11 @@ export default function ProductReviews({
           )}
         </>
       )}
-      <div className="mt-6">
         <AddReview
           productId={productId}
-          reviews={data}
           variantsInfo={variantsInfo}
+          UpdateReviews={handleReviews}
         />
-      </div>
     </div>
   );
 }

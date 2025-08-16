@@ -10,28 +10,31 @@ import { useForm } from "react-hook-form";
 // Validation schema
 import { AddReviewSchema } from "@/lib/schemas";
 // Types
-import { ReviewDetailsType, ReviewWithImagesType, VariantInfoType } from "@/lib/types";
+import { ReviewDetailsType, VariantInfoType } from "@/lib/types";
 // Server actions
 import { upsertReview } from "@/actions/review";
 // packages
 import { toast } from "react-hot-toast";
+// ShadCN and UI
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import RatingStars from "../../shared/rating-stars";
-import { Button } from "../../ui/button";
 import { PulseLoader } from "react-spinners";
 import { Label } from "@/components/ui/label";
+// Components
+import RatingStars from "../../shared/rating-stars";
+import { Button } from "../../ui/button";
+import UploadImage from "../../shared/upload-images";
 
 interface Props {
   productId: string;
-  reviews: ReviewWithImagesType[];
   data?: ReviewDetailsType;
   variantsInfo: VariantInfoType[];
+  UpdateReviews: () => Promise<void>;
 }
 
 const ratings = [1, 2, 3, 4, 5];
 
-export default function AddReview({productId, reviews, data, variantsInfo }: Props) {
+export default function AddReview({productId, data, variantsInfo, UpdateReviews }: Props) {
   // the active variant through url params
   const { variantSlug } = useParams();
   const activeVariant = variantsInfo.find(
@@ -45,7 +48,7 @@ export default function AddReview({productId, reviews, data, variantsInfo }: Pro
     mode: "onChange",
     resolver: zodResolver(AddReviewSchema),
     defaultValues: {
-      variantName: data?.variant ?? selectedVariant.variantName,
+      variant: data?.variant ?? selectedVariant.variantName,
       rating: data?.rating ?? 0,
       size: data?.size ?? "",
       review: data?.review ?? "",
@@ -58,10 +61,9 @@ export default function AddReview({productId, reviews, data, variantsInfo }: Pro
   const isSubmitting = form.formState.isSubmitting;
 
   async function onSubmit(values: z.infer<typeof AddReviewSchema>) {
-    console.log(values);
     const res = await upsertReview(productId, {
       id: data?.id ?? "",
-      variant: values.variantName,
+      variant: values.variant,
       rating: values.rating,
       review: values.review,
       size:values.size,
@@ -72,22 +74,22 @@ export default function AddReview({productId, reviews, data, variantsInfo }: Pro
       toast.error(res.message);
     } else {
       toast.success(res.message);
+      UpdateReviews();
+      form.reset();
     }
   }
 
-  const variantField = form.watch().variantName;
+  const variantField = form.watch().variant;
 
   useEffect(() => {
     form.setValue("size", selectedVariant.sizes[0].size);
-    const name = form.getValues().variantName;
+    const name = form.getValues().variant;
     const variant = variantsInfo.find(v => v.variantName === name);
     if (variant) {
       setSelectedVariant(variant);
       form.setValue("color", variant.colors.map(c => c.name).join(","));
     }
-  }, [variantField, form, variantsInfo]);
-
-  console.log(form.watch());
+  }, [variantField, form, variantsInfo, selectedVariant.sizes]);
 
   return (
     <div className="p-4 bg-[#f5f5f5] rounded-xl">
@@ -110,7 +112,10 @@ export default function AddReview({productId, reviews, data, variantsInfo }: Pro
                         onValueChange={(val) => field.onChange(Number(val))}
                       >
                         <FormControl>
-                          <SelectTrigger className="cursor-pointer bg-[#fcfcfc] border-none" aria-label="Select rating.">
+                          <SelectTrigger
+                            className="cursor-pointer bg-[#fcfcfc] border-none"
+                            aria-label="Select rating."
+                          >
                             <SelectValue placeholder="Select a rating" />
                           </SelectTrigger>
                         </FormControl>
@@ -137,7 +142,7 @@ export default function AddReview({productId, reviews, data, variantsInfo }: Pro
                 {/* Variant Selector */}
                 <FormField
                   control={form.control}
-                  name="variantName"
+                  name="variant"
                   render={({ field }) => (
                     <FormItem>
                       <Select
@@ -239,9 +244,46 @@ export default function AddReview({productId, reviews, data, variantsInfo }: Pro
                   </FormItem>
                 )}
               />
+              {/* Images */}
+              <FormField
+                control={form.control}
+                name="images"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div>
+                        <FormMessage className="!mt-4" />
+                        <UploadImage
+                          value={field.value.map((image) => image.url)}
+                          disabled={isSubmitting}
+                          maxImages={3}
+                          onChange={(cldUrl) => {
+                            // field.value is always the latest value
+                            if (
+                              !field.value.some((img) => img.url === cldUrl)
+                            ) {
+                              form.setValue("images", [
+                                ...form.getValues().images,
+                                { url: cldUrl },
+                              ]);
+                            }
+                          }}
+                          onRemove={(cldUrl) =>
+                            field.onChange(
+                              [...field.value].filter(
+                                (image) => image.url !== cldUrl
+                              )
+                            )
+                          }
+                        />
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
-          <div className="w-full flex justify-end mt-6">
+          <div className="w-full flex justify-end">
             <Button type="submit" className="w-36 h-12">
               {isSubmitting ? (
                 <PulseLoader size={5} color="#fff" />

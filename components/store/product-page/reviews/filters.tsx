@@ -1,6 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
+// Types
 import { ReviewFilterType } from "./product-reviews";
 import { RatingStatisticsType } from "@/lib/types";
+// Utils
 import { cn } from "@/lib/utils";
 
 interface Props {
