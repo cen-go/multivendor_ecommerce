@@ -119,11 +119,12 @@ model Product {
   sales             Int               @default(0)
   shippingFeeMethod ShippingFeeMethod @default(ITEM)
 
-  variants     ProductVariant[]
-  specs        Spec[]
-  questions    Question[]
-  freeShipping FreeShipping?
-  reviews      Review[]
+  variants                    ProductVariant[]
+  specs                       Spec[]
+  questions                   Question[]
+  reviews                     Review[]
+  freeShipping                FreeShipping?
+  freeShippingForAllCountries Boolean          @default(false)
 
   storeId String
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)

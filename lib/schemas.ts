@@ -1,4 +1,4 @@
-import { StoreStatus } from "@prisma/client";
+import { ShippingFeeMethod, StoreStatus } from "@prisma/client";
 import * as z from "zod";
 
 // Helper function to define string requirement
@@ -169,9 +169,18 @@ export const ProductFormSchema = z.object({
   weight: z
     .number()
     .nullable()
-    .refine((weight) => {if (weight) {return Number.isInteger(weight * 1000)} else {return true}}, {
-      message: "weight can have at most three decimal places.",
-    }),
+    .refine(
+      (weight) => {
+        if (weight) {
+          return Number.isInteger(weight * 1000);
+        } else {
+          return true;
+        }
+      },
+      {
+        message: "weight can have at most three decimal places.",
+      }
+    ),
   keywords: requiredString("Product keywords")
     .array()
     .min(3, {
@@ -246,8 +255,23 @@ export const ProductFormSchema = z.object({
     .optional(),
   isSale: z.boolean(),
   saleEndDate: z.string().optional(),
+  freeShippingForAllCountries: z.boolean(),
+  freeShippingCountriesIds: z
+    .object({
+      id: z.string().optional(),
+      label: z.string(),
+      value: z.string(),
+    })
+    .array()
+    .optional()
+    .refine((ids) => ids?.map((idItem) => idItem.label && idItem.value), {
+      message: "Each country must have a valid name and ID.",
+    }),
+  shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
 });
 
+
+// Offer tag Schema
 export const OfferTagFormSchema = z.object({
   name: requiredString("Offer Tag name")
     .min(2, { message: "Tag name must be at least 2 characters long." })

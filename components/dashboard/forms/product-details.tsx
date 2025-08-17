@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 // Schema for validation
 import { ProductFormSchema } from "@/lib/schemas";
 // Types
-import { Category, SubCategory } from "@prisma/client";
+import { Category, ShippingFeeMethod, SubCategory } from "@prisma/client";
 import { ProductWithVariantType } from "@/lib/types";
 // React Tags
 import { WithOutContext as ReactTags } from "react-tag-input";
@@ -57,6 +57,7 @@ import ClickToAddInputs from "./click-to-add";
 // Utils
 import { format } from "date-fns";
 import JoditEditor from "jodit-react";
+import InputFieldset from "../shared/input-fieldset";
 
 
 interface ProductDetailsProps {
@@ -130,7 +131,10 @@ export default function ProductDetails({
       weight: data?.weight,
       saleEndDate:
         data?.saleEndDate || format(new Date(), "yyyy-MM-dd'T'HH:mm:ss"),
-      questions: data?.questions ?? []
+      questions: data?.questions ?? [],
+      freeShippingForAllCountries: data?.freeShippingForAllCountries ?? false,
+      freeShippingCountriesIds: data?.freeShippingCountriesIds ?? [],
+      shippingFeeMethod: data?.shippingFeeMethod ?? ShippingFeeMethod.ITEM,
     },
   });
 
@@ -242,7 +246,7 @@ export default function ProductDetails({
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               {/* IMAGES & COLORS  Container */}
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Images */}
@@ -311,48 +315,49 @@ export default function ProductDetails({
                   )}
                 </div>
               </div>
+
               {/* PRODUCT NAME and VARIANT NAME container */}
-              <div className="flex flex-col md:flex-row gap-4">
-                {/* Name */}
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Product Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          {...field}
-                          placeholder="Product name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* Variant Name */}
-                <FormField
-                  control={form.control}
-                  name="variantName"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Variant Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          {...field}
-                          placeholder="Variant name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <InputFieldset label="Name">
+                <div className="flex flex-col md:flex-row gap-4">
+                  {/* Name */}
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            placeholder="Product name"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Variant Name */}
+                  <FormField
+                    control={form.control}
+                    name="variantName"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormControl>
+                          <Input
+                            type="text"
+                            {...field}
+                            placeholder="Variant name"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </InputFieldset>
 
               {/* Product and Variant DESCRIPTION editor - Tabs */}
-              <div className="flex w-full flex-col gap-6 border p-4 rounded-md">
+              <InputFieldset label="Description" description="Note: The product description is the main description for the product (Will display in every variant page). You can add an extra description specific to this variant using 'Variant description' tab.">
                 <Tabs defaultValue={data ? "variant" : "product"}>
                   <TabsList className="w-full">
                     <TabsTrigger className="cursor-pointer" value="product">
@@ -369,9 +374,6 @@ export default function ProductDetails({
                       name="description"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel className="mt-2">
-                            Product Description
-                          </FormLabel>
                           <FormControl>
                             <JoditEditor
                               ref={productDscEditor}
@@ -391,9 +393,6 @@ export default function ProductDetails({
                       name="variantDescription"
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel className="mt-2">
-                            Variant Description
-                          </FormLabel>
                           <FormControl>
                             <JoditEditor
                               ref={variantDscEditor}
@@ -407,71 +406,71 @@ export default function ProductDetails({
                     />
                   </TabsContent>
                 </Tabs>
-              </div>
+              </InputFieldset>
 
               {/* CATEGORY & SUBCATEGORY */}
-              <div className="flex flex-col md:flex-row gap-4">
-                {/* category */}
-                <FormField
-                  control={form.control}
-                  name="categoryId"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Product Category</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* Subcategory */}
-                <FormField
-                  control={form.control}
-                  name="subcategoryId"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Product Subcategory</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={form.watch().categoryId === ""}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a subcategory" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {subcategories.map((subcategory) => (
-                            <SelectItem
-                              key={subcategory.id}
-                              value={subcategory.id}
-                            >
-                              {subcategory.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <InputFieldset label="Category">
+                <div className="flex flex-col md:flex-row gap-4">
+                  {/* category */}
+                  <FormField
+                    control={form.control}
+                    name="categoryId"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem key={category.id} value={category.id}>
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Subcategory */}
+                  <FormField
+                    control={form.control}
+                    name="subcategoryId"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={form.watch().categoryId === ""}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a subcategory" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {subcategories.map((subcategory) => (
+                              <SelectItem
+                                key={subcategory.id}
+                                value={subcategory.id}
+                              >
+                                {subcategory.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </InputFieldset>
 
               {/* BRAND & Weight */}
               <div className="flex flex-col md:flex-row gap-4">
@@ -532,7 +531,7 @@ export default function ProductDetails({
               </div>
 
               {/* VARIANT IMAGE + KEYWORDS container */}
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row gap-4 pt-6 pb-0 md:pb-8">
                 {/* Variant image */}
                 <div className="border-e pe-6">
                   <FormField
@@ -615,7 +614,8 @@ export default function ProductDetails({
               </div>
 
               {/* SIZES */}
-              <div className="w-full flex flex-col gap-y-3 mt-6">
+              <InputFieldset label="Size, Quantity, Price, Discount">
+              <div className="w-full flex flex-col gap-y-3">
                 <ClickToAddInputs<{
                   size: string;
                   price: number;
@@ -630,7 +630,6 @@ export default function ProductDetails({
                     price: 0.01,
                     discount: 0,
                   }}
-                  header="Size, Quantity, Price, Discount"
                 />
                 {form.formState.errors.sizes && (
                   <p className="text-sm font-medium text-destructive">
@@ -638,8 +637,11 @@ export default function ProductDetails({
                   </p>
                 )}
               </div>
+              </InputFieldset>
+
               {/* PRODUCT & VARIANT SPECS */}
-              <div className="flex w-full flex-col gap-6 border p-4 rounded-md">
+              <InputFieldset label="Specifications">
+              <div className="flex w-full flex-col gap-6">
                 <Tabs defaultValue={data ? "variantSpecs" : "productSpecs"}>
                   <TabsList className="w-full">
                     <TabsTrigger
@@ -699,6 +701,7 @@ export default function ProductDetails({
                   </TabsContent>
                 </Tabs>
               </div>
+              </InputFieldset>
 
               {/* IS SALE & DATE TIME PICKER container */}
               <div className="flex flex-col md:flex-row gap-4 border p-4 rounded-md">

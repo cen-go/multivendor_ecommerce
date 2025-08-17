@@ -1,4 +1,4 @@
-import { Color, FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, Review, ReviewImage, ShippingRate, Size, User } from "@prisma/client";
+import { Color, FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, Review, ReviewImage, ShippingFeeMethod, ShippingRate, Size, User } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
 import { getAllStoreProducts, getProductPageData, getProducts, getRatingStatistics, getShippingDetails } from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
@@ -22,7 +22,7 @@ export type ProductWithVariantType = {
   variantName: string;
   variantDescription: string;
   variantImage: string;
-  images: {url: string}[];
+  images: {id?: string; url: string}[];
   categoryId: string;
   subcategoryId: string;
   isSale: boolean;
@@ -31,16 +31,20 @@ export type ProductWithVariantType = {
   sku: string;
   weight: number | null;
   keywords: string[];
-  colors: {color: string}[];
+  colors: {id?: string; color: string}[];
   sizes: {
+    id: string;
     size: string;
     quantity: number;
     price: number;
     discount: number;
   }[];
-  product_specs: {name: string; value: string;}[];
-  variant_specs: {name: string; value: string;}[];
-  questions?: {question: string; answer: string}[];
+  product_specs: {id?: string; name: string; value: string;}[];
+  variant_specs: {id?: string; name: string; value: string;}[];
+  questions?: {id?: string; question: string; answer: string}[];
+  freeShippingForAllCountries: boolean;
+  freeShippingCountriesIds: {id?: string; label: string; value: string}[];
+  shippingFeeMethod: ShippingFeeMethod;
   createdAt?: Date;
   updatedAt?: Date;
 }
