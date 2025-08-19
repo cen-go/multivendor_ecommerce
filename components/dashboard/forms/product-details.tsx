@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 // Schema for validation
 import { ProductFormSchema } from "@/lib/schemas";
 // Types
-import { Category, ShippingFeeMethod, SubCategory } from "@prisma/client";
+import { Category, Country, ShippingFeeMethod, SubCategory } from "@prisma/client";
 import { ProductWithVariantType } from "@/lib/types";
 // React Tags
 import { WithOutContext as ReactTags } from "react-tag-input";
@@ -58,6 +58,8 @@ import ClickToAddInputs from "./click-to-add";
 import { format } from "date-fns";
 import JoditEditor from "jodit-react";
 import InputFieldset from "../shared/input-fieldset";
+import { MultiSelect } from "react-multi-select-component";
+import { XIcon } from "lucide-react";
 
 const shippingFeeMethods = [
   {
@@ -78,12 +80,14 @@ interface ProductDetailsProps {
   data?: Partial<ProductWithVariantType>;
   categories: Category[];
   storeUrl: string;
+  countries: Country[];
 }
 
 export default function ProductDetails({
   data,
   categories,
   storeUrl,
+  countries,
 }: ProductDetailsProps) {
   const router = useRouter();
 
@@ -115,6 +119,10 @@ export default function ProductDetails({
 
   // Local State for keywords
   const [keywords, setKeywords] = useState<string[]>([]);
+
+  // Define the country options for the multipleSelect component
+  type CountryOption = {label: string; value: string}
+  const countryOptions: CountryOption[] = countries.map(c => ({label: c.name, value: c.id}));
 
   // Referances for Jodit Editor
   const productDscEditor = useRef(null);
@@ -247,9 +255,18 @@ export default function ProductDetails({
     }
   }
 
+  // Value of the multiple select input to help display selected countries for free shipping
+  const freeShippingCountriesField = form.watch().freeShippingCountriesIds;
+
+  function handleDeleteCountryFreeShipping(countryId: string) {
+    const currentValues = form.getValues().freeShippingCountriesIds ?? [];
+    const updatedValues = currentValues.filter(v => v.value !== countryId);
+    form.setValue("freeShippingCountriesIds", updatedValues);
+  }
+
   return (
     <AlertDialog>
-      <Card>
+      <Card className="mb-48">
         <CardHeader>
           <CardTitle className="text-2xl">Product Information</CardTitle>
           <CardDescription className="mt-2">
@@ -803,62 +820,118 @@ export default function ProductDetails({
               {/* SHIPPING */}
               <InputFieldset label="Shipping Details">
                 <div className="space-y-6">
-                  {/* Fee Calculation method */}
-                  <FormField
-                    control={form.control}
-                    name="shippingFeeMethod"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel className="mb-1">
-                          Select shipping fee calculation method
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                  <div className="flex flex-col sm:flex-row gap-6">
+                    {/* Fee Calculation method */}
+                    <FormField
+                      control={form.control}
+                      name="shippingFeeMethod"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel className="mb-1">
+                            Select shipping fee calculation method
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select shipping fee calculation method" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {shippingFeeMethods.map((method) => (
+                                <SelectItem
+                                  key={method.value}
+                                  value={method.value}
+                                >
+                                  {method.description}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* WORLDWIDE FREE SHIPPING */}
+                    <FormField
+                      control={form.control}
+                      name="freeShippingForAllCountries"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="w-5 h-5 cursor-pointer"
+                              />
+                            </FormControl>
+                            <FormLabel className="cursor-pointer">
+                              Free shipping worldwide?
+                            </FormLabel>
+                          </div>
+                          <FormDescription>
+                            Mark it as checked if you want the product to be
+                            shipped worldwide for free.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {/* FREE SHIPPPING COUMTRIES */}
+                  {!form.getValues().freeShippingForAllCountries && (
+                    <FormField
+                      control={form.control}
+                      name="freeShippingCountriesIds"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Select Free Shipping Countries</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select shipping fee calculation method" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {shippingFeeMethods.map((method) => (
-                              <SelectItem
-                                key={method.value}
-                                value={method.value}
-                              >
-                                {method.description}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* WORLDWIDE FREE SHIPPING */}
-                  <FormField
-                    control={form.control}
-                    name="freeShippingForAllCountries"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="w-5 h-5 cursor-pointer"
+                            <MultiSelect
+                              options={countryOptions}
+                              value={field.value || []}
+                              onChange={(selected: CountryOption[]) =>
+                                field.onChange(selected)
+                              }
+                              labelledBy="Select"
+                              className="max-w-[800px]"
                             />
                           </FormControl>
-                          <FormLabel className="cursor-pointer">
-                            Free shipping worldwide?
-                          </FormLabel>
-                        </div>
-                        <FormDescription>Mark it as checked if you want the product to be shipped worldwide for free.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormDescription>
+                            Individually select the countries you want to
+                            provide free shipping.
+                          </FormDescription>
+                          {freeShippingCountriesField &&
+                            freeShippingCountriesField.length > 0 && (
+                              <div className="flex items-center gap-1 text-indigo-800 dark:text-indigo-300 text-sm flex-wrap">
+                                {freeShippingCountriesField.map(
+                                  (c) => (
+                                    <div
+                                key={c.id}
+                                className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-primary rounded-md gap-x-2"
+                              >
+                                <span>{c.label}</span>
+                                <span
+                                  className="cursor-pointer hover:text-red-500"
+                                  onClick={() =>
+                                    handleDeleteCountryFreeShipping(c.value)
+                                  }
+                                >
+                                  x
+                                </span>
+                              </div>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
               </InputFieldset>
 

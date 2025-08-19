@@ -65,6 +65,7 @@
     "react-hook-form": "^7.56.3",
     "react-hot-toast": "^2.5.2",
     "react-image-zooom": "^1.4.1",
+    "react-multi-select-component": "^4.3.4",
     "react-resizable-panels": "^3.0.2",
     "react-responsive": "^10.0.1",
     "react-spinners": "^0.17.0",
