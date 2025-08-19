@@ -59,6 +59,20 @@ import { format } from "date-fns";
 import JoditEditor from "jodit-react";
 import InputFieldset from "../shared/input-fieldset";
 
+const shippingFeeMethods = [
+  {
+    value: ShippingFeeMethod.ITEM,
+    description: "ITEM (Fees calculated based on number of products.)",
+  },
+  {
+    value: ShippingFeeMethod.WEIGHT,
+    description: "WEIGHT (Fees calculated based on product weight)",
+  },
+  {
+    value: ShippingFeeMethod.FIXED,
+    description: "FIXED (Fees are fixed.)",
+  },
+];
 
 interface ProductDetailsProps {
   data?: Partial<ProductWithVariantType>;
@@ -357,7 +371,10 @@ export default function ProductDetails({
               </InputFieldset>
 
               {/* Product and Variant DESCRIPTION editor - Tabs */}
-              <InputFieldset label="Description" description="Note: The product description is the main description for the product (Will display in every variant page). You can add an extra description specific to this variant using 'Variant description' tab.">
+              <InputFieldset
+                label="Description"
+                description="Note: The product description is the main description for the product (Will display in every variant page). You can add an extra description specific to this variant using 'Variant description' tab."
+              >
                 <Tabs defaultValue={data ? "variant" : "product"}>
                   <TabsList className="w-full">
                     <TabsTrigger className="cursor-pointer" value="product">
@@ -615,168 +632,235 @@ export default function ProductDetails({
 
               {/* SIZES */}
               <InputFieldset label="Size, Quantity, Price, Discount">
-              <div className="w-full flex flex-col gap-y-3">
-                <ClickToAddInputs<{
-                  size: string;
-                  price: number;
-                  quantity: number;
-                  discount: number;
-                }>
-                  details={sizes}
-                  setDetails={setSizes}
-                  initialDetail={{
-                    size: "",
-                    quantity: 1,
-                    price: 0.01,
-                    discount: 0,
-                  }}
-                />
-                {form.formState.errors.sizes && (
-                  <p className="text-sm font-medium text-destructive">
-                    {form.formState.errors.sizes.message}
-                  </p>
-                )}
-              </div>
+                <div className="w-full flex flex-col gap-y-3">
+                  <ClickToAddInputs<{
+                    size: string;
+                    price: number;
+                    quantity: number;
+                    discount: number;
+                  }>
+                    details={sizes}
+                    setDetails={setSizes}
+                    initialDetail={{
+                      size: "",
+                      quantity: 1,
+                      price: 0.01,
+                      discount: 0,
+                    }}
+                  />
+                  {form.formState.errors.sizes && (
+                    <p className="text-sm font-medium text-destructive">
+                      {form.formState.errors.sizes.message}
+                    </p>
+                  )}
+                </div>
               </InputFieldset>
 
               {/* PRODUCT & VARIANT SPECS */}
               <InputFieldset label="Specifications">
-              <div className="flex w-full flex-col gap-6">
-                <Tabs defaultValue={data ? "variantSpecs" : "productSpecs"}>
-                  <TabsList className="w-full">
-                    <TabsTrigger
-                      className="cursor-pointer"
-                      value="productSpecs"
-                    >
-                      Product Specifications
-                    </TabsTrigger>
-                    <TabsTrigger
-                      className="cursor-pointer"
-                      value="variantSpecs"
-                    >
-                      Variant Specifications
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="productSpecs">
-                    {/* Product Specs */}
-                    <div className="w-full flex flex-col gap-y-3 mt-2">
-                      <ClickToAddInputs<{
-                        name: string;
-                        value: string;
-                      }>
-                        details={productSpecs}
-                        setDetails={setProductSpecs}
-                        initialDetail={{
-                          name: "",
-                          value: "",
-                        }}
-                      />
-                      {form.formState.errors.product_specs && (
-                        <p className="text-sm font-medium text-destructive">
-                          {form.formState.errors.product_specs.message}
-                        </p>
-                      )}
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="variantSpecs">
-                    {/* Variant Specs */}
-                    <div className="w-full flex flex-col gap-y-3 mt-2">
-                      <ClickToAddInputs<{
-                        name: string;
-                        value: string;
-                      }>
-                        details={variantSpecs}
-                        setDetails={setVariantSpecs}
-                        initialDetail={{
-                          name: "",
-                          value: "",
-                        }}
-                      />
-                      {form.formState.errors.variant_specs && (
-                        <p className="text-sm font-medium text-destructive">
-                          {form.formState.errors.variant_specs.message}
-                        </p>
-                      )}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
+                <div className="flex w-full flex-col gap-6">
+                  <Tabs defaultValue={data ? "variantSpecs" : "productSpecs"}>
+                    <TabsList className="w-full">
+                      <TabsTrigger
+                        className="cursor-pointer"
+                        value="productSpecs"
+                      >
+                        Product Specifications
+                      </TabsTrigger>
+                      <TabsTrigger
+                        className="cursor-pointer"
+                        value="variantSpecs"
+                      >
+                        Variant Specifications
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="productSpecs">
+                      {/* Product Specs */}
+                      <div className="w-full flex flex-col gap-y-3 mt-2">
+                        <ClickToAddInputs<{
+                          name: string;
+                          value: string;
+                        }>
+                          details={productSpecs}
+                          setDetails={setProductSpecs}
+                          initialDetail={{
+                            name: "",
+                            value: "",
+                          }}
+                        />
+                        {form.formState.errors.product_specs && (
+                          <p className="text-sm font-medium text-destructive">
+                            {form.formState.errors.product_specs.message}
+                          </p>
+                        )}
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="variantSpecs">
+                      {/* Variant Specs */}
+                      <div className="w-full flex flex-col gap-y-3 mt-2">
+                        <ClickToAddInputs<{
+                          name: string;
+                          value: string;
+                        }>
+                          details={variantSpecs}
+                          setDetails={setVariantSpecs}
+                          initialDetail={{
+                            name: "",
+                            value: "",
+                          }}
+                        />
+                        {form.formState.errors.variant_specs && (
+                          <p className="text-sm font-medium text-destructive">
+                            {form.formState.errors.variant_specs.message}
+                          </p>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
               </InputFieldset>
 
               {/* IS SALE & DATE TIME PICKER container */}
-              <div className="flex flex-col md:flex-row gap-4 border p-4 rounded-md">
-                {/* Is on sale */}
-                <FormField
-                  control={form.control}
-                  name="isSale"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="w-5 h-5"
-                          />
-                        </FormControl>
-                        <FormLabel>Is on Sale.</FormLabel>
-                      </div>
-                      <FormDescription>
-                        Is this product listed as on sale?
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* Date Time picker */}
-                {form.getValues().isSale && (
+              <InputFieldset label="On Sale">
+                <div className="flex flex-col md:flex-row gap-4">
+                  {/* Is on sale */}
                   <FormField
                     control={form.control}
-                    name="saleEndDate"
+                    name="isSale"
                     render={({ field }) => (
                       <FormItem className="flex-1">
-                        <FormLabel>Sale End Date</FormLabel>
-                        <FormControl>
-                          <DateTimePicker
-                            value={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            onChange={(date) =>
-                              field.onChange(
-                                date
-                                  ? format(date, "yyyy-MM-dd'T'HH:mm:ss")
-                                  : ""
-                              )
-                            }
-                          />
-                        </FormControl>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="w-5 h-5 cursor-pointer"
+                            />
+                          </FormControl>
+                          <FormLabel className="cursor-pointer">
+                            This product is on sale for a special offer
+                          </FormLabel>
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                )}
-              </div>
+                  {/* Date Time picker */}
+                  {form.getValues().isSale && (
+                    <FormField
+                      control={form.control}
+                      name="saleEndDate"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Sale End Date</FormLabel>
+                          <FormControl>
+                            <DateTimePicker
+                              value={
+                                field.value ? new Date(field.value) : undefined
+                              }
+                              onChange={(date) =>
+                                field.onChange(
+                                  date
+                                    ? format(date, "yyyy-MM-dd'T'HH:mm:ss")
+                                    : ""
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+              </InputFieldset>
 
               {/* Product Questions */}
-              <div className="w-full flex flex-col gap-y-3 mt-2">
-                <ClickToAddInputs<{
-                  question: string;
-                  answer: string;
-                }>
-                  details={questions}
-                  setDetails={setQuestions}
-                  initialDetail={{
-                    question: "",
-                    answer: "",
-                  }}
-                  header="Product Questions"
-                />
-                {form.formState.errors.questions && (
-                  <p className="text-sm font-medium text-destructive">
-                    {form.formState.errors.questions.message}
-                  </p>
-                )}
-              </div>
+              <InputFieldset
+                label="Questions"
+                description="Questions and answers related to the product."
+              >
+                <div className="w-full flex flex-col gap-y-3 mt-2">
+                  <ClickToAddInputs<{
+                    question: string;
+                    answer: string;
+                  }>
+                    details={questions}
+                    setDetails={setQuestions}
+                    initialDetail={{
+                      question: "",
+                      answer: "",
+                    }}
+                  />
+                  {form.formState.errors.questions && (
+                    <p className="text-sm font-medium text-destructive">
+                      {form.formState.errors.questions.message}
+                    </p>
+                  )}
+                </div>
+              </InputFieldset>
+
+              {/* SHIPPING */}
+              <InputFieldset label="Shipping Details">
+                <div className="space-y-6">
+                  {/* Fee Calculation method */}
+                  <FormField
+                    control={form.control}
+                    name="shippingFeeMethod"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="mb-1">
+                          Select shipping fee calculation method
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select shipping fee calculation method" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {shippingFeeMethods.map((method) => (
+                              <SelectItem
+                                key={method.value}
+                                value={method.value}
+                              >
+                                {method.description}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* WORLDWIDE FREE SHIPPING */}
+                  <FormField
+                    control={form.control}
+                    name="freeShippingForAllCountries"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="w-5 h-5 cursor-pointer"
+                            />
+                          </FormControl>
+                          <FormLabel className="cursor-pointer">
+                            Free shipping worldwide?
+                          </FormLabel>
+                        </div>
+                        <FormDescription>Mark it as checked if you want the product to be shipped worldwide for free.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </InputFieldset>
 
               <Button
                 type="submit"

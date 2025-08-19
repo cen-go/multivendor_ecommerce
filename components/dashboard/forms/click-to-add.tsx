@@ -11,8 +11,8 @@ import { PaintBucket } from "lucide-react";
 import { SketchPicker } from "react-color";
 
 // Define the interface for each detail object
-export interface Detail {
-  [key: string]: string | number | undefined;
+export interface Detail<T = {[key: string]: string | number | undefined}> {
+  [key: string]: T[keyof T];
 }
 
 // define props for ClickToAddInputs component
