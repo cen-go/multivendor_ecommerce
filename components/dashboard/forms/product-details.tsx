@@ -2,7 +2,7 @@
 
 // Next and React imports
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 // useForm utilities
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,7 +59,7 @@ import { format } from "date-fns";
 import JoditEditor from "jodit-react";
 import InputFieldset from "../shared/input-fieldset";
 import { MultiSelect } from "react-multi-select-component";
-import { XIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 const shippingFeeMethods = [
   {
@@ -124,9 +124,18 @@ export default function ProductDetails({
   type CountryOption = {label: string; value: string}
   const countryOptions: CountryOption[] = countries.map(c => ({label: c.name, value: c.id}));
 
-  // Referances for Jodit Editor
+  // References for Jodit Editor
   const productDscEditor = useRef(null);
   const variantDscEditor = useRef(null);
+
+  // Configuration for Jodit Editor
+  const { theme } = useTheme();
+  const config = useMemo(
+    () => ({
+      theme: theme === "dark" ? "dark" : "default",
+    }),
+    [theme]
+  );
 
   // Form hook for managing form state and validation
   const form = useForm<z.infer<typeof ProductFormSchema>>({
@@ -198,7 +207,6 @@ export default function ProductDetails({
   }, [selectedCategoryId]);
 
   // Handle Keywords input
-
   function handleAddKeyword(keyword: Tag) {
     if (keywords.length === 10) return;
     setKeywords([...keywords, keyword.text]);
@@ -346,7 +354,6 @@ export default function ProductDetails({
                   )}
                 </div>
               </div>
-
               {/* PRODUCT NAME and VARIANT NAME container */}
               <InputFieldset label="Name">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -386,7 +393,6 @@ export default function ProductDetails({
                   />
                 </div>
               </InputFieldset>
-
               {/* Product and Variant DESCRIPTION editor - Tabs */}
               <InputFieldset
                 label="Description"
@@ -413,6 +419,7 @@ export default function ProductDetails({
                               ref={productDscEditor}
                               value={form.getValues().description}
                               onChange={(content) => field.onChange(content)}
+                              config={config}
                             />
                           </FormControl>
                           <FormMessage />
@@ -432,6 +439,7 @@ export default function ProductDetails({
                               ref={variantDscEditor}
                               value={form.getValues().variantDescription}
                               onChange={(content) => field.onChange(content)}
+                              config={config}
                             />
                           </FormControl>
                           <FormMessage />
@@ -441,7 +449,6 @@ export default function ProductDetails({
                   </TabsContent>
                 </Tabs>
               </InputFieldset>
-
               {/* CATEGORY & SUBCATEGORY */}
               <InputFieldset label="Category">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -505,7 +512,6 @@ export default function ProductDetails({
                   />
                 </div>
               </InputFieldset>
-
               {/* BRAND & Weight */}
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Brand */}
@@ -563,7 +569,6 @@ export default function ProductDetails({
                   )}
                 />
               </div>
-
               {/* VARIANT IMAGE + KEYWORDS container */}
               <div className="flex flex-col md:flex-row gap-4 pt-6 pb-0 md:pb-8">
                 {/* Variant image */}
@@ -615,6 +620,7 @@ export default function ProductDetails({
                         <FormLabel>Product Keywords</FormLabel>
                         <FormControl>
                           <ReactTags
+                            autoFocus={false}
                             handleAddition={handleAddKeyword}
                             handleDelete={() => {}}
                             placeholder="Keywords (e.g., winter jacket, warm, stylish)"
@@ -646,7 +652,6 @@ export default function ProductDetails({
                   </div>
                 </div>
               </div>
-
               {/* SIZES */}
               <InputFieldset label="Size, Quantity, Price, Discount">
                 <div className="w-full flex flex-col gap-y-3">
@@ -672,7 +677,6 @@ export default function ProductDetails({
                   )}
                 </div>
               </InputFieldset>
-
               {/* PRODUCT & VARIANT SPECS */}
               <InputFieldset label="Specifications">
                 <div className="flex w-full flex-col gap-6">
@@ -736,7 +740,6 @@ export default function ProductDetails({
                   </Tabs>
                 </div>
               </InputFieldset>
-
               {/* IS SALE & DATE TIME PICKER container */}
               <InputFieldset label="On Sale">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -791,7 +794,6 @@ export default function ProductDetails({
                   )}
                 </div>
               </InputFieldset>
-
               {/* Product Questions */}
               <InputFieldset
                 label="Questions"
@@ -816,72 +818,71 @@ export default function ProductDetails({
                   )}
                 </div>
               </InputFieldset>
+              {/* SHIPPING FEE CALCULATION METHOD */}
+              <InputFieldset label="Shipping Fee Calculation Method">
+                {/* Fee Calculation method */}
+                <FormField
+                  control={form.control}
+                  name="shippingFeeMethod"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel className="mb-1">
+                        Select shipping fee calculation method
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select shipping fee calculation method" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {shippingFeeMethods.map((method) => (
+                            <SelectItem key={method.value} value={method.value}>
+                              {method.description}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </InputFieldset>
 
-              {/* SHIPPING */}
-              <InputFieldset label="Shipping Details">
+              {/* FREE SHIPPING */}
+              <InputFieldset label="Free Shipping (Optional)">
                 <div className="space-y-6">
-                  <div className="flex flex-col sm:flex-row gap-6">
-                    {/* Fee Calculation method */}
-                    <FormField
-                      control={form.control}
-                      name="shippingFeeMethod"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="mb-1">
-                            Select shipping fee calculation method
+                  {/* WORLDWIDE FREE SHIPPING */}
+                  <FormField
+                    control={form.control}
+                    name="freeShippingForAllCountries"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="w-5 h-5 cursor-pointer"
+                            />
+                          </FormControl>
+                          <FormLabel className="cursor-pointer">
+                            Free shipping worldwide?
                           </FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select shipping fee calculation method" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {shippingFeeMethods.map((method) => (
-                                <SelectItem
-                                  key={method.value}
-                                  value={method.value}
-                                >
-                                  {method.description}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {/* WORLDWIDE FREE SHIPPING */}
-                    <FormField
-                      control={form.control}
-                      name="freeShippingForAllCountries"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                className="w-5 h-5 cursor-pointer"
-                              />
-                            </FormControl>
-                            <FormLabel className="cursor-pointer">
-                              Free shipping worldwide?
-                            </FormLabel>
-                          </div>
-                          <FormDescription>
-                            Mark it as checked if you want the product to be
-                            shipped worldwide for free.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  {/* FREE SHIPPPING COUMTRIES */}
+                        </div>
+                        <FormDescription>
+                          Mark it as checked if you want the product to be
+                          shipped worldwide for free. Or select the countries individually from the list below.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* FREE SHIPPPING COUNTRIES */}
                   {!form.getValues().freeShippingForAllCountries && (
                     <FormField
                       control={form.control}
@@ -907,24 +908,22 @@ export default function ProductDetails({
                           {freeShippingCountriesField &&
                             freeShippingCountriesField.length > 0 && (
                               <div className="flex items-center gap-1 text-indigo-800 dark:text-indigo-300 text-sm flex-wrap">
-                                {freeShippingCountriesField.map(
-                                  (c) => (
-                                    <div
-                                key={c.id}
-                                className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-primary rounded-md gap-x-2"
-                              >
-                                <span>{c.label}</span>
-                                <span
-                                  className="cursor-pointer hover:text-red-500"
-                                  onClick={() =>
-                                    handleDeleteCountryFreeShipping(c.value)
-                                  }
-                                >
-                                  x
-                                </span>
-                              </div>
-                                  )
-                                )}
+                                {freeShippingCountriesField.map((c) => (
+                                  <div
+                                    key={c.id}
+                                    className="text-xs inline-flex items-center px-3 py-1 bg-blue-200 text-blue-primary rounded-md gap-x-2"
+                                  >
+                                    <span>{c.label}</span>
+                                    <span
+                                      className="cursor-pointer hover:text-red-500"
+                                      onClick={() =>
+                                        handleDeleteCountryFreeShipping(c.value)
+                                      }
+                                    >
+                                      x
+                                    </span>
+                                  </div>
+                                ))}
                               </div>
                             )}
                           <FormMessage />

@@ -33,7 +33,7 @@ export type ProductWithVariantType = {
   keywords: string[];
   colors: {id?: string; color: string}[];
   sizes: {
-    id: string;
+    id?: string;
     size: string;
     quantity: number;
     price: number;
@@ -43,7 +43,7 @@ export type ProductWithVariantType = {
   variant_specs: {id?: string; name: string; value: string;}[];
   questions?: {id?: string; question: string; answer: string}[];
   freeShippingForAllCountries: boolean;
-  freeShippingCountriesIds: {id?: string; label: string; value: string}[];
+  freeShippingCountriesIds?: {id?: string; label: string; value: string}[];
   shippingFeeMethod: ShippingFeeMethod;
   createdAt?: Date;
   updatedAt?: Date;

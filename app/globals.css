@@ -169,3 +169,43 @@
   background: #e0e0e0;
   border-radius: 5px;
 }
+
+/* Jodit Editor dark mode */
+.jodit_theme_dark.jodit-container {
+  background-color: #1a1b1f !important;
+  border-color: #eeeeee2e !important;
+}
+
+.jodit_theme_dark .jodit-toolbar__box:not(:empty) {
+  background-color: #1a1b1f !important;
+}
+
+.jodit_theme_dark .jodit-status-bar {
+  background-color: #1a1b1f !important;
+}
+
+.jodit_theme_dark .jodit-wysiwyg {
+  background-color: oklch(0.279 0.041 260.031) !important;
+}
+
+/* Dark mode for multi-select in product form */
+.dark .dropdown-container {
+  background-color: oklch(0.279 0.041 260.031) !important;
+  border-color: #eeeeee2e !important;
+  border-radius: 8px !important;
+}
+
+.dark .panel-content {
+  background-color: oklch(0.208 0.042 265.755) !important;
+}
+
+.dark .panel-content input:focus {
+  background-color: oklch(0.279 0.041 260.031) !important;
+}
+
+.dark .select-item:hover {
+  background-color: oklch(0.279 0.041 260.031) !important;
+}
+.dark .select-item.selected {
+  background-color: oklch(0.279 0.041 260.031) !important;
+}

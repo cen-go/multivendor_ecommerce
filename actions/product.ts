@@ -60,13 +60,8 @@ export async function upsertProduct(
       return {success: false, message: "Please provide product data."}
     }
 
-    // Check id product already exists
-    const existingProduct = await db.product.findUnique({
-      where: {id: product.productId ?? ""}
-    });
-
-    // Find the store by URL
-    const store = await db.store.findUnique({where: {url: storeUrl}});
+    // Find the store by URL and userId to check if it exists and owned by the current user
+    const store = await db.store.findUnique({where: {url: storeUrl, userId: user.id}});
     if (!store) {
       return { success: false, message: "Store not found." };
     }
@@ -86,6 +81,16 @@ export async function upsertProduct(
       };
     }
 
+    // Check if product already exists
+    const existingProduct = await db.product.findUnique({
+      where: {id: product.productId ?? ""}
+    });
+
+    // Check if product already exists
+    const existingVariant = await db.productVariant.findUnique({
+      where: {id: product.variantId ?? ""}
+    });
+
     // Generate unique slugs for the product and the variant
     const baseProductSlug = slugify(product.name, {lower: true, trim: true, replacement: "-"});
     // Use the util fn we created to make sure the slug is unique
@@ -95,26 +100,42 @@ export async function upsertProduct(
     const variantSlug = await generateUniqueSlug(baseVariantSlug, "productVariant",);
 
     // Common data for the product and variant
-    const commonProductData = {
+    const commonProductData: Prisma.ProductCreateInput = {
       name: product.name,
       description: product.description,
       slug: productSlug,
       brand: product.brand,
-      store: {connect: {id: store.id}},
-      category: {connect: {id: product.categoryId}},
-      subcategory: {connect: {id: product.subcategoryId}},
+      store: { connect: { id: store.id } },
+      category: { connect: { id: product.categoryId } },
+      subcategory: { connect: { id: product.subcategoryId } },
       specs: {
-        create: product.product_specs.map(spec => ({
+        create: product.product_specs.map((spec) => ({
           name: spec.name,
           value: spec.value,
-        }))
+        })),
       },
       questions: {
-        create: product.questions?.map(q => ({
+        create: product.questions?.map((q) => ({
           question: q.question,
           answer: q.answer,
-        }))
-      }
+        })),
+      },
+      shippingFeeMethod: product.shippingFeeMethod,
+      freeShippingForAllCountries: product.freeShippingForAllCountries,
+      freeShipping: product.freeShippingForAllCountries
+        ? undefined
+        : product.freeShippingCountriesIds &&
+          product.freeShippingCountriesIds.length > 0
+        ? {
+            create: {
+              eligibleCountries: {
+                create: product.freeShippingCountriesIds.map((c) => ({
+                  country: { connect: { id: c.value } },
+                })),
+              },
+            },
+          }
+        : undefined,
     };
 
     const commonVariantData = {
@@ -154,33 +175,28 @@ export async function upsertProduct(
       },
     };
 
-    // If product exists create a variant
     if (existingProduct) {
-      const variantData = {
-        ...commonVariantData,
-        product: {connect: {id: existingProduct.id}},
+      if (existingVariant) {
+        // update existing variant and product
+      return {success: true, message: `Product named -${product.name}- has created`};
+      } else {
+        // Create a new variant
+      return {success: true, message: `Product named -${product.name}- has created`};
       }
-
-      const variantCreated = await db.productVariant.create({
-        data: variantData,
-      });
-
-      return {success: true, message: "Product variant created.", data: variantCreated};
     } else {
-      // Otherwise create a new product with variant
-      const productData = {
-        ...commonProductData,
-        variants: {
-          create: [{
-            ...commonVariantData
-          }]
+      // Create a new product and it's variant
+      const newProduct = await db.product.create({
+        data: {
+          ...commonProductData,
+          variants: {
+            create: [{
+              ...commonVariantData
+            }],
+          },
         },
-      }
-      const productCreated = await db.product.create({
-        data: productData
       });
 
-      return {success: true, message: "Product created", data: productCreated}
+      return {success: true, message: `Product named -${product.name}- has created`, data: newProduct};
     }
 
   } catch (error) {
