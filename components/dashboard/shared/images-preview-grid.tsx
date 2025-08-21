@@ -41,6 +41,7 @@ export default function ImagesPreviewGrid({
 
   // Extract image colors
   const [ colorPalettes, setColorPalettes ] = useState<string[][]>([]);
+  const [ actionsVisible, setActionsVisible ] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchColors() {
@@ -87,6 +88,8 @@ export default function ImagesPreviewGrid({
             className={cn(
               "relative h-full h-min-[150px] border-2 rounded-md bg-slate-100/20 border-slate-300 overflow-hidden"
             )}
+            onMouseEnter={() => setActionsVisible(true)}
+            onMouseLeave={() => setActionsVisible(false)}
           >
             {/* Delete image btn */}
                 <Button
@@ -107,10 +110,12 @@ export default function ImagesPreviewGrid({
               className="w-full h-full object-contain"
             />
             {/* Actions */}
-            <div className={cn("absolute top-0 right-0 bottom-0 left-0 bg-white/55 items-center flex justify-center gap-y-3 transition-all duration-500")}>
+            {actionsVisible && (
+              <div className={cn("absolute top-0 right-0 bottom-0 left-0 bg-white/55 items-center flex justify-center gap-y-3 transition-all duration-500")}>
               {/* Color palette (extract color) */}
               <ColorPalette colors={colors} extractedColors={colorPalettes[index]} setColors={setColors}  />
             </div>
+            )}
           </div>
         ))}
       </div>

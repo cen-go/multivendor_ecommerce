@@ -178,10 +178,25 @@ export async function upsertProduct(
     if (existingProduct) {
       if (existingVariant) {
         // update existing variant and product
-      return {success: true, message: `Product named -${product.name}- has created`};
+        return {
+          success: true,
+          message: `Product named -${product.name}- has created`,
+        };
       } else {
         // Create a new variant
-      return {success: true, message: `Product named -${product.name}- has created`};
+        const newVariant = await db.productVariant.create({
+          data: {
+            ...commonVariantData,
+            product: {
+              connect: {id: existingProduct.id}
+            },
+          },
+        });
+        return {
+          success: true,
+          message: `${newVariant.variantName}- variant has created`,
+          data: newVariant
+        };
       }
     } else {
       // Create a new product and it's variant
@@ -189,14 +204,20 @@ export async function upsertProduct(
         data: {
           ...commonProductData,
           variants: {
-            create: [{
-              ...commonVariantData
-            }],
+            create: [
+              {
+                ...commonVariantData,
+              },
+            ],
           },
         },
       });
 
-      return {success: true, message: `Product named -${product.name}- has created`, data: newProduct};
+      return {
+        success: true,
+        message: `Product named -${product.name}- has created`,
+        data: newProduct,
+      };
     }
 
   } catch (error) {
@@ -213,7 +234,10 @@ export async function upsertProduct(
 // Returns: An object containing main information of the product or null if the product doesn't exist
 export async function getProductMainInfo(productId: string) {
   // Retrieve the product from the database
-  const product = await db.product.findUnique({where: {id: productId}});
+  const product = await db.product.findUnique({
+    where: { id: productId },
+    include: { specs: { select: { name: true, value: true } } },
+  });
   if (!product) return null;
 
   // Return the main information of the product
@@ -225,6 +249,9 @@ export async function getProductMainInfo(productId: string) {
     categoryId: product.categoryId,
     subcategoryId: product.subcategoryId,
     storeId: product.storeId,
+    shippingFeeMethod: product.shippingFeeMethod,
+    product_specs: product.specs,
+    freeShippingForAllCountries: product.freeShippingForAllCountries,
   };
 }
 
@@ -516,7 +543,9 @@ async function retrieveProductDetails(
         include: {
           images: true,
           colors: true,
-          sizes: true,
+          sizes: {
+            orderBy: {size: "asc"},
+          },
           specs: true,
         },
       },

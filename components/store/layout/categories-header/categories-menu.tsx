@@ -42,7 +42,7 @@ export default function CategoriesMenu({
             {
               "w-[256px] bg-[#f5f5f5] text-black text-base rounded-t-[20px] rounded-b-none scale-100":
                 open,
-              "scale-75 rounded-full bg-[#535353] text-white": !open,
+              "scale-85 rounded-full bg-[#535353] text-white": !open,
             }
           )}
         >

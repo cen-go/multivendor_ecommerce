@@ -34,7 +34,7 @@ export default function ProductCard({product}: {product: ProductType}) {
               {name} - {variantName}
             </div>
             {/* Rating - Sales */}
-            {rating > 0 && sales > 0 && (
+            {rating > 0 && (
               <div className="flex items-center gap-x-1 h-5">
                 <RatingStars value={rating} />
                 <div className="text-xs text-main-secondary">{sales} sold</div>

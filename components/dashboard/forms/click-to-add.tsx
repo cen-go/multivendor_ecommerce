@@ -22,6 +22,8 @@ interface ClickToAddInputsProps<T extends Detail> {
   initialDetail?: T; // Optional initial detail object
   header?: string;
   colorPicker?: boolean; // Is color picker needed
+  containerClassName?: string;
+  inputClassName?: string;
 }
 
 export default function ClickToAddInputs<T extends Detail>({
@@ -30,6 +32,8 @@ export default function ClickToAddInputs<T extends Detail>({
   header,
   initialDetail = {} as T, // Default of the initial value is an empty object
   colorPicker,
+  containerClassName,
+  inputClassName,
 }: ClickToAddInputsProps<T>) {
   // State to manage toggling color picker index
   const [colorPickerIndex, setColorPickerIndex] = useState<number | null>(null)
@@ -126,7 +130,7 @@ export default function ClickToAddInputs<T extends Detail>({
       {details.map((detail, i) => (
         <div key={i} className="flex items-center gap-x-2">
           {Object.keys(detail).map((keyName, keyIndex) => (
-            <div key={keyIndex} className="flex items-center ">
+            <div key={keyIndex} className={cn("flex items-center", containerClassName)}>
               {/* Color picker toggle */}
               {keyName === "color" && colorPicker && (
                 <div className="flex items-center">
@@ -152,7 +156,7 @@ export default function ClickToAddInputs<T extends Detail>({
                 />
               )}
               <Input
-                className="w-24"
+                className={cn("w-28 placeholder:capitalize", inputClassName)}
                 type={typeof detail[keyName] === "number" ? "number" : "text"}
                 name={keyName}
                 placeholder={keyName}

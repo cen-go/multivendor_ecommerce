@@ -263,10 +263,7 @@ export const ProductFormSchema = z.object({
       value: z.string(),
     })
     .array()
-    .optional()
-    .refine((ids) => ids?.map((idItem) => idItem.label && idItem.value), {
-      message: "Each country must have a valid name and ID.",
-    }),
+    .optional(),
   shippingFeeMethod: z.nativeEnum(ShippingFeeMethod),
 });
 

@@ -39,7 +39,7 @@ export default function ProductCardImageSwiper({images}: {images: ProductVariant
               alt="product variant image"
               width={400}
               height={400}
-              className="block object-cover h-full w-48 sm:w-52"
+              className="block object-contain h-full w-48 sm:w-52"
             />
           </SwiperSlide>
         ))}
