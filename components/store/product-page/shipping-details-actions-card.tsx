@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 // React Next.js
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 // Types
 import { CartProductType, ProductShippingDetailsType } from "@/lib/types";
 import { Size } from "@prisma/client";
@@ -21,36 +21,49 @@ interface Props {
   sizes: Size[];
 }
 
-export default function ShippingAndActionsCard({ sizeId, shippingDetails, cartProductData, sizes }: Props) {
-// Local state to manage products' state before adding to the cart
-const [productToAddToCart, setProductToAddToCart] = useState<CartProductType>(cartProductData);
-// state to validate the product before adding to the cart
-const [isProductValid, setIsProductValid] = useState<boolean>(false);
+export default function ShippingAndActionsCard({
+  sizeId,
+  shippingDetails,
+  cartProductData,
+  sizes,
+}: Props) {
+  // Local state to manage products' state before adding to the cart
+  const [productToAddToCart, setProductToAddToCart] =
+    useState<CartProductType>(cartProductData);
+  // state to validate the product before adding to the cart
+  const [isProductValid, setIsProductValid] = useState<boolean>(false);
 
+  const handleChange = useCallback(
+    (
+      property: keyof CartProductType,
+      value: number | string | boolean | undefined
+    ) => {
+      setProductToAddToCart((prevProduct) => ({
+        ...prevProduct,
+        [property]: value,
+      }));
+    },
+    []
+  );
 
-useEffect(() => {
-  const currentSize = sizes.find(size => sizeId === size.id);
+  useEffect(() => {
+    const currentSize = sizes.find((size) => sizeId === size.id);
 
-  if (currentSize) {
-    const discountedPrice = Math.round(currentSize.price * (1 - currentSize.discount / 100));
-    handleChange("sizeId", currentSize.id);
-    handleChange("price", discountedPrice);
-    handleChange("size", currentSize.size);
-    handleChange("stock", currentSize.quantity);
-  }
-}, [sizeId, sizes]);
+    if (currentSize) {
+      const discountedPrice = Math.round(
+        currentSize.price * (1 - currentSize.discount / 100)
+      );
+      handleChange("sizeId", currentSize.id);
+      handleChange("price", discountedPrice);
+      handleChange("size", currentSize.size);
+      handleChange("stock", currentSize.quantity);
+    }
+  }, [sizeId, sizes, handleChange]);
 
-useEffect(() => {
-  const check  = isProductValidToAdd(productToAddToCart);
-  setIsProductValid(check);
-}, [productToAddToCart])
-
-function handleChange(property: keyof CartProductType, value: number | string | boolean | undefined) {
-  setProductToAddToCart((prevProduct) => ({
-    ...prevProduct,
-    [property]: value,
-  }))
-}
+  useEffect(() => {
+    const check = isProductValidToAdd(productToAddToCart);
+    setIsProductValid(check);
+  }, [productToAddToCart]);
 
   return (
     <div className="w-[340px] sm:w-[390px]">
@@ -92,10 +105,18 @@ function handleChange(property: keyof CartProductType, value: number | string | 
               </div>
             )}
             {/* Action Buttons */}
-            <Button variant="default" disabled={!isProductValid} className={!isProductValid ? "cursor-not-allowed" : ""}>
+            <Button
+              variant="default"
+              disabled={!isProductValid}
+              className={!isProductValid ? "cursor-not-allowed" : ""}
+            >
               <span>Buy Now</span>
             </Button>
-            <Button variant="pink" disabled={!isProductValid} className={!isProductValid ? "cursor-not-allowed" : ""}>
+            <Button
+              variant="pink"
+              disabled={!isProductValid}
+              className={!isProductValid ? "cursor-not-allowed" : ""}
+            >
               <span>Add to cart</span>
             </Button>
           </div>

@@ -28,7 +28,7 @@ export default function QuantitySelector({
   // UseEffect to reset the quantity back to 1 when the selected size changes
   useEffect(() => {
     handleChange("quantity", 1);
-  }, [sizeId]);
+  }, [sizeId, handleChange]);
 
   //functions to handle quantity change
   const handleIncrease = () => {
