@@ -20,10 +20,10 @@ interface Actions {
 
 // Default state
 const INITIAL_STATE: State = {
- cart: [],
- totalItems: 0,
- totalPrice: 0,
-}
+  cart: [],
+  totalItems: 0,
+  totalPrice: 0,
+};
 
 // Create the store with Zustand, combining the status interface and actions
 export const useCartStore = create(
@@ -65,10 +65,53 @@ export const useCartStore = create(
           }));
         }
       },
-      updateProductQuantity(item, quantity) {},
-      removeFromCart(item) {},
-      removeMultipleFromCart(items) {},
-      emptyCart() {},
+      updateProductQuantity: (product, quantity) => {
+        const cart = get().cart;
+        // If quantity is 0 or less remove the item
+        if (quantity <= 0) {
+          get().removeFromCart(product);
+        }
+        const updatedCart = cart.map((item) =>
+          item.productId === product.productId &&
+          item.variantId === product.variantId &&
+          item.sizeId === product.sizeId
+            ? { ...item, quantity }
+            : item
+        );
+
+        set(() => ({
+          cart: updatedCart,
+          totalItems: updatedCart.reduce((sum, item) => sum + item.quantity, 0),
+          totalPrice: updatedCart.reduce(
+            (sum, item) => sum + item.quantity * item.price,
+            0
+          ),
+        }));
+      },
+      removeFromCart: (product) => {
+        set((state) => ({
+          cart: state.cart.filter(
+            (item) =>
+              !(
+                item.productId === product.productId &&
+                item.variantId === product.variantId &&
+                item.sizeId === product.sizeId
+              )
+          ),
+          totalItems: state.totalItems - product.quantity,
+          totalPrice: state.totalPrice - product.price * product.quantity,
+        }));
+      },
+      removeMultipleFromCart: (products) => {
+        products.map((product) => get().removeFromCart(product));
+      },
+      emptyCart() {
+        set(() => ({
+          cart: INITIAL_STATE.cart,
+          totalItems: INITIAL_STATE.totalItems,
+          totalPrice: INITIAL_STATE.totalPrice,
+        }));
+      },
     }),
     { name: "storageCart" }
   )
