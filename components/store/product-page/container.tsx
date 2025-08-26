@@ -26,6 +26,7 @@ export default function ProductPageContainer({children, productData, sizeId}: Pr
     variantSlug: productData.variantSlug,
     name: productData.name,
     variantName: productData.variantName,
+    brand: productData.brand,
     image: productData.images[0].url,
     variantImage: productData.variantImage,
     sizeId: sizeId ?? "",

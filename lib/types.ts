@@ -99,6 +99,7 @@ export type CartProductType = {
   productSlug: string;
   variantSlug: string;
   name: string;
+  brand: string;
   variantName: string;
   image: string;
   variantImage: string;

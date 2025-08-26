@@ -152,12 +152,6 @@ export default function ShippingAndActionsCard({
             >
               <span>Add to cart</span>
             </Button>
-            <Button
-              variant="outline"
-              onClick={emptyCart}
-            >
-              <span>Empty Cart</span>
-            </Button>
           </div>
         </div>
       </div>
