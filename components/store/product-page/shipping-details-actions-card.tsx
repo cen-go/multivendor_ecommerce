@@ -73,7 +73,6 @@ export default function ShippingAndActionsCard({
 
   // Get the cart and addToCart state setter fn from the state
   const addToCart = useCartStore(state => state.addToCart);
-  const emptyCart = useCartStore(state => state.emptyCart);
   const cart = useFromStore(useCartStore, state => state.cart);
 
   // Check user's cart and the amount already in user's cart than
@@ -87,10 +86,6 @@ export default function ShippingAndActionsCard({
     );
     return selectedProduct? selectedProduct.stock - selectedProduct.quantity : productToAddToCart.stock
   }, [cart, productToAddToCart]);
-
-  // console logs for development purposes, DELETE THEM LATER
-  console.log(cart);
-  console.log(maxQuantity);
 
   function handleAddToCart() {
     if (maxQuantity <= 0) return;

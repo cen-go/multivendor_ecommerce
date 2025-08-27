@@ -19,7 +19,7 @@ export default function CartPage() {
     <div>
       {cartItems && cartItems.length > 0 && totalItems ? (
         <div className="bg-[#f5f5f5]">
-          <div className="max-w-[1200px] mx-auto py-6 flex">
+          <div className="max-w-[1200px] mx-auto py-6 px-3 flex flex-col lg:flex-row">
             <div className="min-w-0 flex-1">
               <CartHeader
                 cartItems={cartItems}

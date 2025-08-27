@@ -58,7 +58,7 @@ export default function SidebarNavSeller({ menuLinks }: SidebarNavSellerProps) {
                     className="w-full flex items-center gap-3 transition-all"
                   >
                     {icon}
-                    <span>{link.label}</span>
+                    <span className="pl-2">{link.label}</span>
                   </Link>
                 </CommandItem>
               );

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 // Clerk imports
 import { ClerkProvider } from "@clerk/nextjs";
 // Modal provider
@@ -44,15 +43,8 @@ export default function RootLayout({
         <body
           className={`${interFont.className} ${barlowFont.variable} ${geologica.variable} antialiased`}
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
             <ModalProvider>{children}</ModalProvider>
             <Toaster richColors />
-          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
