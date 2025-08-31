@@ -11,10 +11,10 @@ interface Props {
   product: CartProductType;
   selectedItems: CartProductType[];
   setSelectedItems: Dispatch<SetStateAction<CartProductType[]>>;
-  setTotalShipping: Dispatch<SetStateAction<number>>;
+  setShippingFees: Dispatch<SetStateAction<{uniqueId: string; shippingFee: number;}[]>>;
 }
 
-export default function CartProduct({product, selectedItems, setSelectedItems,setTotalShipping}: Props) {
+export default function CartProduct({product, selectedItems, setSelectedItems,setShippingFees}: Props) {
   const {
     productId,
     variantId,
@@ -62,7 +62,13 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
     }
 
     // Subtract the previous shipping total for this product before updating
-    setTotalShipping(prevTotal => prevTotal - shippingInfo.totalFee + totalFee);
+    setShippingFees(prevFees => {
+      const updatedFees = prevFees.filter(fee => fee.uniqueId !== uniqueId);
+      return [
+        ...updatedFees,
+        {uniqueId, shippingFee: totalFee }
+      ];
+    });
 
     // Update the state
     setShippingInfo({
@@ -73,7 +79,7 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
       method: shippingMethod,
       shippingService,
     });
-  }, [shippingFee,extraShippingFee,weight, shippingMethod, shippingService, setTotalShipping, shippingInfo.totalFee, quantity]);
+  }, [quantity]);
 
   useEffect(() => calculateShippingFee(), [quantity, calculateShippingFee]);
 
@@ -120,6 +126,7 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
         )
       );
     }
+    setShippingFees(prevFees => prevFees.filter(fee => fee.uniqueId !== uniqueId));
   }
 
   function handleDecreaseQuantity() {
