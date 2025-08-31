@@ -1,7 +1,7 @@
 import { CartProductType } from "@/lib/types"
 import { cn, formatCurrency } from "@/lib/utils";
 import { ShippingFeeMethod } from "@prisma/client";
-import { CheckIcon, ChevronRight, HeartIcon, MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { CheckIcon, ChevronRight, HeartIcon, MinusIcon, PlusIcon, Trash2Icon, TruckIcon } from "lucide-react";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
@@ -53,7 +53,7 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
 
     if (shippingMethod === ShippingFeeMethod.ITEM) {
       initialFee = shippingFee;
-      extraFee = quantity > 1 ? extraShippingFee * quantity : 0;
+      extraFee = quantity > 1 ? extraShippingFee * (quantity - 1) : 0;
       totalFee = initialFee + extraFee;
     } else if (shippingMethod === ShippingFeeMethod.WEIGHT) {
       totalFee = shippingFee * (weight ?? 0) * quantity;
@@ -190,7 +190,7 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
               href={`/product/${productSlug}/${variantSlug}?size=${sizeId}`}
               className="inline-block text-sm"
             >
-              {product.brand} - {product.name} - {variantName}
+              {brand} - {product.name} - {variantName}
             </Link>
             <div className="absolute top-0 right-0">
               <span className="mr-2.5 cursor-pointer inline-block">
@@ -206,14 +206,12 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
           </div>
           {/* Style - Size */}
           <div className="my-1">
-            <button className="text-main-primary relative h-[24px] bg-gray-100 whitespace-normal px-2.5 py-0 max-w-full text-xs leading-4 rounded-xl font-bold cursor-pointer  outline-0">
-              <span className="flex items-center justify-between flex-wrap">
-                <div className="text-left inline-block overflow-hidden text-ellipsis whitespace-nowrap max-w-[95%]">
-                  {size}
-                </div>
-                <span className="ml-0.5">
-                  <ChevronRight className="w-3" />
-                </span>
+            <button className="flex items-center justify-between flex-wrap text-main-primary relative h-[24px] bg-gray-100 whitespace-normal px-2.5 py-0 max-w-full text-xs leading-4 rounded-xl font-bold cursor-pointer  outline-0">
+              <div className="text-left inline-block overflow-hidden text-ellipsis whitespace-nowrap max-w-[95%]">
+                {size}
+              </div>
+              <span className="ml-0.5">
+                <ChevronRight className="w-3" />
               </span>
             </button>
           </div>
@@ -245,6 +243,35 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
                 <PlusIcon className="w-3 stroke-[#555]" />
               </div>
             </div>
+          </div>
+          {/* Shipping Info */}
+          <div className="flex items-center my-1 text-xs text-[#999] cursor-pointer">
+            <TruckIcon className="w-4 inline-block text-green-600" />
+            {shippingInfo.totalFee > 0 ? (
+              <span className="text-green-600 ml-1">
+                {shippingMethod === ShippingFeeMethod.ITEM ? (
+                  <>
+                    {formatCurrency(shippingInfo.initialFee)} {quantity > 1 && "first item"}{" "}
+                    {quantity > 1 && (
+                      <span>
+                        + ({quantity - 1} {quantity > 2 ? "pieces" : "piece"}) x {formatCurrency(extraShippingFee)} ={" "}
+                        {formatCurrency(shippingInfo.totalFee)}
+                      </span>
+                    )}
+                  </>
+                ) : shippingMethod === ShippingFeeMethod.WEIGHT ? (
+                  <>
+                    {formatCurrency(shippingInfo.initialFee)} x {weight ?? 0}kg x{" "}
+                    {quantity} {quantity > 1 ? "items" : "item"} ={" "}
+                    {formatCurrency(shippingInfo.totalFee)}
+                  </>
+                ) : (
+                  <>{formatCurrency(shippingInfo.totalFee)}</>
+                )}
+              </span>
+            ) : (
+              <span className="text-green-600 ml-1">Free Delivery</span>
+            )}
           </div>
         </div>
       </div>

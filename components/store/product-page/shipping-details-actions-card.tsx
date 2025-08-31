@@ -63,7 +63,18 @@ export default function ShippingAndActionsCard({
       handleChange("size", currentSize.size);
       handleChange("stock", currentSize.quantity);
     }
-  }, [sizeId, sizes, handleChange]);
+  }, [sizeId, sizes, handleChange,]);
+
+  // Upd. shipping details of the product to be added to cart, whenever the country changes
+  useEffect(() => {
+      handleChange("freeShipping", cartProductData.freeShipping);
+      handleChange("extraShippingFee", cartProductData.extraShippingFee);
+      handleChange("shippingFee", cartProductData.shippingFee);
+      handleChange("deliveryTimeMin", cartProductData.deliveryTimeMin);
+      handleChange("deliveryTimeMax", cartProductData.deliveryTimeMax);
+      handleChange("shippingMethod", cartProductData.shippingMethod);
+      handleChange("shippingService", cartProductData.shippingService);
+  }, [shippingDetails.countryName, cartProductData, handleChange]);
 
   // Validate the data in the productToAddToCart state object
   useEffect(() => {
