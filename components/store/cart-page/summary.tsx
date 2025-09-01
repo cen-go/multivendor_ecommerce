@@ -1,6 +1,11 @@
 import { CartProductType } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
+import { saveUserCart } from "@/actions/user";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { PulseLoader } from "react-spinners";
 
 interface Props {
   cartItems: CartProductType[];
@@ -8,12 +13,26 @@ interface Props {
 }
 
 export default function CartSummary({ cartItems, totalShipping }: Props) {
+  const router = useRouter();
+  const [loading, setloading] = useState(false);
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
   const total = subtotal + totalShipping;
+
+  async function handleSaveCart() {
+    setloading(true);
+    const res = await saveUserCart(cartItems);
+    if (res.success) {
+      router.push("/checkout");
+      setloading(false)
+    } else {
+      toast.error(res.message);
+      setloading(false);
+    }
+  }
 
   return (
     <div className="relative py-4 px-6 bg-white">
@@ -47,12 +66,16 @@ export default function CartSummary({ cartItems, totalShipping }: Props) {
           Total
         </h2>
         <h3 className="flex-1 w-0 min-w-0 text-right px-0.5 text-black text-lg inline-block break-all">
-              {formatCurrency(total)}
+          {formatCurrency(total)}
         </h3>
       </div>
       <div className="my-3">
-        <Button>
-          <span>Checkout</span>
+        <Button onClick={handleSaveCart} disabled={loading}>
+          {loading ? (
+            <PulseLoader size={5} color="#fff" />
+          ) : (
+            <span>Checkout</span>
+          )}
         </Button>
       </div>
     </div>
