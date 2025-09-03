@@ -14,7 +14,8 @@ import EmptyCart from "./empty-cart";
 export default function CartContainer({userCountry}: {userCountry: UserCountry}) {
   const cartItems = useFromStore(useCartStore, state => state.cart);
   const totalItems = useFromStore(useCartStore, state => state.totalItems);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isCartLoaded, setIsCartLoaded] = useState(false)
   const [selectedItems, setSelectedItems] = useState<CartProductType[]>([]);
   const [shippingFees, setShippingFees] = useState<{uniqueId: string; shippingFee: number;}[]>([]);
 

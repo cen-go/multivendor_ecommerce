@@ -105,6 +105,51 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
     }
 
     // Fetch product, variant and size data from the database and validate
+    const validatedCartItems = await validateCartProducts(cartProducts);
+
+    // Recalculate cart's total price and shipping fees
+    const subtotal = validatedCartItems.reduce((total, item) => total + item.price * item.quantity,0);
+    const shippingFees = validatedCartItems.reduce((total, item) => total + item.shippingFee,0);
+    const totalPrice = subtotal + shippingFees;
+
+    // save the validated items to the cart in the database
+    const cart = await db.cart.create({
+      data: {
+        subtotal,
+        shippingFees,
+        total: totalPrice,
+        cartItems: {
+          create: validatedCartItems.map((item) => ({
+            name: item.combinedName,
+            productId: item.productId,
+            variantId: item.variantId,
+            productSlug: item.productSlug,
+            variantSlug: item.variantSlug,
+            image: item.image,
+            size: item.size,
+            sizeId: item.sizeId,
+            storeId: item.storeId,
+            sku: item.sku,
+            price: item.price,
+            totalPrice: item.totalPrice,
+            quantity: item.quantity,
+            shippingFee: item.totalShippingFee,
+          })),
+        },
+        user: {connect: {id: userId}}
+      },
+    });
+
+    return {success:true, message: "Shopping cart saved", data: cart};
+
+  } catch (error) {
+    console.error("Error saving the user cart: ", error)
+    return { success: false, message: "An unexpected error occured!" };
+  }
+}
+
+export async function validateCartProducts(cartProducts: CartProductType[] ) {
+  // Fetch product, variant and size data from the database and validate
     const validatedCartItems = await Promise.all(
       cartProducts.map(async (cartProduct) => {
         const { productId, variantId, sizeId } = cartProduct;
@@ -163,21 +208,21 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
           dbProduct.freeShipping
         );
 
-        let shippingFee = 0;
+        let totalShippingFee = 0;
 
         if (dbProduct.shippingFeeMethod === ShippingFeeMethod.ITEM) {
-          shippingFee =
+          totalShippingFee =
             details.shippingFee +
             (validQuantity > 1
               ? details.extraShippingFee * (validQuantity - 1)
               : 0);
         } else if (dbProduct.shippingFeeMethod === ShippingFeeMethod.WEIGHT) {
-          shippingFee =
+          totalShippingFee =
             details.shippingFee *
             (variant.weight ? variant.weight.toNumber() : 0) *
             validQuantity;
         } else if (dbProduct.shippingFeeMethod === ShippingFeeMethod.FIXED) {
-          shippingFee = details.shippingFee;
+          totalShippingFee = details.shippingFee;
         }
 
         return {
@@ -188,41 +233,29 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
           sizeId,
           storeId: dbProduct.storeId,
           sku: variant.sku,
-          name: `${cartProduct.name}-${cartProduct.variantName}-${cartProduct.size}`,
+          name: dbProduct.name,
+          variantName: variant.variantName,
+          combinedName: `${cartProduct.name}-${cartProduct.variantName}-${cartProduct.size}`,
+          brand: dbProduct.brand,
           image: variant.images[0].url,
+          variantImage: variant.variantImage,
+          weight: variant.weight,
+          stock: size.quantity,
           size: size.size,
           quantity: validQuantity,
           price,
-          shippingFee,
-          totalPrice: price * validQuantity + shippingFee,
+          totalShippingFee,
+          totalPrice: price * validQuantity + totalShippingFee,
+          shippingMethod: details.shippingFeeMethod,
+          shippingService: details.shippingService,
+          freeShipping: details.freeShipping,
+          shippingFee: details.shippingFee,
+          extraShippingFee: details.extraShippingFee,
+          deliveryTimeMin: details.deliveryTimeMin,
+          deliveryTimeMax: details.deliveryTimeMax
         };
       })
     );
 
-    // Recalculate cart's total price and shipping fees
-    const subtotal = validatedCartItems.reduce((total, item) => total + item.price * item.quantity,0);
-    const shippingFees = validatedCartItems.reduce((total, item) => total + item.shippingFee,0);
-    const totalPrice = subtotal + shippingFees;
-
-    // save the validated items to the cart in the database
-    const cart = await db.cart.create({
-      data: {
-        subtotal,
-        shippingFees,
-        total: totalPrice,
-        cartItems: {
-          create: validatedCartItems.map((item) => ({
-            ...item,
-          })),
-        },
-        user: {connect: {id: userId}}
-      },
-    });
-
-    return {success:true, message: "Shopping cart saved", data: cart};
-
-  } catch (error) {
-    console.error("Error saving the user cart: ", error)
-    return { success: false, message: "An unexpected error occured!" };
-  }
+    return validatedCartItems
 }
