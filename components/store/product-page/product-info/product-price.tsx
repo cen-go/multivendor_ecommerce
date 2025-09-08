@@ -57,7 +57,11 @@ export default function ProductPrice({sizeId, sizes, isCard}: Props) {
             <div className="text-orange-background text-xs leading-4 mt-1">
               <p>Note: Select a size to see the exact price</p>
             </div>
-            <p className="mt-2 text-xs">{totalQuantity} pieces</p>
+            {totalQuantity === 0 ? (
+              <p className="mt-2 text-xs text-destructive">Out of stock</p>
+            ): (
+              <p className="mt-2 text-xs">{totalQuantity} pieces</p>
+            )}
           </>
         )}
       </div>
@@ -93,7 +97,11 @@ export default function ProductPrice({sizeId, sizes, isCard}: Props) {
           {selectedSize.discount}% off
         </span>
       )}
-      <p className="mt-2 text-xs">{selectedSize.quantity} pieces</p>
+      {selectedSize.quantity === 0 ? (
+              <p className="mt-2 text-xs text-destructive">Out of stock</p>
+            ): (
+              <p className="mt-2 text-xs">{selectedSize.quantity} pieces</p>
+            )}
     </div>
   );
 }

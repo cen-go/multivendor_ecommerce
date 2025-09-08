@@ -13,9 +13,10 @@ import ShippingDetails from "./shipping/shipping-details";
 import ReturnPrivacySecurityCard from "./returns-security-privacy-card";
 import QuantitySelector from "./quantity-selector";
 import { Button } from "../ui/button";
+import toast from "react-hot-toast";
+// cart state
 import { useCartStore } from "@/store/useCartStore";
 import useFromStore from "@/hooks/useFromStore";
-import toast from "react-hot-toast";
 
 interface Props {
   sizeId: string | undefined;
@@ -84,7 +85,32 @@ export default function ShippingAndActionsCard({
 
   // Get the cart and addToCart state setter fn from the state
   const addToCart = useCartStore(state => state.addToCart);
+  const setCart = useCartStore(state => state.setCart);
   const cart = useFromStore(useCartStore, state => state.cart);
+
+  // useEffect to keep the state in sync with the storage
+  useEffect(() => {
+    function handleStorageChange(event:StorageEvent) {
+      if (event.key === "storageCart") {
+        try {
+          const updatedValue = event.newValue ? JSON.parse(event.newValue) : null;
+          // Check if the updated value and state are valid and than update the cart
+          if (updatedValue && updatedValue.state && Array.isArray(updatedValue.state.cart)) {
+            setCart(updatedValue.state.cart)
+          }
+        } catch (error) {
+          console.error("Failed to parse updated cart data: ", error)
+        }
+      }
+    }
+
+    // Add an event listener to to listen the changes in local storage
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    }
+  }, [])
+  
 
   // Check user's cart and the amount already in user's cart than
   // recalculate the maximum amount that can be added to the cart

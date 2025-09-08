@@ -16,6 +16,7 @@ interface Actions {
   removeMultipleFromCart: (items: CartProductType[]) => void;
   updateProductQuantity: (item: CartProductType, quantity: number) => void;
   emptyCart: () => void;
+  setCart: (newCart: CartProductType[]) => void; // re-sets the cart after switching country etc.
 }
 
 // Default state
@@ -110,6 +111,15 @@ export const useCartStore = create(
           cart: INITIAL_STATE.cart,
           totalItems: INITIAL_STATE.totalItems,
           totalPrice: INITIAL_STATE.totalPrice,
+        }));
+      },
+      setCart(newCart) {
+        const totalItems = newCart.reduce((sum, item) => sum + item.quantity, 0);
+        const totalPrice = newCart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+        set(() => ({
+          cart: newCart,
+          totalItems,
+          totalPrice,
         }));
       },
     }),

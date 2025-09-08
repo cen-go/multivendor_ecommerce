@@ -239,7 +239,7 @@ export async function validateCartProducts(cartProducts: CartProductType[] ) {
           brand: dbProduct.brand,
           image: variant.images[0].url,
           variantImage: variant.variantImage,
-          weight: variant.weight,
+          weight: variant.weight?.toNumber(),
           stock: size.quantity,
           size: size.size,
           quantity: validQuantity,
