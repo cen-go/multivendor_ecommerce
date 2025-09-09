@@ -1,17 +1,23 @@
 "use client"
 
-import useFromStore from "@/hooks/useFromStore";
-import { CartProductType, UserCountry } from "@/lib/types";
-import { useCartStore } from "@/store/useCartStore";
+// React & Next.js
 import { useEffect, useState } from "react";
+// Cart state
+import useFromStore from "@/hooks/useFromStore";
+import { useCartStore } from "@/store/useCartStore";
+// Types
+import { CartProductType, UserCountry } from "@/lib/types";
+// Components
 import CartHeader from "./cart-header";
 import CartProduct from "../cards/cart-product-card";
 import CartSummary from "./summary";
 import FastDelivery from "../cards/fast-delivery";
 import { SecurityPrivacyCard } from "../product-page/security-privacy-card";
 import EmptyCart from "./empty-cart";
-import { validateCartProducts } from "@/actions/user";
 import { PulseLoader } from "react-spinners";
+// Server actions and queries
+import { validateCartProducts } from "@/actions/user";
+import { InfoIcon } from "lucide-react";
 
 export default function CartContainer({userCountry}: {userCountry: UserCountry}) {
   const cartItems = useFromStore(useCartStore, state => state.cart);
@@ -54,48 +60,69 @@ export default function CartContainer({userCountry}: {userCountry: UserCountry})
     <div>
       {cartItems && cartItems.length > 0 && totalItems ? (
         <>
-        {loading ?  (
-          <div className="py-24 mx-auto flex justify-center"><PulseLoader color="#ffbcbe" /></div>
-        ): (
-          <div className="bg-[#f5f5f5]">
-          <div className="max-w-[1200px] mx-auto py-6 px-3 flex flex-col lg:flex-row gap-6">
-            <div className="min-w-0 flex-1">
-              <CartHeader
-                cartItems={cartItems}
-                selectedItems={selectedItems}
-                setSelectedItems={setSelectedItems}
-                totalItems={totalItems}
-              />
-              <div className="h-auto overflow-x-hidden overflow-auto mt-2">
-                {cartItems.map((item) => (
-                  <CartProduct
-                    key={item.sizeId}
-                    product={item}
+          {loading ? (
+            <div className="py-24 mx-auto flex justify-center">
+              <PulseLoader color="#ffbcbe" />
+            </div>
+          ) : (
+            <div className="bg-[#f5f5f5]">
+              <div className="max-w-[1200px] mx-auto py-6 px-3 flex flex-col lg:flex-row gap-6">
+                <div className="min-w-0 flex-1">
+                  <CartHeader
+                    cartItems={cartItems}
                     selectedItems={selectedItems}
                     setSelectedItems={setSelectedItems}
-                    setShippingFees={setShippingFees}
+                    totalItems={totalItems}
                   />
-                ))}
+                  {/* Country Note */}
+                  <div className="w-full p-3 mt-2 bg-green-100  flex items-center">
+                    <div className="w-8 h-8 border rounded-full border-green-200 flex flex-shrink-0 items-center justify-center">
+                      <InfoIcon className="stroke-green-300" />
+                    </div>
+                    <div className="pl-3 w-full">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm leading-none text-green-700">
+                          Shipping fees are calculated based on your current
+                          country ({userCountry.name}). <br />
+                          Shipping fees will always automatically update to
+                          reflect your delivery destination.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Cart Item Cards container */}
+                  <div className="h-auto overflow-x-hidden overflow-auto mt-2">
+                    {cartItems.map((item) => (
+                      <CartProduct
+                        key={item.sizeId}
+                        product={item}
+                        selectedItems={selectedItems}
+                        setSelectedItems={setSelectedItems}
+                        setShippingFees={setShippingFees}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {/* Cart side */}
+                <div className="sticky top-4 w-[380px] max-h-max">
+                  <CartSummary
+                    cartItems={cartItems}
+                    totalShipping={totalShippingFee}
+                  />
+                  <div className="mt-2 bg-white px-6 p-4">
+                    <FastDelivery />
+                  </div>
+                  <div className="mt-2 bg-white px-6 p-4">
+                    <SecurityPrivacyCard />
+                  </div>
+                </div>
               </div>
             </div>
-            {/* Cart side */}
-            <div className="sticky top-4 w-[380px] max-h-max">
-              <CartSummary cartItems={cartItems} totalShipping={totalShippingFee} />
-              <div className="mt-2 bg-white px-6 p-4">
-                <FastDelivery />
-              </div>
-              <div className="mt-2 bg-white px-6 p-4">
-                <SecurityPrivacyCard />
-              </div>
-            </div>
-          </div>
-        </div>
-        )}
+          )}
         </>
-        
       ) : (
         <EmptyCart />
       )}
     </div>
-  )
+  );
 }

@@ -1,8 +1,13 @@
-import { CartProductType } from "@/lib/types"
-import { cn } from "@/lib/utils";
-import { useCartStore } from "@/store/useCartStore";
-import { CheckIcon, Trash2Icon } from "lucide-react";
+// React & Next.js
 import { Dispatch, SetStateAction } from "react";
+// Types
+import { CartProductType } from "@/lib/types"
+// Utils
+import { cn } from "@/lib/utils";
+// Cart state
+import { useCartStore } from "@/store/useCartStore";
+// Icons
+import { CheckIcon, Trash2Icon } from "lucide-react";
 
 interface Props {
   cartItems: CartProductType[];

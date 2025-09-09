@@ -11,6 +11,10 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { CheckIcon, ChevronRight, HeartIcon, MinusIcon, PlusIcon, Trash2Icon, TruckIcon } from "lucide-react";
 // cart State
 import { useCartStore } from "@/store/useCartStore";
+import { addToWishlist } from "@/actions/user";
+import { useUser } from "@clerk/nextjs";
+import toast from "react-hot-toast";
+import { usePathname } from "next/navigation";
 
 interface Props {
   product: CartProductType;
@@ -41,6 +45,8 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
     stock,
   } = product;
 
+  const user = useUser();
+  const pathname = usePathname();
   const uniqueId = `${productId}-${variantId}-${sizeId}`;
   const [shippingInfo, setShippingInfo] = useState({
     initialFee: 0,
@@ -153,6 +159,30 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
     }
   }
 
+  async function handleAddToWishlist() {
+    if (!user.isSignedIn) {
+      toast(() => (
+        <span>
+          You need to{" "}
+          <Link
+            href={`/sign-in?redirect_url=${encodeURIComponent(pathname)}`}
+            className="underline text-orange-secondary font-bold"
+          >
+            Sign in{" "}
+          </Link>
+          to add an item to your wishlist.
+        </span>
+      ));
+      return;
+    }
+    const res = await addToWishlist(productId, variantId);
+    if (res.success) {
+      toast.success(res.message);
+    } else {
+      toast.error(res.message)
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -218,11 +248,12 @@ export default function CartProduct({product, selectedItems, setSelectedItems,se
               {brand} - {product.name} - {variantName}
             </Link>
             <div className="absolute top-0 right-0">
-              <span className="mr-2.5 cursor-pointer inline-block">
+              <span className="mr-2.5 cursor-pointer inline-block" aria-label="Add item to wishlist" onClick={handleAddToWishlist}>
                 <HeartIcon className="w-5 hover:stroke-orange-secondary" />
               </span>
               <span
                 className="mr-2.5 cursor-pointer inline-block"
+                aria-label="Remove item from the cart"
                 onClick={handleRemoveItemFtomCart}
               >
                 <Trash2Icon className="w-5 hover:stroke-orange-secondary" />

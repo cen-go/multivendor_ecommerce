@@ -259,3 +259,50 @@ export async function validateCartProducts(cartProducts: CartProductType[] ) {
 
     return validatedCartItems
 }
+
+// Function: addToWishlist
+// Description: Adds a product to user's wishlist
+// Permission Level: User
+// Parameters:
+//   - productId: ID of the product to add to the wishlist
+//   - variantId
+//   - sizeId: optional size ID
+export async function addToWishlist(productId: string, variantId: string, sizeId?:string) {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return {success: false, message: "You need to be logged in, in order to add a product to your wishlist."};
+    }
+
+    const userId = user.id;
+
+    // Check if the product is already in the wishlist
+    const existingItem = await db.wishlist.findFirst({
+      where: {
+        userId,
+        productId,
+        variantId,
+      },
+    });
+
+    if (existingItem) {
+      await db.wishlist.delete({
+        where: { id: existingItem.id },
+      });
+      return { success: true, message: "Product removed from the wishlist." };
+    } else {
+      await db.wishlist.create({
+        data: {
+          userId,
+          productId,
+          variantId,
+          sizeId,
+        },
+      });
+      return { success: true, message: "Product added to the wishlist." };
+    }
+  } catch (error) {
+    console.error("Error while adding item to wishlist: ", error);
+    return {success: false, message: "An unexpected error occured."};
+  }
+}

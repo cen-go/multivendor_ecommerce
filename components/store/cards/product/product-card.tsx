@@ -3,6 +3,7 @@
 // React & Next.js
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 // Types
 import { ProductType, VariantSimplified } from "@/lib/types";
 // Components
@@ -11,13 +12,45 @@ import { Button } from "@/components/store/ui/button";
 import ProductCardImageSwiper from "./swiper";
 import VariantSwitcher from "./variant-switcher";
 import ProductPrice from "../../product-page/product-info/product-price";
+// Packages
+import toast from "react-hot-toast";
 // Icons
 import { HeartIcon } from "lucide-react";
+// clerk
+import { useUser } from "@clerk/nextjs";
+// Server actions and queries
+import { addToWishlist } from "@/actions/user";
 
 export default function ProductCard({product}: {product: ProductType}) {
   const { name, slug, rating, sales, variants, variantImages } = product;
   const [variant, SetVariant] = useState<VariantSimplified>(variants[0]);
   const { variantName, variantSlug, images, sizes } = variant;
+  const user = useUser();
+  const pathname = usePathname();
+
+  async function handleAddToWishlist() {
+    if (!user.isSignedIn) {
+      toast(() => (
+        <span>
+          You need to{" "}
+          <Link
+            href={`/sign-in?redirect_url=${encodeURIComponent(pathname)}`}
+            className="underline text-orange-secondary font-bold"
+          >
+            Sign in{" "}
+          </Link>
+          to add an item to your wishlist.
+        </span>
+      ));
+      return;
+    }
+    const res = await addToWishlist(product.id, variant.variantId);
+    if (res.success) {
+      toast.success(res.message);
+    } else {
+      toast.error(res.message)
+    }
+  }
 
   return (
     <div>
@@ -46,11 +79,23 @@ export default function ProductCard({product}: {product: ProductType}) {
         </div>
         <div className="hidden group-hover:block absolute -left-[1px] bg-white border border-t-0 w-[calc(100%+2px)] px-4 pb-4 rounded-b-3xl shadow-xl z-30 space-y-2">
           {/* Variant switcher */}
-          <VariantSwitcher images={variantImages} variants={variants} selectedVariant={variant} setVariant={SetVariant} />
+          <VariantSwitcher
+            images={variantImages}
+            variants={variants}
+            selectedVariant={variant}
+            setVariant={SetVariant}
+          />
           {/* Action buttons */}
           <div className="flex items-center gap-x-1">
             <Button>Add to cart</Button>
-            <Button variant="black" size="icon"><HeartIcon className="w-5" /></Button>
+            <Button
+              variant="black"
+              size="icon"
+              onClick={handleAddToWishlist}
+              aria-label="Add item to wishlist"
+            >
+              <HeartIcon className="w-5" />
+            </Button>
           </div>
         </div>
       </div>

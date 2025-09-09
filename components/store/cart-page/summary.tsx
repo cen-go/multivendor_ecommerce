@@ -1,11 +1,16 @@
-import { CartProductType } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { saveUserCart } from "@/actions/user";
+// React & Next.js
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+// Types
+import { CartProductType } from "@/lib/types";
+// Utils
+import { formatCurrency } from "@/lib/utils";
+// Components
 import toast from "react-hot-toast";
 import { PulseLoader } from "react-spinners";
+import { Button } from "../ui/button";
+// Server actions and queries
+import { saveUserCart } from "@/actions/user";
 
 interface Props {
   cartItems: CartProductType[];
