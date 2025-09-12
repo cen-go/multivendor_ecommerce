@@ -1,6 +1,28 @@
-import { Color, FreeShipping, FreeShippingCountry, Prisma, ProductVariantImage, Review, ReviewImage, ShippingFeeMethod, ShippingRate, Size, User } from "@prisma/client";
+import {
+  Cart,
+  CartItem,
+  Color,
+  Country,
+  FreeShipping,
+  FreeShippingCountry,
+  Prisma,
+  ProductVariantImage,
+  Review,
+  ReviewImage,
+  ShippingAddress,
+  ShippingFeeMethod,
+  ShippingRate,
+  Size,
+  User,
+} from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
-import { getAllStoreProducts, getProductPageData, getProducts, getRatingStatistics, getShippingDetails } from "@/actions/product";
+import {
+  getAllStoreProducts,
+  getProductPageData,
+  getProducts,
+  getRatingStatistics,
+  getShippingDetails,
+} from "@/actions/product";
 import { getStoreDefaultShippingDetails } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
@@ -151,3 +173,11 @@ export type VariantInfoType = {
   sizes: Size[];
   colors: Partial<Color>[];
 };
+
+export type CartWithCartItemsType = Cart & {
+  cartItems: CartItem[];
+}
+
+export type UserShippingAddressType = ShippingAddress & {
+  country: Country;
+}

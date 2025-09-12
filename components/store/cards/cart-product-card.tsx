@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 // Types
 import { CartProductType} from "@/lib/types"
 import { ShippingFeeMethod } from "@prisma/client";
@@ -14,7 +15,6 @@ import { useCartStore } from "@/store/useCartStore";
 import { addToWishlist } from "@/actions/user";
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
-import { usePathname } from "next/navigation";
 
 interface Props {
   product: CartProductType;

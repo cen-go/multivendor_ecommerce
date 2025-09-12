@@ -17,7 +17,7 @@ import EmptyCart from "./empty-cart";
 import { PulseLoader } from "react-spinners";
 // Server actions and queries
 import { validateCartProducts } from "@/actions/user";
-import { InfoIcon } from "lucide-react";
+import CountryNote from "../shared/country-note";
 
 export default function CartContainer({userCountry}: {userCountry: UserCountry}) {
   const cartItems = useFromStore(useCartStore, state => state.cart);
@@ -75,21 +75,7 @@ export default function CartContainer({userCountry}: {userCountry: UserCountry})
                     totalItems={totalItems}
                   />
                   {/* Country Note */}
-                  <div className="w-full p-3 mt-2 bg-green-100  flex items-center">
-                    <div className="w-8 h-8 border rounded-full border-green-200 flex flex-shrink-0 items-center justify-center">
-                      <InfoIcon className="stroke-green-300" />
-                    </div>
-                    <div className="pl-3 w-full">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm leading-none text-green-700">
-                          Shipping fees are calculated based on your current
-                          country ({userCountry.name}). <br />
-                          Shipping fees will always automatically update to
-                          reflect your delivery destination.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <CountryNote userCountry={userCountry} />
                   {/* Cart Item Cards container */}
                   <div className="h-auto overflow-x-hidden overflow-auto mt-2">
                     {cartItems.map((item) => (

@@ -22,10 +22,11 @@ model User {
   role    Role   @default(USER)
 
   stores    Store[]
-  following Store[]    @relation("UserFollowingStore")
+  following Store[]           @relation("UserFollowingStore")
   reviews   Review[]
   cart      Cart?
   wishlists Wishlist[]
+  addresses ShippingAddress[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -273,6 +274,7 @@ model Country {
 
   shippingRates         ShippingRate[]
   freeShippingCountries FreeShippingCountry[]
+  shippingAddresses     ShippingAddress[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -430,4 +432,28 @@ model Wishlist {
   @@index([productId])
   @@index([variantId])
   @@index([sizeId])
+}
+
+model ShippingAddress {
+  id        String  @id @default(uuid())
+  userId    String
+  countryId String
+  title     String
+  firstName String
+  lastName  String
+  phone     String
+  address1  String
+  address2  String
+  city      String
+  zip_code  String
+  default   Boolean @default(false)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([countryId])
 }

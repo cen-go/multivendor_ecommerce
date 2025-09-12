@@ -306,3 +306,17 @@ export async function addToWishlist(productId: string, variantId: string, sizeId
     return {success: false, message: "An unexpected error occured."};
   }
 }
+
+// Function: getUserShippingAddresses
+// Description: Retrieves all shipping addresses for a specific user.
+// Permission Level: User who owns the addresses
+// Parameters: - userId: ID of the user whose addresses to be fetched
+// Returns: List of shipping addresses for the user.
+export async function getUserShippingAddresses(userId:string) {
+  const userAdresses = await db.shippingAddress.findMany({
+    where: {userId},
+    include: {country: true},
+  });
+
+  return userAdresses
+}
