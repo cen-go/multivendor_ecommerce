@@ -2,8 +2,7 @@
 
 import { CartWithCartItemsType, UserShippingAddressType } from "@/lib/types"
 import { Country, ShippingAddress } from "@prisma/client";
-import UserAddresses from "../shared/user-addresses";
-import CountryNote from "../shared/country-note";
+import UserAddresses from "../shared/user-address/user-addresses";
 import { useState } from "react";
 
 interface Props {
@@ -27,9 +26,6 @@ export default function CheckoutContainer({cart, countries, addresses}: Props) {
           setSelectedAddress={setSelectedAddress}
         />
         {/* country note */}
-        {selectedAddress && (
-          <CountryNote userCountry={addressCountry} />
-        )}
         {/* Checkout Table */}
       </div>
       {/* Place order card */}

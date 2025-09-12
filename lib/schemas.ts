@@ -383,3 +383,47 @@ export const AddReviewSchema = z.object({
   images: z.object({ url: z.string() }).array().max(3, "You can upload up to 3 images per review."),
   color: requiredString("Color"),
 });
+
+export const ShippingAddressSchema = z.object({
+  countryId: requiredString("Country").uuid(),
+  title: requiredString("Title")
+    .min(2, { message: "Address title should be at least 2 characters long." })
+    .max(50, { message: "Address title cannot exceed 50 characters." })
+    .regex(/^[\p{L}0-9\s'-_]+$/u, {
+      message: "No special characters are allowed in title.",
+    }),
+  firstName: requiredString("First name")
+    .min(2, { message: "First name should be at least 2 characters long." })
+    .max(50, { message: "First name cannot exceed 50 characters." })
+    .regex(/^[\p{L}\s]+$/u, {
+      message: "No special characters are allowed in name.",
+    }),
+
+  lastName: requiredString("Last name")
+    .min(2, { message: "Last name should be at least 2 characters long." })
+    .max(50, { message: "Last name cannot exceed 50 characters." })
+    .regex(/^[\p{L}]+$/u, {
+      message: "No special characters are allowed in name.",
+    }),
+  phone: requiredString("Phone number").regex(/^\+?\d+$/, {
+    message: "Invalid phone number format.",
+  }),
+
+  address1: requiredString("Address line 1")
+    .min(5, { message: "Address line 1 should be at least 5 characters long." })
+    .max(100, { message: "Address line 1 cannot exceed 100 characters." }),
+
+  address2: requiredString("Address line 2")
+    .min(5, { message: "Address line 2 should be at least 5 characters long." })
+    .max(100, { message: "Address line 2 cannot exceed 100 characters." }),
+
+  city: requiredString("City")
+    .min(2, { message: "City should be at least 2 characters long." })
+    .max(50, { message: "City cannot exceed 50 characters." }),
+
+  zip_code: requiredString("Zip code")
+    .min(2, { message: "Zip code should be at least 2 characters long." })
+    .max(10, { message: "Zip code cannot exceed 10 characters." }),
+
+  default: z.boolean(),
+});

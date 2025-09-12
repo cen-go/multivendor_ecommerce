@@ -5,7 +5,8 @@ import { CartProductType, UserCountry } from "@/lib/types";
 import { currentUser } from "@clerk/nextjs/server"
 import { cookies } from "next/headers";
 import { getShippingDetails } from "./product";
-import { ShippingFeeMethod } from "@prisma/client";
+import { ShippingAddress, ShippingFeeMethod } from "@prisma/client";
+import { ShippingAddressSchema } from "@/lib/schemas";
 
 // Function: followStore
 // Description: Toggle follow status for a store by the current user.
@@ -319,4 +320,70 @@ export async function getUserShippingAddresses(userId:string) {
   });
 
   return userAdresses
+}
+
+export async function upsertUserAddress(
+  address: Omit<ShippingAddress, "createdAt" | "updatedAt" | "userId">
+) {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { success: false, message: "Unauthenticated." };
+    }
+    const userId = user.id;
+
+    const validatedAddress = ShippingAddressSchema.safeParse(address);
+
+    if (!validatedAddress.success) {
+      const { fieldErrors, formErrors } = validatedAddress.error.flatten();
+      return {
+        success: false,
+        message: "Error validating form data",
+        fieldErrors,
+        formErrors,
+      };
+    }
+
+    const addressData = validatedAddress.data;
+
+    // If default selected in form check for a default address that already exist in db
+    if (addressData.default) {
+      const prevDefaultAddress = await db.shippingAddress.findFirst({
+        where: {
+          userId,
+          default: true,
+        },
+      });
+
+      // If there is a previeous default address and it's different
+      // than the one we might be updating then update it's default field to false
+      if (prevDefaultAddress && address.id !== prevDefaultAddress.id) {
+        await db.shippingAddress.update({
+          where: { id: prevDefaultAddress.id },
+          data: { default: false },
+        });
+      }
+    }
+
+    // Upsert the user address into the database
+    const upsertedAddress = db.shippingAddress.upsert({
+      where: { id: address.id },
+      update: {
+        ...addressData,
+        updatedAt: new Date(),
+      },
+      create: {
+        ...addressData,
+        userId,
+      },
+    });
+    return {
+      success: true,
+      message: `Address ${address.id ? "updated" : "added"}.`,
+      data: upsertedAddress,
+    };
+  } catch (error) {
+    console.error("Error saving the user address: ", error);
+    return { success: false, message: "An unexpected error occured!" };
+  }
 }
