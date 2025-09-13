@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 import Modal from "../modal";
 import AddressDetailsForm from "./address-details-form";
+import AddressList from "./address-list";
 
 interface Props {
   countries: Country[];
@@ -28,7 +29,14 @@ export default function UserAddresses({
       <div className="w-full py-4 px-6 bg-white">
         <div className="relative flex flex-col text-sm">
           <h1 className="text-lg mb-3 font-bold">Shipping Addresses</h1>
-          {addresses && addresses.length > 0 && <div>Addresses List</div>}
+          {addresses && addresses.length > 0 && (
+            <AddressList
+              addresses={addresses}
+              countries={countries}
+              setSelectedAddress={setSelectedAddress}
+              selectedAddress={selectedAddress}
+            />
+          )}
           <div
             className="mt-4 ml-8 text-orange-background cursor-pointer"
             onClick={() => setShowModal(true)}

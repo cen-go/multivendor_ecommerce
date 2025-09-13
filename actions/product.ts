@@ -367,7 +367,7 @@ export async function deleteProduct(product: StoreProductType) {
 // Returns: An object containing paginated products, filtered variants, and pagination metadata (totalPages, currentPage, pageSize)
 export async function getProducts(
   filters: ProductQueryFiltersType = {},
-  sortBy: string = "",
+  // sortBy: string = "",
   page: number = 1,
   pageSize: number = 10
 ) {

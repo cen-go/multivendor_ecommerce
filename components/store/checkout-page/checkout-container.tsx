@@ -13,8 +13,7 @@ interface Props {
 
 export default function CheckoutContainer({cart, countries, addresses}: Props) {
   const [selectedAddress, setSelectedAddress] = useState<ShippingAddress>()
-
-  const addressCountry = countries.find(c => c.id === selectedAddress?.countryId)
+  
   return (
     <div className="w-full flex flex-col gap-y-2 lg:flex-row">
       <div className="space-y-2 lg:flex-1">
