@@ -15,7 +15,7 @@ export default function StoreProducts({ storeUrl, limit }: Props) {
 
   useEffect(() => {
     async function getStoreProducts() {
-      const storeProducts = await getProducts({storeUrl,}, "", 1, limit);
+      const storeProducts = await getProducts({storeUrl,}, 1, limit);
       setProducts(storeProducts.products);
     }
 
