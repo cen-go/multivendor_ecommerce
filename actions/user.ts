@@ -110,7 +110,7 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
 
     // Recalculate cart's total price and shipping fees
     const subtotal = validatedCartItems.reduce((total, item) => total + item.price * item.quantity,0);
-    const shippingFees = validatedCartItems.reduce((total, item) => total + item.shippingFee,0);
+    const shippingFees = validatedCartItems.reduce((total, item) => total + item.totalShippingFee,0);
     const totalPrice = subtotal + shippingFees;
 
     // save the validated items to the cart in the database

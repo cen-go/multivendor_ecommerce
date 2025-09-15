@@ -5,6 +5,7 @@ import { Country, ShippingAddress } from "@prisma/client";
 import UserAddresses from "../shared/user-address/user-addresses";
 import { useState } from "react";
 import CheckoutProductCard from "../cards/checkout-product-card";
+import PlaceOrderCard from "../cards/place-order-card";
 
 interface Props {
   cart: CartWithCartItemsType;
@@ -28,12 +29,19 @@ export default function CheckoutContainer({cart, countries, addresses}: Props) {
         {/* country note */}
         {/* Checkout Table */}
         <div className="py-4 my-3">
-          {cart.cartItems.map(product => (
+          {cart.cartItems.map((product) => (
             <CheckoutProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>
       {/* Place order card */}
+      <PlaceOrderCard
+        cartId={cart.id}
+        selectedAddress={selectedAddress}
+        shippingFees={cart.shippingFees}
+        subtotal={cart.subtotal}
+        total={cart.total}
+      />
     </div>
   );
 }

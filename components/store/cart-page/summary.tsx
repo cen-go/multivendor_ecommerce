@@ -74,14 +74,16 @@ export default function CartSummary({ cartItems, totalShipping }: Props) {
           {formatCurrency(total)}
         </h3>
       </div>
-      <div className="my-3">
-        <Button onClick={handleSaveCart} disabled={loading}>
-          {loading ? (
-            <PulseLoader size={5} color="#fff" />
-          ) : (
-            <span>Checkout</span>
-          )}
-        </Button>
+      <div className="w-full">
+        <div className="my-3 max-w-[400px] mx-auto">
+          <Button onClick={handleSaveCart} disabled={loading}>
+            {loading ? (
+              <PulseLoader size={5} color="#fff" />
+            ) : (
+              <span>Checkout</span>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -90,7 +90,7 @@ export default function CartContainer({userCountry}: {userCountry: UserCountry})
                   </div>
                 </div>
                 {/* Cart side */}
-                <div className="sticky top-4 w-[380px] max-h-max">
+                <div className="sticky top-4 w-full lg:w-[380px] max-h-max">
                   <CartSummary
                     cartItems={cartItems}
                     totalShipping={totalShippingFee}

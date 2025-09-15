@@ -1,0 +1,66 @@
+import { formatCurrency } from "@/lib/utils";
+import { ShippingAddress } from "@prisma/client";
+import { Button } from "../ui/button";
+import toast from "react-hot-toast";
+
+interface Props {
+  shippingFees: number;
+  subtotal: number;
+  total: number;
+  selectedAddress:ShippingAddress |undefined;
+  cartId: string;
+}
+
+export default function PlaceOrderCard({cartId, shippingFees, subtotal, total, selectedAddress}: Props) {
+  async function handlePlaceOrder() {
+    if (!selectedAddress) {
+      toast.error("Please select a shipping address!");
+      return;
+    }
+  }
+
+  return (
+    <div className="sticky top-4 lg:ml-5 lg:w-[380px] max-h-max">
+      <div className="relative py-4 px-6 bg-white">
+        <h1 className="text-gray-900 text-2xl font-bold mb-4">Summary</h1>
+        <div className="mt-4 font-medium flex items-center text-[#222] text-sm pb-1 border-b">
+          <h2 className="overflow-hidden whitespace-nowrap text-ellipsis break-normal">
+            Subtotal
+          </h2>
+          <h3 className="flex-1 w-0 min-w-0 text-right px-0.5 text-black text-lg inline-block break-all">
+            {formatCurrency(subtotal)}
+          </h3>
+        </div>
+        <div className="mt-2 font-medium flex items-center text-[#222] text-sm pb-1 border-b">
+          <h2 className="overflow-hidden whitespace-nowrap text-ellipsis break-normal">
+            Shipping Fees
+          </h2>
+          <h3 className="flex-1 w-0 min-w-0 text-right px-0.5 text-black text-lg inline-block break-all">
+            +{formatCurrency(shippingFees)}
+          </h3>
+        </div>
+        <div className="mt-2 font-medium flex items-center text-[#222] text-sm pb-1 border-b">
+          <h2 className="overflow-hidden whitespace-nowrap text-ellipsis break-normal">
+            Taxes
+          </h2>
+          <h3 className="flex-1 w-0 min-w-0 text-right px-0.5 text-black text-lg inline-block break-all">
+            +$0.00
+          </h3>
+        </div>
+        <div className="mt-2 font-bold flex items-center text-[#222]">
+          <h2 className="overflow-hidden whitespace-nowrap text-ellipsis break-normal">
+            Total
+          </h2>
+          <h3 className="flex-1 w-0 min-w-0 text-right px-0.5 text-black text-lg inline-block break-all">
+            {formatCurrency(total)}
+          </h3>
+        </div>
+        <div className="w-full">
+          <div className="my-3 max-w-[400px] mx-auto">
+            <Button className="my-4">Place Order</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
