@@ -1,13 +1,19 @@
-import { UserShippingAddressType } from "@/lib/types"
-import { cn } from "@/lib/utils";
-import { Country } from "@prisma/client";
-import { CheckIcon } from "lucide-react";
+// React & Next.js
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+// Types
+import { UserShippingAddressType } from "@/lib/types"
+import { Country } from "@prisma/client";
+// Utils
+import { cn } from "@/lib/utils";
+// Server actions and queries
+import { upsertUserAddress } from "@/actions/user";
+// Icons
+import { CheckIcon } from "lucide-react";
+// Components
 import Modal from "../shared/modal";
 import AddressDetailsForm from "../shared/user-address/address-details-form";
-import { upsertUserAddress } from "@/actions/user";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 interface Props {
   address: UserShippingAddressType;

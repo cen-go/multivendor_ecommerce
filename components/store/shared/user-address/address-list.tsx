@@ -2,7 +2,8 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 // Types
 import { UserShippingAddressType } from "@/lib/types";
 import { Country, ShippingAddress } from "@prisma/client";
-import AddressCard from "../../cards/address-card";
+//Components
+import AddressCard from "@/components/store/cards/address-card";
 
 interface Props {
   addresses: UserShippingAddressType[];

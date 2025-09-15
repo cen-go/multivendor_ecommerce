@@ -1,7 +1,11 @@
+// React & Next.js
+import { Dispatch, SetStateAction, useState } from "react";
+// Types
 import { UserShippingAddressType } from "@/lib/types";
 import { Country, ShippingAddress } from "@prisma/client";
+// Icons
 import { PlusIcon } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+// Components
 import Modal from "../modal";
 import AddressDetailsForm from "./address-details-form";
 import AddressList from "./address-list";

@@ -27,6 +27,7 @@ model User {
   cart      Cart?
   wishlists Wishlist[]
   addresses ShippingAddress[]
+  orders    Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -96,6 +97,7 @@ model Store {
   shippingRates ShippingRate[]
   followers     User[]         @relation("UserFollowingStore")
   cartItems     CartItem[]
+  orderGroups   OrderGroup[]
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -451,9 +453,111 @@ model ShippingAddress {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
 
+  orders Order[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([countryId])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  ON_DELIVERY
+  DELIVERED
+  CANCELLED
+  FAILED
+  REFUNDED
+  RETURNED
+  PARTIALLY_SHIPPED
+  ON_HOLD
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  DECLINED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  CHARGEBACK
+}
+
+model Order {
+  id                String        @id @default(uuid())
+  shippingFees      Int
+  subtotal          Int
+  total             Int
+  orderStatus       OrderStatus   @default(PENDING)
+  paymentStatus     PaymentStatus @default(PENDING)
+  shippingAddressId String
+  userId            String
+
+  shippingAddress ShippingAddress @relation(fields: [shippingAddressId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+
+  orderGroups OrderGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([shippingAddressId])
+  @@index([userId])
+}
+
+model OrderGroup {
+  id              String      @id @default(uuid())
+  status          OrderStatus @default(PENDING)
+  shippingService String
+  deliveryTimeMin Int
+  deliveryTimeMax Int
+  shippingFees    Int
+  subtotal        Int
+  total           Int
+  orderId         String
+  storeId         String
+
+  order Order @relation(fields: [orderId], references: [id])
+  store Store @relation(fields: [storeId], references: [id])
+
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([storeId])
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+
+  productId   String
+  variantId   String
+  sizeId      String
+  productSlug String
+  variantSlug String
+  sku         String
+
+  name        String
+  image       String
+  size        String
+  quantity    Int    @default(1)
+  shippingFee Int    @default(0)
+  price       Int
+  totalPrice  Int
+
+  orderGroupId String
+
+  orderGroup OrderGroup @relation(fields: [orderGroupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderGroupId])
 }
