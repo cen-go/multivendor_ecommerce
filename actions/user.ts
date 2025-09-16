@@ -467,8 +467,8 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
       return acc;
     }, {} as GroupedOrderItems);
 
-    await db.$transaction(async (tx) => {
-      await tx.order.create({
+    const order = await db.$transaction(async (tx) => {
+      const createdOrder = await tx.order.create({
         data: {
           userId,
           shippingAddressId: address.id,
@@ -516,11 +516,11 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
 
       // Delete the cart
       await tx.cart.delete({where:{id: cartId}});
+
+      return createdOrder;
     });
 
-
-    return {success: true, message: "Order successfully created"};
-
+    return {success: true, message: "Order successfully created", orderId: order.id};
 
   } catch (error) {
     console.error("Error placing the order: ", error)

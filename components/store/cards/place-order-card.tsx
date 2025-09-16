@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import { placeOrder } from "@/actions/user";
 import { useCartStore } from "@/store/useCartStore";
+import { useRouter } from "next/navigation";
 
 interface Props {
   shippingFees: number;
@@ -14,7 +15,8 @@ interface Props {
 }
 
 export default function PlaceOrderCard({cartId, shippingFees, subtotal, total, selectedAddress}: Props) {
-  const emptyCart = useCartStore(state => state.emptyCart)
+  const emptyCart = useCartStore(state => state.emptyCart);
+  const router = useRouter();
 
   async function handlePlaceOrder() {
     if (!selectedAddress) {
@@ -26,7 +28,8 @@ export default function PlaceOrderCard({cartId, shippingFees, subtotal, total, s
       toast.error(response.message);
     } else {
       emptyCart();
-      toast.success(response.message)
+      toast.success(response.message);
+      router.push(`/order/${response.orderId}`);
     }
   }
 
