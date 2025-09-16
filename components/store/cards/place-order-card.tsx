@@ -2,6 +2,8 @@ import { formatCurrency } from "@/lib/utils";
 import { ShippingAddress } from "@prisma/client";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+import { placeOrder } from "@/actions/user";
+import { useCartStore } from "@/store/useCartStore";
 
 interface Props {
   shippingFees: number;
@@ -12,10 +14,19 @@ interface Props {
 }
 
 export default function PlaceOrderCard({cartId, shippingFees, subtotal, total, selectedAddress}: Props) {
+  const emptyCart = useCartStore(state => state.emptyCart)
+
   async function handlePlaceOrder() {
     if (!selectedAddress) {
       toast.error("Please select a shipping address!");
       return;
+    }
+    const response = await placeOrder(selectedAddress, cartId);
+    if (!response.success) {
+      toast.error(response.message);
+    } else {
+      emptyCart();
+      toast.success(response.message)
     }
   }
 
@@ -57,7 +68,7 @@ export default function PlaceOrderCard({cartId, shippingFees, subtotal, total, s
         </div>
         <div className="w-full">
           <div className="my-3 max-w-[400px] mx-auto">
-            <Button className="my-4">Place Order</Button>
+            <Button className="my-4" onClick={handlePlaceOrder}>Place Order</Button>
           </div>
         </div>
       </div>

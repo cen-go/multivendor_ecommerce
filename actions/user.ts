@@ -5,7 +5,7 @@ import { CartProductType, UserCountry } from "@/lib/types";
 import { currentUser } from "@clerk/nextjs/server"
 import { cookies } from "next/headers";
 import { getShippingDetails } from "./product";
-import { ShippingAddress, ShippingFeeMethod } from "@prisma/client";
+import { CartItem, Prisma, ShippingAddress, ShippingFeeMethod } from "@prisma/client";
 import { ShippingAddressSchema } from "@/lib/schemas";
 
 // Function: followStore
@@ -149,51 +149,71 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
   }
 }
 
-export async function validateCartProducts(cartProducts: CartProductType[] ) {
-  // Fetch product, variant and size data from the database and validate
-    const validatedCartItems = await Promise.all(
-      cartProducts.map(async (cartProduct) => {
-        const { productId, variantId, sizeId } = cartProduct;
 
-        const dbProduct = await db.product.findUnique({
-          where: { id: productId },
-          include: {
-            store: true,
-            freeShipping: {
-              include: { eligibleCountries: true },
-            },
-            variants: {
-              where: { id: variantId },
-              include: {
-                sizes: {
-                  where: { id: sizeId },
-                },
-                images: true,
+// Function to revalidate products to avoid front end manipulations
+// and remake the calculations when the country data changes
+export async function validateCartProducts(
+  cartProducts: Omit<CartItem, "createdAt" | "updatedAt" | "id" | "cartId" | "sku" | "totalPrice" | "storeId">[],
+  countryId?: string
+) {
+  // Fetch product, variant and size data from the database and validate
+  const validatedCartItems = await Promise.all(
+    cartProducts.map(async (cartProduct) => {
+      const { productId, variantId, sizeId } = cartProduct;
+
+      const dbProduct = await db.product.findUnique({
+        where: { id: productId },
+        include: {
+          store: true,
+          freeShipping: {
+            include: { eligibleCountries: true },
+          },
+          variants: {
+            where: { id: variantId },
+            include: {
+              sizes: {
+                where: { id: sizeId },
               },
+              images: true,
             },
           },
+        },
+      });
+
+      // Validate the product coming from the front-end
+      if (
+        !dbProduct ||
+        dbProduct.variants.length === 0 ||
+        dbProduct.variants[0].sizes.length === 0
+      ) {
+        throw new Error(`Invalid Product`);
+      }
+
+      const variant = dbProduct.variants[0];
+      const size = variant.sizes[0];
+
+      // Validate stock and price
+      const validQuantity = Math.min(cartProduct.quantity, size.quantity);
+      const price = size.discount
+        ? size.price * (1 - size.discount / 100)
+        : size.price;
+
+      // Calculate shipping details based on country
+      let country: UserCountry;
+
+      if (countryId) {
+        // country Id is provided then we calculate based on the country in user address
+        // this will apply before checkout
+        const dbCountry = await db.country.findUnique({
+          where: { id: countryId },
         });
-
-        // Validate the product coming from the front-end
-        if (
-          !dbProduct ||
-          dbProduct.variants.length === 0 ||
-          dbProduct.variants[0].sizes.length === 0
-        ) {
-          throw new Error(`Invalid Product, ${cartProduct.name}-${cartProduct.variantName}-${cartProduct.size}`);
-          ;
+        if (!dbCountry) {
+          throw new Error("Country not found!");
         }
-
-        const variant = dbProduct.variants[0];
-        const size = variant.sizes[0];
-
-        // Validate stock and price
-        const validQuantity = Math.min(cartProduct.quantity, size.quantity);
-        const price = size.discount
-          ? size.price * (1 - size.discount / 100)
-          : size.price;
-
-        // Calculate shipping details
+        country = { name: dbCountry.name, code: dbCountry.code };
+      } else {
+        // otherwise read the country from cookies. this will apply on regular
+        // country switches made from header bar
         const cookieStore = await cookies();
         const countryCookie = cookieStore.get("userCountry");
 
@@ -201,64 +221,66 @@ export async function validateCartProducts(cartProducts: CartProductType[] ) {
           throw new Error("Country cookie not found!");
         }
 
-        const country = JSON.parse(countryCookie.value) as UserCountry;
-        const details = await getShippingDetails(
-          dbProduct.shippingFeeMethod,
-          country,
-          dbProduct.store,
-          dbProduct.freeShipping
-        );
+        country = JSON.parse(countryCookie.value) as UserCountry;
+      }
 
-        let totalShippingFee = 0;
+      const details = await getShippingDetails(
+        dbProduct.shippingFeeMethod,
+        country,
+        dbProduct.store,
+        dbProduct.freeShipping
+      );
 
-        if (dbProduct.shippingFeeMethod === ShippingFeeMethod.ITEM) {
-          totalShippingFee =
-            details.shippingFee +
-            (validQuantity > 1
-              ? details.extraShippingFee * (validQuantity - 1)
-              : 0);
-        } else if (dbProduct.shippingFeeMethod === ShippingFeeMethod.WEIGHT) {
-          totalShippingFee =
-            details.shippingFee *
-            (variant.weight ? variant.weight.toNumber() : 0) *
-            validQuantity;
-        } else if (dbProduct.shippingFeeMethod === ShippingFeeMethod.FIXED) {
-          totalShippingFee = details.shippingFee;
-        }
+      let totalShippingFee = 0;
 
-        return {
-          productId,
-          variantId,
-          productSlug: dbProduct.slug,
-          variantSlug: variant.slug,
-          sizeId,
-          storeId: dbProduct.storeId,
-          sku: variant.sku,
-          name: dbProduct.name,
-          variantName: variant.variantName,
-          combinedName: `${cartProduct.name}-${cartProduct.variantName}-${cartProduct.size}`,
-          brand: dbProduct.brand,
-          image: variant.images[0].url,
-          variantImage: variant.variantImage,
-          weight: variant.weight?.toNumber(),
-          stock: size.quantity,
-          size: size.size,
-          quantity: validQuantity,
-          price,
-          totalShippingFee,
-          totalPrice: price * validQuantity + totalShippingFee,
-          shippingMethod: details.shippingFeeMethod,
-          shippingService: details.shippingService,
-          freeShipping: details.freeShipping,
-          shippingFee: details.shippingFee,
-          extraShippingFee: details.extraShippingFee,
-          deliveryTimeMin: details.deliveryTimeMin,
-          deliveryTimeMax: details.deliveryTimeMax
-        };
-      })
-    );
+      if (dbProduct.shippingFeeMethod === ShippingFeeMethod.ITEM) {
+        totalShippingFee =
+          details.shippingFee +
+          (validQuantity > 1
+            ? details.extraShippingFee * (validQuantity - 1)
+            : 0);
+      } else if (dbProduct.shippingFeeMethod === ShippingFeeMethod.WEIGHT) {
+        totalShippingFee =
+          details.shippingFee *
+          (variant.weight ? variant.weight.toNumber() : 0) *
+          validQuantity;
+      } else if (dbProduct.shippingFeeMethod === ShippingFeeMethod.FIXED) {
+        totalShippingFee = details.shippingFee;
+      }
 
-    return validatedCartItems
+      return {
+        productId,
+        variantId,
+        productSlug: dbProduct.slug,
+        variantSlug: variant.slug,
+        sizeId,
+        storeId: dbProduct.storeId,
+        sku: variant.sku,
+        name: dbProduct.name,
+        variantName: variant.variantName,
+        combinedName: `${dbProduct.name}-${variant.variantName}-${size.size}`,
+        brand: dbProduct.brand,
+        image: variant.images[0].url,
+        variantImage: variant.variantImage,
+        weight: variant.weight?.toNumber(),
+        stock: size.quantity,
+        size: size.size,
+        quantity: validQuantity,
+        price,
+        totalShippingFee,
+        totalPrice: price * validQuantity + totalShippingFee,
+        shippingMethod: details.shippingFeeMethod,
+        shippingService: details.shippingService,
+        freeShipping: details.freeShipping,
+        shippingFee: details.shippingFee,
+        extraShippingFee: details.extraShippingFee,
+        deliveryTimeMin: details.deliveryTimeMin,
+        deliveryTimeMax: details.deliveryTimeMax,
+      };
+    })
+  );
+
+  return validatedCartItems;
 }
 
 // Function: addToWishlist
@@ -322,6 +344,12 @@ export async function getUserShippingAddresses(userId:string) {
   return userAdresses
 }
 
+
+// Function: upsertUserAddress
+// Description: creates a new address for a specific user or updates an existing address.
+// Permission Level: User.
+// Parameters: - address: Address details from the form data
+// Returns: returns information about status and the address data.
 export async function upsertUserAddress(
   address: Omit<ShippingAddress, "createdAt" | "updatedAt" | "userId">
 ) {
@@ -332,6 +360,7 @@ export async function upsertUserAddress(
     }
     const userId = user.id;
 
+    // Validate the data coming from the form
     const validatedAddress = ShippingAddressSchema.safeParse(address);
 
     if (!validatedAddress.success) {
@@ -384,6 +413,117 @@ export async function upsertUserAddress(
     };
   } catch (error) {
     console.error("Error saving the user address: ", error);
+    return { success: false, message: "An unexpected error occured!" };
+  }
+}
+
+// Function: upsertUserAddress
+// Description: creates a new address for a specific user or updates an existing address.
+// Permission Level: User.
+// Parameters: - address: Address details from the form data
+// Returns: returns information about status and the address data.
+export async function placeOrder(address: ShippingAddress, cartId: string ) {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return {success: false, message: "Unauthenticated."};
+    }
+    const userId = user.id;
+
+    // Fetch user's cart with items in it
+    const cart = await db.cart.findUnique({
+      where: {id: cartId},
+      include: {cartItems: true},
+    });
+
+    if (!cart) {
+      return {success: false, message: "Cart not found."};
+    }
+
+    // Validate the address
+    const dbAddress = await db.shippingAddress.findUnique({where: {id: address.id}});
+
+    if (!dbAddress) {
+      return {success: false, message: "User address couldn't found."};
+    }
+
+    const cartItems = cart.cartItems;
+    const validatedCartItems = await validateCartProducts(cartItems, dbAddress.countryId);
+
+    const shippingFees = validatedCartItems.reduce((sum, item) => sum + item.totalShippingFee , 0);
+    const subtotal = validatedCartItems.reduce((sum, item) => sum + item.price * item.quantity , 0)
+
+    // define type for order itemds grouped by store
+    type GroupedOrderItems = {[storeId: string]: typeof validatedCartItems};
+    // Group the items by store with array reduce method
+    const groupedOrderItems = validatedCartItems.reduce((acc, item) => {
+      // if store id of the product doesn't exist in the accumulator object as a key
+      // then create it as a key and asign an empty array to it
+      if (!acc[item.storeId]) {
+        acc[item.storeId] = []
+      }
+      // Push the product in the the array with the corresponding store id as it's key
+      acc[item.storeId].push(item);
+      return acc;
+    }, {} as GroupedOrderItems);
+
+    await db.$transaction(async (tx) => {
+      await tx.order.create({
+        data: {
+          userId,
+          shippingAddressId: address.id,
+          shippingFees,
+          subtotal,
+          total: subtotal + shippingFees,
+          orderGroups: {
+            create: Object.keys(groupedOrderItems).map(store => ({
+              shippingService: groupedOrderItems[store][0].shippingService,
+              deliveryTimeMin: groupedOrderItems[store][0].deliveryTimeMin,
+              deliveryTimeMax: groupedOrderItems[store][0].deliveryTimeMax,
+              storeId: store,
+              shippingFees: groupedOrderItems[store].reduce((sum, item) => sum + item.totalShippingFee , 0),
+              subtotal: groupedOrderItems[store].reduce((sum, item) => sum + item.price * item.quantity , 0),
+              total: groupedOrderItems[store].reduce((sum, item) => sum + (item.price * item.quantity + item.totalShippingFee) , 0),
+              orderItems: {
+                create: groupedOrderItems[store].map(item => ({
+                  name: item.combinedName,
+                  productId: item.productId,
+                  variantId: item.variantId,
+                  sizeId: item.sizeId,
+                  productSlug: item.productSlug,
+                  variantSlug: item.variantSlug,
+                  size: item.size,
+                  sku: item.sku,
+                  image: item.image,
+                  quantity: item.quantity,
+                  shippingFee: item.shippingFee,
+                  price: item.price,
+                  totalPrice: item.totalPrice,
+                } as Prisma.OrderItemCreateInput))
+              },
+            }))
+          }
+        },
+      });
+
+      // decrease the stock if the order is placed successfully
+      for (const item of validatedCartItems) {
+        await tx.size.update({
+          where: {id: item.sizeId},
+          data: {quantity: {decrement: item.quantity}},
+        });
+      }
+
+      // Delete the cart
+      await tx.cart.delete({where:{id: cartId}});
+    });
+
+
+    return {success: true, message: "Order successfully created"};
+
+
+  } catch (error) {
+    console.error("Error placing the order: ", error)
     return { success: false, message: "An unexpected error occured!" };
   }
 }

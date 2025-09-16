@@ -71,13 +71,13 @@ export default function UserMenu() {
           <div
             onMouseLeave={() => setOpen(false)}
             onClick={e => e.stopPropagation()}
-            className={cn("absolute z-40 top-9 -left-20", {
-              "-left-[200px] lg:-left-[148px]": isSignedIn,
+            className={cn("absolute z-40 top-9 -left-38", {
+              "-left-[260px] lg:-left-[240px]": isSignedIn,
             })}
           >
             <div className="relative left-2 right-auto bottom-auto pt-2.5 p-0 text-sm z-40">
               {/* Triangle */}
-              <div className="w-0 h-0 absolute left-[149px] top-1 right-24 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-[var(--card)]"></div>
+              <div className="w-0 h-0 absolute left-[262px] lg:left-[244px] top-1 right-24 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-[var(--card)]"></div>
               {/* Menu */}
               <div className="rounded-3xl bg-[var(--card)] shadow-lg">
                 <div className="w-[300px]">
