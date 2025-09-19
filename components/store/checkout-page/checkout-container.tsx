@@ -1,20 +1,38 @@
 "use client"
 
-import { CartWithCartItemsType, UserShippingAddressType } from "@/lib/types"
-import { Country, ShippingAddress } from "@prisma/client";
+import { CartWithCartItemsType, UserCountry, UserShippingAddressType } from "@/lib/types"
+import { Country } from "@prisma/client";
 import UserAddresses from "../shared/user-address/user-addresses";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CheckoutProductCard from "../cards/checkout-product-card";
 import PlaceOrderCard from "../cards/place-order-card";
+import CountryNote from "../shared/country-note";
+import { revalidateCheckoutCart } from "@/actions/user";
+import toast from "react-hot-toast";
 
 interface Props {
   cart: CartWithCartItemsType;
   countries: Country[];
-  addresses: UserShippingAddressType[]
+  addresses: UserShippingAddressType[];
+  userCountry: UserCountry;
 }
 
-export default function CheckoutContainer({cart, countries, addresses}: Props) {
-  const [selectedAddress, setSelectedAddress] = useState<ShippingAddress>();
+export default function CheckoutContainer({cart, countries, addresses, userCountry}: Props) {
+  const [selectedAddress, setSelectedAddress] = useState<UserShippingAddressType>();
+  const [cartState, setCartState] = useState<CartWithCartItemsType>(cart);
+
+  useEffect(() => {
+    const updateShippingData = async () => {
+      const res = await revalidateCheckoutCart(cart, selectedAddress?.countryId);
+      if (res.success) {
+        setCartState(res.cartData);
+      } else {
+        toast.error(res.message)
+      }
+    }
+
+    updateShippingData();
+  }, [selectedAddress?.countryId, cart, userCountry.name])
 
   return (
     <div className="w-full flex flex-col gap-y-2 lg:flex-row">
@@ -27,9 +45,21 @@ export default function CheckoutContainer({cart, countries, addresses}: Props) {
           setSelectedAddress={setSelectedAddress}
         />
         {/* country note */}
+        <div className="mt-5">
+          <CountryNote
+            userCountry={
+              selectedAddress
+                ? {
+                    name: selectedAddress.country.name,
+                    code: selectedAddress.country.code,
+                  }
+                : userCountry
+            }
+          />
+        </div>
         {/* Checkout Table */}
-        <div className="py-4 my-3">
-          {cart.cartItems.map((product) => (
+        <div className="my-5">
+          {cartState.cartItems.map((product) => (
             <CheckoutProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -38,9 +68,9 @@ export default function CheckoutContainer({cart, countries, addresses}: Props) {
       <PlaceOrderCard
         cartId={cart.id}
         selectedAddress={selectedAddress}
-        shippingFees={cart.shippingFees}
-        subtotal={cart.subtotal}
-        total={cart.total}
+        shippingFees={cartState.shippingFees}
+        subtotal={cartState.subtotal}
+        total={cartState.total}
       />
     </div>
   );

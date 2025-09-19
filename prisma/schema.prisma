@@ -99,6 +99,7 @@ model Store {
   followers     User[]         @relation("UserFollowingStore")
   cartItems     CartItem[]
   orderGroups   OrderGroup[]
+  coupons       Coupon[]
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -375,17 +376,21 @@ model ReviewImage {
 }
 
 model Cart {
-  id           String @id @default(uuid())
-  userId       String @unique
-  shippingFees Int    @default(0)
+  id           String  @id @default(uuid())
+  userId       String  @unique
+  shippingFees Int     @default(0)
   subtotal     Int
   total        Int
+  couponId     String?
+  coupon       Coupon? @relation(fields: [couponId], references: [id])
 
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   cartItems CartItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([couponId])
 }
 
 model CartItem {
@@ -561,4 +566,22 @@ model OrderItem {
   updatedAt DateTime @updatedAt
 
   @@index([orderGroupId])
+}
+
+model Coupon {
+  id        String @id @default(uuid())
+  code      String @unique
+  startDate String
+  endDate   String
+  discount  Int
+  storeId   String
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  carts Cart[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
 }

@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 // Types
 import { UserShippingAddressType } from "@/lib/types";
-import { Country, ShippingAddress } from "@prisma/client";
+import { Country } from "@prisma/client";
 // Icons
 import { PlusIcon } from "lucide-react";
 // Components
@@ -13,8 +13,8 @@ import AddressList from "./address-list";
 interface Props {
   countries: Country[];
   addresses: UserShippingAddressType[];
-  selectedAddress: ShippingAddress | undefined;
-  setSelectedAddress: Dispatch<SetStateAction<ShippingAddress | undefined>>;
+  selectedAddress: UserShippingAddressType | undefined;
+  setSelectedAddress: Dispatch<SetStateAction<UserShippingAddressType | undefined>>;
 }
 
 export default function UserAddresses({

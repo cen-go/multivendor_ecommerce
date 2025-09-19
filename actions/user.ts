@@ -1,7 +1,7 @@
 "use server"
 
 import db from "@/lib/db";
-import { CartProductType, UserCountry } from "@/lib/types";
+import { CartProductType, CartWithCartItemsType, UserCountry } from "@/lib/types";
 import { currentUser } from "@clerk/nextjs/server"
 import { cookies } from "next/headers";
 import { getShippingDetails } from "./product";
@@ -106,7 +106,7 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
     }
 
     // Fetch product, variant and size data from the database and validate
-    const validatedCartItems = await validateCartProducts(cartProducts);
+    const validatedCartItems = await validateCartProducts({cartProducts,});
 
     // Recalculate cart's total price and shipping fees
     const subtotal = validatedCartItems.reduce((total, item) => total + item.price * item.quantity,0);
@@ -152,10 +152,20 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
 
 // Function to revalidate products to avoid front end manipulations
 // and remake the calculations when the country data changes
-export async function validateCartProducts(
-  cartProducts: Omit<CartItem, "createdAt" | "updatedAt" | "id" | "cartId" | "sku" | "totalPrice" | "storeId">[],
-  countryId?: string
-) {
+export async function validateCartProducts({
+  cartProducts,
+  countryId,
+  updateCartInDb = false,
+  cartId,
+}: {
+  cartProducts: (Omit<
+    CartItem,
+    "createdAt" | "updatedAt" | "sku" | "totalPrice" | "storeId" | "id" | "cartId"
+  > & Partial<Pick<CartItem, "id" | "cartId">>)[];
+  countryId?: string;
+  updateCartInDb?: boolean;
+  cartId?: string;
+}) {
   // Fetch product, variant and size data from the database and validate
   const validatedCartItems = await Promise.all(
     cartProducts.map(async (cartProduct) => {
@@ -248,6 +258,18 @@ export async function validateCartProducts(
         totalShippingFee = details.shippingFee;
       }
 
+      if (updateCartInDb) {
+        await db.cartItem.update({
+          where: {id: cartProduct.id},
+          data: {
+            quantity: validQuantity,
+            price,
+            shippingFee: totalShippingFee,
+            totalPrice: price * validQuantity + totalShippingFee,
+          }
+        });
+      }
+
       return {
         productId,
         variantId,
@@ -278,7 +300,18 @@ export async function validateCartProducts(
         deliveryTimeMax: details.deliveryTimeMax,
       };
     })
-  );
+  ); // End of Promise.all
+
+  if (updateCartInDb) {
+    const subtotal = validatedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const shippingFees = validatedCartItems.reduce((sum, item) => sum + item.totalShippingFee, 0);
+    const total = subtotal + shippingFees;
+
+    await db.cart.update({
+      where: {id: cartId},
+      data: {subtotal, shippingFees, total}
+    });
+  }
 
   return validatedCartItems;
 }
@@ -417,11 +450,13 @@ export async function upsertUserAddress(
   }
 }
 
-// Function: upsertUserAddress
+// Function: PlaceOrder
 // Description: creates a new address for a specific user or updates an existing address.
 // Permission Level: User.
-// Parameters: - address: Address details from the form data
-// Returns: returns information about status and the address data.
+// Parameters: - address: Details of the selected address for the order.
+//             - cartId: ID of the cart that is going to be placed order
+// Returns: returns information about status and the address data and
+// the id of the order if it's successfully created.
 export async function placeOrder(address: ShippingAddress, cartId: string ) {
   try {
     const user = await currentUser();
@@ -448,8 +483,9 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
     }
 
     const cartItems = cart.cartItems;
-    const validatedCartItems = await validateCartProducts(cartItems, dbAddress.countryId);
+    const validatedCartItems = await validateCartProducts({cartProducts: cartItems, countryId: dbAddress.countryId});
 
+    // Calculate the fees for the total of the order
     const shippingFees = validatedCartItems.reduce((sum, item) => sum + item.totalShippingFee , 0);
     const subtotal = validatedCartItems.reduce((sum, item) => sum + item.price * item.quantity , 0)
 
@@ -525,5 +561,32 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
   } catch (error) {
     console.error("Error placing the order: ", error)
     return { success: false, message: "An unexpected error occured!" };
+  }
+}
+
+
+export async function revalidateCheckoutCart(cart:CartWithCartItemsType, countryId?: string) {
+  try {
+    await validateCartProducts({cartProducts: cart.cartItems, updateCartInDb: true, cartId: cart.id, countryId});
+    const cartData = await db.cart.findUnique({
+      where: {id: cart.id},
+      include: {cartItems: true},
+    });
+    if (!cartData) {
+      return {
+      success: false,
+      message: "An unexpected error occured while updating shipping details!",
+      cartData: cart,
+    };
+    }
+    return {success: true, message: "Cart data validated.", cartData, };
+
+  } catch (error) {
+    console.error("Error placing the order: ", error)
+    return {
+      success: false,
+      message: "An unexpected error occured while updating shipping details!",
+      cartData: cart,
+    };
   }
 }

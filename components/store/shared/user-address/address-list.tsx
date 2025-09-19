@@ -1,15 +1,15 @@
 import { Dispatch, SetStateAction, useEffect } from "react";
 // Types
 import { UserShippingAddressType } from "@/lib/types";
-import { Country, ShippingAddress } from "@prisma/client";
+import { Country } from "@prisma/client";
 //Components
 import AddressCard from "@/components/store/cards/address-card";
 
 interface Props {
   addresses: UserShippingAddressType[];
   countries: Country[];
-  selectedAddress: ShippingAddress | undefined;
-  setSelectedAddress: Dispatch<SetStateAction<ShippingAddress | undefined>>;
+  selectedAddress: UserShippingAddressType | undefined;
+  setSelectedAddress: Dispatch<SetStateAction<UserShippingAddressType | undefined>>;
 }
 
 export default function AddressList({
@@ -25,7 +25,7 @@ export default function AddressList({
     }
   }, [addresses, setSelectedAddress]);
 
-  function handleSelect(address:ShippingAddress) {
+  function handleSelect(address:UserShippingAddressType) {
     setSelectedAddress(address)
   }
 

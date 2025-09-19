@@ -43,7 +43,7 @@ export default function CartContainer({userCountry}: {userCountry: UserCountry})
       if (cartItems && cartItems?.length > 0) {
         try {
           setLoading(true);
-          const validatedCart = await validateCartProducts(cartItems);
+          const validatedCart = await validateCartProducts({cartProducts: cartItems});
           setCart(validatedCart as CartProductType[]);
           setLoading(false);
         } catch (error) {
