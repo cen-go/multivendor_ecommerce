@@ -1,14 +1,18 @@
 "use client"
 
+// React Next.js
+import { useEffect, useState } from "react";
+// Types
 import { CartWithCartItemsType, UserCountry, UserShippingAddressType } from "@/lib/types"
 import { Country } from "@prisma/client";
+// Components
 import UserAddresses from "../shared/user-address/user-addresses";
-import { useEffect, useState } from "react";
 import CheckoutProductCard from "../cards/checkout-product-card";
 import PlaceOrderCard from "../cards/place-order-card";
 import CountryNote from "../shared/country-note";
-import { revalidateCheckoutCart } from "@/actions/user";
 import toast from "react-hot-toast";
+// Server actions & queries
+import { revalidateCheckoutCart } from "@/actions/user";
 
 interface Props {
   cart: CartWithCartItemsType;

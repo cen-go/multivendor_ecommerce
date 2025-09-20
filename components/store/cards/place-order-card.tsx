@@ -1,10 +1,16 @@
+// React, Next.js
+import { useRouter } from "next/navigation";
+// Utils
 import { formatCurrency } from "@/lib/utils";
+// Types
 import { ShippingAddress } from "@prisma/client";
+// Components
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+// Server actions, queries
 import { placeOrder } from "@/actions/user";
+// Cart state
 import { useCartStore } from "@/store/useCartStore";
-import { useRouter } from "next/navigation";
 
 interface Props {
   shippingFees: number;

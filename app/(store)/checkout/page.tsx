@@ -1,10 +1,16 @@
-import { getUserShippingAddresses } from "@/actions/user";
-import CheckoutContainer from "@/components/store/checkout-page/checkout-container";
-import db from "@/lib/db";
-import { UserCountry } from "@/lib/types";
-import { currentUser } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
+// Next.js & React
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+// Server action & queries
+import { getUserShippingAddresses } from "@/actions/user";
+// Components
+import CheckoutContainer from "@/components/store/checkout-page/checkout-container";
+// Database client
+import db from "@/lib/db";
+// Types
+import { UserCountry } from "@/lib/types";
+// Clerk
+import { currentUser } from "@clerk/nextjs/server";
 
 export default async function CheckoutPage() {
   const user = await currentUser();
