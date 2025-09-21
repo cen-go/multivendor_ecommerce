@@ -44,9 +44,9 @@ import { ColumnDef } from "@tanstack/react-table";
 
 // Types
 import { Coupon } from "@prisma/client";
-// import { getTimeUntil } from "@/lib/utils";
 import CustomModal from "@/components/dashboard/shared/custom-modal";
 import CouponDetails from "@/components/dashboard/forms/coupon-details";
+import { getTimeLeft } from "@/lib/utils";
 
 export const columns: ColumnDef<Coupon>[] = [
   {
@@ -78,18 +78,18 @@ export const columns: ColumnDef<Coupon>[] = [
       return <span>{new Date(row.original.endDate).toDateString()}</span>;
     },
   },
-  // {
-  //   accessorKey: "timeLeft",
-  //   header: "Time Left",
-  //   cell: ({ row }) => {
-  //     const { days, hours } = getTimeUntil(row.original.endDate);
-  //     return (
-  //       <span>
-  //         {days} days and {hours} hours
-  //       </span>
-  //     );
-  //   },
-  // },
+  {
+    accessorKey: "timeLeft",
+    header: "Time Left",
+    cell: ({ row }) => {
+      const { days, hours } = getTimeLeft(row.original.endDate);
+      return (
+        <span>
+          {days} days and {hours} hours
+        </span>
+      );
+    },
+  },
   {
     id: "actions",
     cell: ({ row }) => {

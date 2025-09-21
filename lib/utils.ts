@@ -7,6 +7,7 @@ import ColorThief from "colorthief"
 import { PrismaClient } from "@prisma/client";
 import db from "./db";
 import { CartProductType, UserCountry } from "./types";
+import { differenceInDays, differenceInHours } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -222,4 +223,18 @@ export function censorName(firstName:string, lastName:string,): string {
     return `${firstChar}${"*".repeat(name.length - 1)}`;
   }
   return `${censor(firstName)} ${censor(lastName)}`.toUpperCase();
+}
+
+export function getTimeLeft(targetDate:string): {days: number; hours: number} {
+  const target = new Date(targetDate);
+  const now = new Date();
+
+  // check if the target date expired
+  if (target <= now) return {days: 0, hours: 0};
+
+  // calculate the days and hours left
+  const daysLeft = differenceInDays(target,now);
+  const hoursLeft = differenceInHours(target, now) % 24;
+
+  return {days: daysLeft, hours: hoursLeft};
 }
