@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 // Server action
-import { upsertCategory } from "@/actions/category";
+import { upsertCoupon } from "@/actions/coupon";
 // Components
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 // Utils
@@ -40,9 +40,10 @@ import { format } from "date-fns";
 
 interface CouponDetailsProps {
   data?: Coupon;
+  storeUrl: string
 }
 
-export default function CouponDetailsForm({ data }: CouponDetailsProps) {
+export default function CouponDetailsForm({ data, storeUrl }: CouponDetailsProps) {
   const router = useRouter();
 
   // Form hook for managing form state and validation
@@ -70,10 +71,10 @@ export default function CouponDetailsForm({ data }: CouponDetailsProps) {
 
   // Submit handler for form submission
   async function onSubmit(values: z.infer<typeof CouponFormSchema>) {
-    const response = await upsertCategory({
-      id: data?.id,
+    const response = await upsertCoupon({
+      id: data?.id || "",
       ...values,
-    });
+    }, storeUrl);
 
     if (!response.success) {
       // Show field/form errors if available
@@ -100,23 +101,19 @@ export default function CouponDetailsForm({ data }: CouponDetailsProps) {
     }
 
     // Display success message
-    toast.success(
-      `${response.category?.name} category is ${
-        data?.id ? "updated" : "created"
-      }.`
-    );
+    toast.success(response.message);
 
     // Redirect or refresh data
     if (data?.id) {
       router.refresh();
     } else {
-      router.push(`dashboard/seller/stores/test-store/coupons/`);
+      router.push(`/dashboard/seller/stores/${storeUrl}/coupons/`);
     }
   }
 
   return (
     <AlertDialog>
-      <Card className="w-full">
+      <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl">Coupon Information</CardTitle>
           <CardDescription className="mt-2">
