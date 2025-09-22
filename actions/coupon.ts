@@ -1,7 +1,8 @@
 "use server"
 
 import db from "@/lib/db";
-import { CouponFormSchema } from "@/lib/schemas";
+import { ApplyCouponFormSchema, CouponFormSchema } from "@/lib/schemas";
+import { CartWithCartItemsType } from "@/lib/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { Coupon, Role } from "@prisma/client";
 
@@ -141,7 +142,7 @@ export async function deleteCoupon(couponId:string, storeUrl: string) {
 
     return {success: true, message: "Coupon successfully deleted"};
   } catch (error) {
-    console.error("Error upserting coupon: ", error);
+    console.error("Error deleting coupon: ", error);
     return { success: false, message: "An unexpected error occured." };
   }
 }
@@ -156,4 +157,96 @@ export async function getCoupon(couponId:string) {
   const coupon = await db.coupon.findUnique({where: {id: couponId}});
 
   return coupon;
+}
+
+// Function: applyCoupon
+// Description: Applies a coupon to a cart for items belonging to the coupon's store.
+// Access Level: Public
+// Parameters:
+//   - couponCode - The coupon code to apply.
+//   - cartId - The ID of the cart to apply the coupon to.
+// Returns: A message indicating success or failure, along with the updated cart.
+export async function applyCoupon(
+  couponCode: string,
+  cartId: string
+): Promise<{
+  success: boolean;
+  message: string;
+  cart?: CartWithCartItemsType;
+}> {
+  try {
+    // Validate the form data coming from the front end
+    const validatedFormData = ApplyCouponFormSchema.safeParse(couponCode);
+
+    if (!validatedFormData.success) {
+      return { success: false, message: "Validation error" };
+    }
+
+    // step 1: Get coupon details
+    const coupon = await db.coupon.findUnique({
+      where: { code: couponCode },
+      include: { store: true },
+    });
+
+    if (!coupon) {
+    return { success: false, message: "Invalid coupon code." };
+    }
+
+    // step 2: validate the coupons date range
+    const currentDate = new Date();
+    const startDate = new Date(coupon.startDate);
+    const endDate = new Date(coupon.endDate);
+
+    if (currentDate < startDate || currentDate > endDate) {
+    return { success: false, message: "Coupon has expired or not active yet." };
+    }
+
+    // Step 3: Fetch the cart and validate it's existence
+    const cart = await db.cart.findUnique({
+      where: {id: cartId},
+      include: {cartItems: true},
+    });
+
+    if (!cart) {
+    return { success: false, message: "Cart not found." };
+    }
+
+    // Step 4: Ensure no coupon already applied to cart
+    if (cart.couponId) {
+    return { success: false, message: "A coupon is already applied to this cart." };
+  }
+
+  // Step 5: Filter the items from the store associated with the coupon
+  const storeItems = cart.cartItems.filter(item => item.storeId === coupon.storeId);
+
+  if (storeItems.length === 0) {
+    return {
+      success: false,
+      message:
+        "No items in the cart are available to apply this coupon.",
+    };
+  }
+
+  // Step 6: Calculate the discount on the stores Products
+  const subtotal = storeItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const ShippingTotal = storeItems.reduce((sum, item) => sum + item.shippingFee, 0);
+  const discountedAmount = Math.round(subtotal * coupon.discount / 100);
+  const newTotal = subtotal - discountedAmount + ShippingTotal;
+
+  // Step 7: Update cart with the applied coupon and the new total
+  const updatedCart = await db.cart.update({
+    where: {id: cartId},
+    data: {
+      couponId: coupon.id,
+      total: newTotal,
+    },
+    include: {cartItems: true, coupon: true},
+  });
+
+  return {success: true, message: "Coupon successfully applied.", cart: updatedCart};
+
+  } catch (error) {
+    console.error("Error applying coupon: ", error);
+    return { success: false, message: "An unexpected error occured." };
+  }
 }

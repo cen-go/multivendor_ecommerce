@@ -75,6 +75,7 @@ export default function CheckoutContainer({cart, countries, addresses, userCount
         shippingFees={cartState.shippingFees}
         subtotal={cartState.subtotal}
         total={cartState.total}
+        setCart={setCartState}
       />
     </div>
   );

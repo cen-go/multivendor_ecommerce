@@ -11,17 +11,28 @@ import toast from "react-hot-toast";
 import { placeOrder } from "@/actions/user";
 // Cart state
 import { useCartStore } from "@/store/useCartStore";
+import ApplyCouponForm from "../forms/apply-coupon";
+import { Dispatch, SetStateAction } from "react";
+import { CartWithCartItemsType } from "@/lib/types";
 
 interface Props {
   shippingFees: number;
   subtotal: number;
   total: number;
-  selectedAddress:ShippingAddress |undefined;
+  selectedAddress: ShippingAddress | undefined;
   cartId: string;
+  setCart: Dispatch<SetStateAction<CartWithCartItemsType>>;
 }
 
-export default function PlaceOrderCard({cartId, shippingFees, subtotal, total, selectedAddress}: Props) {
-  const emptyCart = useCartStore(state => state.emptyCart);
+export default function PlaceOrderCard({
+  cartId,
+  shippingFees,
+  subtotal,
+  total,
+  selectedAddress,
+  setCart,
+}: Props) {
+  const emptyCart = useCartStore((state) => state.emptyCart);
   const router = useRouter();
 
   async function handlePlaceOrder() {
@@ -75,9 +86,16 @@ export default function PlaceOrderCard({cartId, shippingFees, subtotal, total, s
             {formatCurrency(total)}
           </h3>
         </div>
+        <div className="mt-2">
+          <div className="p-4 bg-white">
+            <ApplyCouponForm cartId={cartId} setCart={setCart} />
+          </div>
+        </div>
         <div className="w-full">
           <div className="my-3 max-w-[400px] mx-auto">
-            <Button className="my-4" onClick={handlePlaceOrder}>Place Order</Button>
+            <Button className="my-4" onClick={handlePlaceOrder}>
+              Place Order
+            </Button>
           </div>
         </div>
       </div>
