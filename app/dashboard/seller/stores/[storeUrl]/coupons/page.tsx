@@ -1,8 +1,9 @@
 import CouponDetailsForm from "@/components/dashboard/forms/coupon-details";
 import DataTable from "@/components/ui/data-table"
-import { PlusIcon } from "lucide-react"
+import { PictureInPicture2 } from "lucide-react"
 import { columns } from "./columns";
 import { getStoreCoupons } from "@/actions/coupon";
+import { Coupon } from "@prisma/client";
 
 export default async function SellerCouponsPage({
   params,
@@ -11,22 +12,27 @@ export default async function SellerCouponsPage({
 }) {
   const { storeUrl } = await params;
 
-  const coupons = await getStoreCoupons(storeUrl);
+  const coupons: Coupon[] = await getStoreCoupons(storeUrl);
+
+  if (!coupons || coupons.length === 0) {
+    return <div className="text-center mt-8">No coupons to display.</div>;
+  }
+
   return (
     <div>
       <DataTable
         actionButtonText={
           <>
-            <PlusIcon size={15} />
-            Create coupon
-          </>
+          <PictureInPicture2  size={12} />
+          Create in modal
+        </>
         }
         modalChildren={<CouponDetailsForm storeUrl={storeUrl} />}
         newTabLink={`/dashboard/seller/stores/${storeUrl}/coupons/new`}
         filterValue="name"
         data={coupons}
         columns={columns}
-        searchPlaceholder="Search coupon ..."
+        searchPlaceHolder="Search coupon ..."
       />
     </div>
   );

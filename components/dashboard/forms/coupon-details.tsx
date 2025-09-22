@@ -41,9 +41,10 @@ import { format } from "date-fns";
 interface CouponDetailsProps {
   data?: Coupon;
   storeUrl: string
+  setClose?: () => void;
 }
 
-export default function CouponDetailsForm({ data, storeUrl }: CouponDetailsProps) {
+export default function CouponDetailsForm({ data, storeUrl, setClose }: CouponDetailsProps) {
   const router = useRouter();
 
   // Form hook for managing form state and validation
@@ -106,6 +107,7 @@ export default function CouponDetailsForm({ data, storeUrl }: CouponDetailsProps
     // Redirect or refresh data
     if (data?.id) {
       router.refresh();
+      if (setClose) setClose();
     } else {
       router.push(`/dashboard/seller/stores/${storeUrl}/coupons/`);
     }

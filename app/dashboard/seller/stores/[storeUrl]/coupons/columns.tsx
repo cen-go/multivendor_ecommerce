@@ -37,7 +37,7 @@ import {
 } from "lucide-react";
 
 // Queries
-// import { deleteCoupon, getCoupon } from "@/actions/coupon";
+import { deleteCoupon, getCoupon } from "@/actions/coupon";
 
 // Tanstack React Table
 import { ColumnDef } from "@tanstack/react-table";
@@ -45,7 +45,7 @@ import { ColumnDef } from "@tanstack/react-table";
 // Types
 import { Coupon } from "@prisma/client";
 import CustomModal from "@/components/dashboard/shared/custom-modal";
-import CouponDetails from "@/components/dashboard/forms/coupon-details";
+import CouponDetailsForm from "@/components/dashboard/forms/coupon-details";
 import { getTimeLeft } from "@/lib/utils";
 
 export const columns: ColumnDef<Coupon>[] = [
@@ -106,7 +106,7 @@ interface CellActionsProps {
 }
 
 // CellActions component definition
-const CellActions: React.FC<CellActionsProps> = ({ coupon }) => {
+function CellActions({ coupon }: CellActionsProps) {
   // Hooks
   const { setOpen, setClose } = useModal();
   const [loading, setLoading] = useState(false);
@@ -115,7 +115,7 @@ const CellActions: React.FC<CellActionsProps> = ({ coupon }) => {
   const params = useParams<{ storeUrl: string }>();
 
   // Return null if rowData or rowData.id don't exist
-  if (!coupon) return null;
+  if (!coupon || !coupon.id) return null;
 
   return (
     <AlertDialog>
@@ -135,9 +135,10 @@ const CellActions: React.FC<CellActionsProps> = ({ coupon }) => {
                 // Custom modal component
                 <CustomModal>
                   {/* Store details component */}
-                  <CouponDetails
+                  <CouponDetailsForm
                     data={{ ...coupon }}
                     storeUrl={params.storeUrl}
+                    setClose={setClose}
                   />
                 </CustomModal>,
                 async () => {
@@ -176,11 +177,8 @@ const CellActions: React.FC<CellActionsProps> = ({ coupon }) => {
             className="bg-destructive hover:bg-destructive mb-2 text-white"
             onClick={async () => {
               setLoading(true);
-              await deleteCoupon(coupon.id, params.storeUrl);
-              toast({
-                title: "Deleted coupon",
-                description: "The coupon has been deleted.",
-              });
+              const res = await deleteCoupon(coupon.id, params.storeUrl);
+              toast.info(res.message);
               setLoading(false);
               router.refresh();
               setClose();

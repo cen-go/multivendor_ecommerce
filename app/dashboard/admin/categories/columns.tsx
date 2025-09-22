@@ -50,7 +50,7 @@ import { ColumnDef } from "@tanstack/react-table";
 // Prisma models
 import { Category } from "@prisma/client";
 
-// TODO import getCAtegory and deleteCategory
+// Server actions
 import { getCategoryById, deleteCategory } from "@/actions/category";
 
 // COLUMNS definition
