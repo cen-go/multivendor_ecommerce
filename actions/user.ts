@@ -303,13 +303,60 @@ export async function validateCartProducts({
   ); // End of Promise.all
 
   if (updateCartInDb) {
-    const subtotal = validatedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shippingFees = validatedCartItems.reduce((sum, item) => sum + item.totalShippingFee, 0);
-    const total = subtotal + shippingFees;
+    const subtotal = validatedCartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    const shippingFees = validatedCartItems.reduce(
+      (sum, item) => sum + item.totalShippingFee,
+      0
+    );
+    let total = subtotal + shippingFees;
+    let discountedAmount = 0;
+
+    // check if a coupon is applied to the cart
+    const cartCoupon = await db.cart.findUnique({
+      where: { id: cartProducts[0].cartId },
+      select: {
+        coupon: {
+          include: {
+            store: { select: { id: true, url: true, name: true } },
+          },
+        },
+      },
+    });
+
+    if (cartCoupon?.coupon) {
+      const { coupon } = cartCoupon;
+
+      // Validate the coupons date range
+      const currentDate = new Date();
+      const startDate = new Date(coupon.startDate);
+      const endDate = new Date(coupon.endDate);
+
+      if (currentDate < startDate || currentDate > endDate) {
+        // Coupon has expired discount will be 0
+        discountedAmount = 0;
+      } else {
+        // Filter the items from the related store
+        const itemsFromCouponStore = validatedCartItems.filter(
+          (item) => item.storeId === coupon.storeId
+        );
+        const subtotalOfCouponProducts = itemsFromCouponStore.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
+        discountedAmount = Math.round(
+          (subtotalOfCouponProducts * coupon.discount) / 100
+        );
+      }
+    }
+
+    total -= discountedAmount;
 
     await db.cart.update({
-      where: {id: cartId},
-      data: {subtotal, shippingFees, total}
+      where: { id: cartId },
+      data: { subtotal, shippingFees, total },
     });
   }
 
@@ -570,7 +617,7 @@ export async function revalidateCheckoutCart(cart:CartWithCartItemsType, country
     await validateCartProducts({cartProducts: cart.cartItems, updateCartInDb: true, cartId: cart.id, countryId});
     const cartData = await db.cart.findUnique({
       where: {id: cart.id},
-      include: {cartItems: true},
+      include: {cartItems: true, coupon: true},
     });
     if (!cartData) {
       return {

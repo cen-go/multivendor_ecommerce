@@ -38,6 +38,21 @@ export default function CheckoutContainer({cart, countries, addresses, userCount
     updateShippingData();
   }, [selectedAddress?.countryId, cart, userCountry.name])
 
+  let discount = 0;
+  // calculate the discount amount if a coupon is applied
+  if (cartState.coupon) {
+    const { coupon } = cartState;
+    const applicableItems = cartState.cartItems.filter(
+      (item) => item.storeId === coupon.storeId
+    );
+    const subtotalOfCouponProducts = applicableItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    discount = Math.round((subtotalOfCouponProducts * coupon.discount) / 100);
+  }
+
   return (
     <div className="w-full flex flex-col gap-y-2 lg:flex-row">
       <div className="space-y-2 lg:flex-1">
@@ -74,8 +89,10 @@ export default function CheckoutContainer({cart, countries, addresses, userCount
         selectedAddress={selectedAddress}
         shippingFees={cartState.shippingFees}
         subtotal={cartState.subtotal}
+        discount={discount}
         total={cartState.total}
         setCart={setCartState}
+        coupon={cartState.coupon}
       />
     </div>
   );

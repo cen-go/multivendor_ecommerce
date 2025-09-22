@@ -3,6 +3,7 @@ import {
   CartItem,
   Color,
   Country,
+  Coupon,
   FreeShipping,
   FreeShippingCountry,
   Prisma,
@@ -176,6 +177,7 @@ export type VariantInfoType = {
 
 export type CartWithCartItemsType = Cart & {
   cartItems: CartItem[];
+  coupon: Coupon | null;
 }
 
 export type UserShippingAddressType = ShippingAddress & {

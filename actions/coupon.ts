@@ -3,6 +3,7 @@
 import db from "@/lib/db";
 import { ApplyCouponFormSchema, CouponFormSchema } from "@/lib/schemas";
 import { CartWithCartItemsType } from "@/lib/types";
+import { formatCurrency } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
 import { Coupon, Role } from "@prisma/client";
 
@@ -176,9 +177,10 @@ export async function applyCoupon(
 }> {
   try {
     // Validate the form data coming from the front end
-    const validatedFormData = ApplyCouponFormSchema.safeParse(couponCode);
+    const validatedFormData = ApplyCouponFormSchema.safeParse({coupon: couponCode});
 
     if (!validatedFormData.success) {
+      console.log(validatedFormData.error.flatten());
       return { success: false, message: "Validation error" };
     }
 
@@ -229,21 +231,25 @@ export async function applyCoupon(
 
   // Step 6: Calculate the discount on the stores Products
   const subtotal = storeItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const ShippingTotal = storeItems.reduce((sum, item) => sum + item.shippingFee, 0);
   const discountedAmount = Math.round(subtotal * coupon.discount / 100);
-  const newTotal = subtotal - discountedAmount + ShippingTotal;
 
   // Step 7: Update cart with the applied coupon and the new total
   const updatedCart = await db.cart.update({
     where: {id: cartId},
     data: {
       couponId: coupon.id,
-      total: newTotal,
+      total: {decrement: discountedAmount},
     },
     include: {cartItems: true, coupon: true},
   });
 
-  return {success: true, message: "Coupon successfully applied.", cart: updatedCart};
+  return {
+    success: true,
+    message: `Coupon successfully applied. Discount: ${formatCurrency(
+      discountedAmount
+    )}`,
+    cart: updatedCart,
+  };
 
   } catch (error) {
     console.error("Error applying coupon: ", error);

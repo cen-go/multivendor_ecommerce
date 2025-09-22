@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 // Utils
 import { formatCurrency } from "@/lib/utils";
 // Types
-import { ShippingAddress } from "@prisma/client";
+import { Coupon, ShippingAddress } from "@prisma/client";
 // Components
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
@@ -19,9 +19,11 @@ interface Props {
   shippingFees: number;
   subtotal: number;
   total: number;
+  discount: number;
   selectedAddress: ShippingAddress | undefined;
   cartId: string;
   setCart: Dispatch<SetStateAction<CartWithCartItemsType>>;
+  coupon: Coupon | null;
 }
 
 export default function PlaceOrderCard({
@@ -29,8 +31,10 @@ export default function PlaceOrderCard({
   shippingFees,
   subtotal,
   total,
+  discount,
   selectedAddress,
   setCart,
+  coupon,
 }: Props) {
   const emptyCart = useCartStore((state) => state.emptyCart);
   const router = useRouter();
@@ -78,6 +82,16 @@ export default function PlaceOrderCard({
             +$0.00
           </h3>
         </div>
+        {coupon && (
+          <div className="mt-2 font-medium flex items-center text-[#222] text-sm pb-1 border-b">
+            <h2 className="overflow-hidden whitespace-nowrap text-ellipsis break-normal">
+              Coupon:&nbsp;<span className="text-green-600">{coupon.code}</span>
+            </h2>
+            <h3 className="flex-1 w-0 min-w-0 text-right px-0.5 text-green-600 text-lg inline-block break-all">
+              -{formatCurrency(discount)}
+            </h3>
+          </div>
+        )}
         <div className="mt-2 font-bold flex items-center text-[#222]">
           <h2 className="overflow-hidden whitespace-nowrap text-ellipsis break-normal">
             Total
