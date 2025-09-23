@@ -92,6 +92,7 @@ export type UserCountry = {
 }
 
 import countries from "@/lib/data/countries.json";
+import { getOrder } from "@/actions/order";
 
 export type SelectMenuOption = (typeof countries)[number];
 
@@ -184,3 +185,5 @@ export type CartWithCartItemsType = Cart & {
 export type UserShippingAddressType = ShippingAddress & {
   country: Country;
 }
+
+export type OrderExtendedType = Prisma.PromiseReturnType<typeof getOrder>;

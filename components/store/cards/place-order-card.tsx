@@ -1,20 +1,20 @@
 // React, Next.js
 import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useState } from "react";
 // Utils
 import { formatCurrency } from "@/lib/utils";
 // Types
 import { Coupon, ShippingAddress, Store } from "@prisma/client";
+import { CartWithCartItemsType } from "@/lib/types";
 // Components
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+import ApplyCouponForm from "../forms/apply-coupon";
+import { PulseLoader } from "react-spinners";
 // Server actions, queries
 import { placeOrder } from "@/actions/user";
 // Cart state
 import { useCartStore } from "@/store/useCartStore";
-import ApplyCouponForm from "../forms/apply-coupon";
-import { Dispatch, SetStateAction, useState } from "react";
-import { CartWithCartItemsType } from "@/lib/types";
-import { PulseLoader } from "react-spinners";
 
 interface Props {
   shippingFees: number;

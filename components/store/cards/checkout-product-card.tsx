@@ -1,8 +1,9 @@
 // React & Next.js
 import Link from "next/link";
 import Image from "next/image";
-
+// Types
 import { CartItem } from "@prisma/client"
+
 import { ChevronRight, TruckIcon } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 

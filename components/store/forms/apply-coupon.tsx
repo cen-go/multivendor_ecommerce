@@ -19,9 +19,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
+// Types
 import { CartWithCartItemsType } from "@/lib/types";
-import { applyCoupon } from "@/actions/coupon";
 // Server action
+import { applyCoupon } from "@/actions/coupon";
 
 interface Props {
   cartId: string;

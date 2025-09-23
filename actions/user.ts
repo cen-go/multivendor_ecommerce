@@ -678,7 +678,7 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
   }
 }
 
-
+// validates cart items again and recalculates shipping costs after selected address changes
 export async function revalidateCheckoutCart(cart:CartWithCartItemsType, countryId?: string) {
   try {
     await validateCartProducts({cartProducts: cart.cartItems, updateCartInDb: true, cartId: cart.id, countryId});
