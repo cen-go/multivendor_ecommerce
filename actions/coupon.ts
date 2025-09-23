@@ -240,7 +240,7 @@ export async function applyCoupon(
       couponId: coupon.id,
       total: {decrement: discountedAmount},
     },
-    include: {cartItems: true, coupon: true},
+    include: {cartItems: true, coupon: {include: {store: true}}},
   });
 
   return {

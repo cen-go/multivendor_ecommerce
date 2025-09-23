@@ -7,10 +7,11 @@ import { ChevronRight, TruckIcon } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 interface Props {
-  product: CartItem
+  product: CartItem;
+  isCouponApplied: boolean;
 }
 
-export default function CheckoutProductCard({product}: Props) {
+export default function CheckoutProductCard({product, isCouponApplied}: Props) {
   const { productSlug, variantSlug, sizeId, shippingFee } = product;
   return (
     <div className="bg-white px-6 border-t bordet-t-[#ebebeb] select-none">
@@ -59,11 +60,14 @@ export default function CheckoutProductCard({product}: Props) {
             {/* Price - Delievery */}
             <div className="flex flex-col justify-between mt-2 relative">
               {/* Price - Qty */}
-              <div className="font-bold w-full flex items-start justify-between">
+              <div className="w-full flex items-start justify-between">
                 <div className="flex items-center gap-x-2">
-                  <span className="inline-block break-all">
+                  <span className="inline-block break-all font-bold">
                     {formatCurrency(product.price)} x {product.quantity}
                   </span>
+                  {isCouponApplied && (
+                    <span className="text-xs text-white bg-gradient-to-r from-orange-secondary to-orange-500 px-2 py-0.5 rounded-full">Coupon applied</span>
+                  )}
                 </div>
               </div>
               {/* Shipping fee */}

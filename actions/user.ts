@@ -508,47 +508,104 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
   try {
     const user = await currentUser();
     if (!user) {
-      return {success: false, message: "Unauthenticated."};
+      return { success: false, message: "Unauthenticated." };
     }
     const userId = user.id;
 
     // Fetch user's cart with items in it
     const cart = await db.cart.findUnique({
-      where: {id: cartId},
-      include: {cartItems: true},
+      where: { id: cartId },
+      include: { cartItems: true, coupon: true },
     });
 
     if (!cart) {
-      return {success: false, message: "Cart not found."};
+      return { success: false, message: "Cart not found." };
     }
 
+    const cartCoupon = cart.coupon;
+
     // Validate the address
-    const dbAddress = await db.shippingAddress.findUnique({where: {id: address.id}});
+    const dbAddress = await db.shippingAddress.findUnique({
+      where: { id: address.id },
+    });
 
     if (!dbAddress) {
-      return {success: false, message: "User address couldn't found."};
+      return { success: false, message: "User address couldn't found." };
     }
 
     const cartItems = cart.cartItems;
-    const validatedCartItems = await validateCartProducts({cartProducts: cartItems, countryId: dbAddress.countryId});
-
-    // Calculate the fees for the total of the order
-    const shippingFees = validatedCartItems.reduce((sum, item) => sum + item.totalShippingFee , 0);
-    const subtotal = validatedCartItems.reduce((sum, item) => sum + item.price * item.quantity , 0)
+    const validatedCartItems = await validateCartProducts({
+      cartProducts: cartItems,
+      countryId: dbAddress.countryId,
+    });
 
     // define type for order itemds grouped by store
-    type GroupedOrderItems = {[storeId: string]: typeof validatedCartItems};
+    type GroupedOrderItems = {
+      [storeId: string]: {
+        items: typeof validatedCartItems;
+        coupon: string | null;
+        subtotal: number;
+        shippingFees: number;
+        total: number;
+      };
+    };
     // Group the items by store with array reduce method
     const groupedOrderItems = validatedCartItems.reduce((acc, item) => {
       // if store id of the product doesn't exist in the accumulator object as a key
       // then create it as a key and asign an empty array to it
       if (!acc[item.storeId]) {
-        acc[item.storeId] = []
+        acc[item.storeId] = {
+          items: [],
+          coupon: null,
+          subtotal: 0,
+          shippingFees: 0,
+          total: 0,
+        };
       }
       // Push the product in the the array with the corresponding store id as it's key
-      acc[item.storeId].push(item);
+      acc[item.storeId].items.push(item);
       return acc;
     }, {} as GroupedOrderItems);
+
+    const storeIds = Object.keys(groupedOrderItems);
+
+    // Calculate subtotal, shipping fees and total price for each group, calculate discount if a coupon is applied
+    storeIds.forEach((storeId) => {
+      const groupSubtotal = groupedOrderItems[storeId].items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      const groupShippingFees = groupedOrderItems[storeId].items.reduce(
+        (sum, item) => sum + item.totalShippingFee,
+        0
+      );
+      let groupTotal = groupSubtotal + groupShippingFees;
+
+      if (cartCoupon && cartCoupon.storeId === storeId) {
+        const discount = Math.round(
+          (groupSubtotal * cartCoupon.discount) / 100
+        );
+        groupTotal -= discount;
+        groupedOrderItems[storeId].coupon = cartCoupon.id;
+      }
+      groupedOrderItems[storeId].subtotal = groupSubtotal;
+      groupedOrderItems[storeId].shippingFees = groupShippingFees;
+      groupedOrderItems[storeId].total = groupTotal;
+    });
+
+    // Calculate the fees for the total of the order
+    const subtotal = storeIds.reduce(
+      (sum, storeId) => sum + groupedOrderItems[storeId].subtotal,
+      0
+    );
+    const shippingFees = storeIds.reduce(
+      (sum, storeId) => sum + groupedOrderItems[storeId].shippingFees,
+      0
+    );
+    const total = storeIds.reduce(
+      (sum, storeId) => sum + groupedOrderItems[storeId].total,
+      0
+    );
 
     const order = await db.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
@@ -557,54 +614,64 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
           shippingAddressId: address.id,
           shippingFees,
           subtotal,
-          total: subtotal + shippingFees,
+          total,
           orderGroups: {
-            create: Object.keys(groupedOrderItems).map(store => ({
-              shippingService: groupedOrderItems[store][0].shippingService,
-              deliveryTimeMin: groupedOrderItems[store][0].deliveryTimeMin,
-              deliveryTimeMax: groupedOrderItems[store][0].deliveryTimeMax,
+            create: Object.keys(groupedOrderItems).map((store) => ({
+              shippingService:
+                groupedOrderItems[store].items[0].shippingService,
+              deliveryTimeMin:
+                groupedOrderItems[store].items[0].deliveryTimeMin,
+              deliveryTimeMax:
+                groupedOrderItems[store].items[0].deliveryTimeMax,
               storeId: store,
-              shippingFees: groupedOrderItems[store].reduce((sum, item) => sum + item.totalShippingFee , 0),
-              subtotal: groupedOrderItems[store].reduce((sum, item) => sum + item.price * item.quantity , 0),
-              total: groupedOrderItems[store].reduce((sum, item) => sum + (item.price * item.quantity + item.totalShippingFee) , 0),
+              shippingFees: groupedOrderItems[store].shippingFees,
+              subtotal: groupedOrderItems[store].subtotal,
+              total: groupedOrderItems[store].total,
+              couponId: groupedOrderItems[store].coupon,
               orderItems: {
-                create: groupedOrderItems[store].map(item => ({
-                  name: item.combinedName,
-                  productId: item.productId,
-                  variantId: item.variantId,
-                  sizeId: item.sizeId,
-                  productSlug: item.productSlug,
-                  variantSlug: item.variantSlug,
-                  size: item.size,
-                  sku: item.sku,
-                  image: item.image,
-                  quantity: item.quantity,
-                  shippingFee: item.shippingFee,
-                  price: item.price,
-                  totalPrice: item.totalPrice,
-                } as Prisma.OrderItemCreateInput))
+                create: groupedOrderItems[store].items.map(
+                  (item) =>
+                    ({
+                      name: item.combinedName,
+                      productId: item.productId,
+                      variantId: item.variantId,
+                      sizeId: item.sizeId,
+                      productSlug: item.productSlug,
+                      variantSlug: item.variantSlug,
+                      size: item.size,
+                      sku: item.sku,
+                      image: item.image,
+                      quantity: item.quantity,
+                      shippingFee: item.shippingFee,
+                      price: item.price,
+                      totalPrice: item.totalPrice,
+                    } as Prisma.OrderItemCreateInput)
+                ),
               },
-            }))
-          }
+            })),
+          },
         },
       });
 
       // decrease the stock if the order is placed successfully
       for (const item of validatedCartItems) {
         await tx.size.update({
-          where: {id: item.sizeId},
-          data: {quantity: {decrement: item.quantity}},
+          where: { id: item.sizeId },
+          data: { quantity: { decrement: item.quantity } },
         });
       }
 
       // Delete the cart
-      await tx.cart.delete({where:{id: cartId}});
+      await tx.cart.delete({ where: { id: cartId } });
 
       return createdOrder;
     });
 
-    return {success: true, message: "Order successfully created", orderId: order.id};
-
+    return {
+      success: true,
+      message: "Order successfully created",
+      orderId: order.id,
+    };
   } catch (error) {
     console.error("Error placing the order: ", error)
     return { success: false, message: "An unexpected error occured!" };
@@ -616,8 +683,8 @@ export async function revalidateCheckoutCart(cart:CartWithCartItemsType, country
   try {
     await validateCartProducts({cartProducts: cart.cartItems, updateCartInDb: true, cartId: cart.id, countryId});
     const cartData = await db.cart.findUnique({
-      where: {id: cart.id},
-      include: {cartItems: true, coupon: true},
+      where: { id: cart.id },
+      include: { cartItems: true, coupon: { include: { store: true } } },
     });
     if (!cartData) {
       return {

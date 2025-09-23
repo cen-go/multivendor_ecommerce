@@ -64,7 +64,7 @@ export default function CheckoutContainer({cart, countries, addresses, userCount
           setSelectedAddress={setSelectedAddress}
         />
         {/* country note */}
-        <div className="mt-5">
+        <div className="mt-3">
           <CountryNote
             userCountry={
               selectedAddress
@@ -77,9 +77,13 @@ export default function CheckoutContainer({cart, countries, addresses, userCount
           />
         </div>
         {/* Checkout Table */}
-        <div className="my-5">
+        <div className="my-3">
           {cartState.cartItems.map((product) => (
-            <CheckoutProductCard key={product.id} product={product} />
+            <CheckoutProductCard
+              key={product.id}
+              product={product}
+              isCouponApplied={cartState.coupon?.storeId === product.storeId}
+            />
           ))}
         </div>
       </div>

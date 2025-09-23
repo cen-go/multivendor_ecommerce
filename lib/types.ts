@@ -14,6 +14,7 @@ import {
   ShippingFeeMethod,
   ShippingRate,
   Size,
+  Store,
   User,
 } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
@@ -177,7 +178,7 @@ export type VariantInfoType = {
 
 export type CartWithCartItemsType = Cart & {
   cartItems: CartItem[];
-  coupon: Coupon | null;
+  coupon: Coupon & {store: Store} | null;
 }
 
 export type UserShippingAddressType = ShippingAddress & {

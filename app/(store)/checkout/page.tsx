@@ -19,7 +19,7 @@ export default async function CheckoutPage() {
   // Get user cart
   const cart = await db.cart.findUnique({
     where: { userId: user.id },
-    include: { cartItems: true },
+    include: { cartItems: true, coupon: { include: { store: true } } },
   });
 
   if (!cart) redirect("/cart");
