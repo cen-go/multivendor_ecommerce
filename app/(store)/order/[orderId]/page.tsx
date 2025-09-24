@@ -1,4 +1,5 @@
 import { getOrder } from "@/actions/order";
+import OrderHeader from "@/components/store/order-page/order-header";
 import { OrderExtendedType } from "@/lib/types";
 import { redirect } from "next/navigation";
 
@@ -19,6 +20,8 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
   console.log(totalItemsCount);
 
   return (
-    <div>OrderPage, Order ID: {orderId}</div>
+    <div>
+      <OrderHeader order={order} />
+    </div>
   )
 }
