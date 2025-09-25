@@ -114,9 +114,10 @@ export async function getUserCountry(): Promise<UserCountry> {
 const ShippingDateTimeFormatter = new Intl.DateTimeFormat("en-US", {dateStyle: 'long'});
 export function calculateShippingDateRange(
   minDays: number,
-  maxDays: number
+  maxDays: number,
+  date?: Date,
 ): { minDate: string; maxDate: string } {
-  const currentDate = new Date();
+  const currentDate = date ? date : new Date();
 
   const minDate = new Date(currentDate);
   minDate.setDate(currentDate.getDate() + minDays);

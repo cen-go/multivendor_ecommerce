@@ -6,6 +6,8 @@ import {
   Coupon,
   FreeShipping,
   FreeShippingCountry,
+  OrderGroup,
+  OrderItem,
   Prisma,
   ProductVariantImage,
   Review,
@@ -188,3 +190,9 @@ export type UserShippingAddressType = ShippingAddress & {
 }
 
 export type OrderExtendedType = Prisma.PromiseReturnType<typeof getOrder>;
+
+export type OrderGroupWithItemsType = OrderGroup & {
+  orderItems: OrderItem[];
+  coupon: Coupon | null;
+  store: Store;
+};

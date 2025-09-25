@@ -2,8 +2,10 @@ import { getOrder } from "@/actions/order";
 import OrderInfoCard from "@/components/store/cards/order/order-info-card";
 import OrderTotalDetailsCard from "@/components/store/cards/order/order-total-card";
 import OrderUserDetailsCard from "@/components/store/cards/order/order-user-card";
+import OrderGroupTable from "@/components/store/order-page/order-group-table";
 import OrderHeader from "@/components/store/order-page/order-header";
 import { OrderExtendedType } from "@/lib/types";
+import { calculateShippingDateRange } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 export default async function OrderPage({params}: {params: Promise<{orderId: string}>}) {
@@ -20,7 +22,21 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
     0
   );
 
-  console.log(totalItemsCount);
+  // extract order groups and arrange delivery details for each individeual group
+  const {orderGroups} = order;
+  const deliveryDetails = orderGroups.map((group) => {
+      const { minDate, maxDate } = calculateShippingDateRange(
+        group.deliveryTimeMin,
+        group.deliveryTimeMax,
+        group.createdAt
+      );
+  
+      return {
+        shippingService: group.shippingService,
+        deliveryMinDate: minDate,
+        deliveryMaxDate: maxDate,
+      };
+    });
 
   return (
     <div className="p-2">
@@ -31,7 +47,7 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
           gridTemplateColumns:
             order.paymentStatus === "PENDING" ||
             order.paymentStatus === "FAILED"
-              ? "400px 3fr 1fr"
+              ? "320px 3fr 1fr"
               : "1fr 4fr",
         }}
       >
@@ -45,20 +61,26 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
             deliveredItemsCount={1}
             paymentDetails={order.paymentDetails}
           />
-          {(order.paymentStatus !== "PENDING" &&
-            order.paymentStatus !== "FAILED") && (
-            <OrderTotalDetailsCard
-              details={{
-                subTotal: order.subtotal,
-                shippingFees: order.shippingFees,
-                total: order.total,
-              }}
-            />
-          )}
+          {order.paymentStatus !== "PENDING" &&
+            order.paymentStatus !== "FAILED" && (
+              <OrderTotalDetailsCard
+                details={{
+                  subTotal: order.subtotal,
+                  shippingFees: order.shippingFees,
+                  total: order.total,
+                }}
+              />
+            )}
         </div>
         {/* Col 2 --> Order groups and items */}
-        <div className="h-[calc(100vh-195px)] overflow-auto scrollbar bg-emerald-50">
+        <div className="h-[calc(100vh-195px)] overflow-auto scrollbar">
           {/* Order group details */}
+          <section className="p-2 relative w-full space-y-4">
+            {orderGroups.map((group, index) => {
+              const deliveryInfo = deliveryDetails[index];
+            return <OrderGroupTable deliveryInfo={deliveryInfo} group={group} key={group.id} check />;
+          })}
+          </section>
         </div>
         {/* Col 3 --> Payment gateways */}
         {(order.paymentStatus === "PENDING" ||
