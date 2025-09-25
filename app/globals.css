@@ -209,3 +209,12 @@
 .dark .select-item.selected {
   background-color: oklch(0.279 0.041 260.031) !important;
 }
+
+/* Custom scrollbar */
+.scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 5px;
+}

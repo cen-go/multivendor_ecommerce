@@ -184,6 +184,7 @@ export type CartWithCartItemsType = Cart & {
 
 export type UserShippingAddressType = ShippingAddress & {
   country: Country;
+  user: User;
 }
 
 export type OrderExtendedType = Prisma.PromiseReturnType<typeof getOrder>;
