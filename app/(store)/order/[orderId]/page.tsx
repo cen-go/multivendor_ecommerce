@@ -4,6 +4,7 @@ import OrderTotalDetailsCard from "@/components/store/cards/order/order-total-ca
 import OrderUserDetailsCard from "@/components/store/cards/order/order-user-card";
 import OrderGroupTable from "@/components/store/order-page/order-group-table";
 import OrderHeader from "@/components/store/order-page/order-header";
+import OrderPayment from "@/components/store/order-page/order-payment";
 import { OrderExtendedType } from "@/lib/types";
 import { calculateShippingDateRange } from "@/lib/utils";
 import { redirect } from "next/navigation";
@@ -52,7 +53,7 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
         }}
       >
         {/* Col 1 --> User, Order details */}
-        <div className="h-[calc(100vh-195px)] overflow-auto flex flex-col gap-y-5 scrollbar bg-violet-50">
+        <div className="h-[calc(100vh-195px)] overflow-auto flex flex-col gap-y-5 scrollbar">
           {/* User Card */}
           <OrderUserDetailsCard shippingAddress={order.shippingAddress} />
           {/* Order General Info */}
@@ -85,7 +86,7 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
         {/* Col 3 --> Payment gateways */}
         {(order.paymentStatus === "PENDING" ||
           order.paymentStatus === "FAILED") && (
-          <div className="h-[calc(100vh-195px)] overflow-auto scrollbar bg-orange-50 border px-2 py-4 space-y-5">
+          <div className="h-[calc(100vh-195px)] overflow-auto scrollbar border px-2 py-4 space-y-5">
             {/* Order total details */}
             <OrderTotalDetailsCard
               details={{
@@ -94,6 +95,7 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
                 total: order.total,
               }}
             />
+            <OrderPayment orderId={order.id} amount={order.total} />
           </div>
         )}
       </div>

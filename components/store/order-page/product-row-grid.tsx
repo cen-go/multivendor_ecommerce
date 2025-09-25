@@ -54,9 +54,9 @@ export default function ProductRowGrid({ product }: { product: OrderItem }) {
                 <p className="font-medium text-sm leading-7 text-black">
                   Status
                 </p>
-                <p className="leading-6 py-0.5 mt-3 flex">
+                <div className="leading-6 py-0.5 mt-3 flex">
                   <ProductStatusTag status={product.status} />
-                </p>
+                </div>
               </div>
             </div>
           </div>
