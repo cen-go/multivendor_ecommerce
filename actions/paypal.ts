@@ -58,7 +58,7 @@ export async function createPayPalPayment(OrderId: string) {
     const orderData = await response.json();
 
     if (orderData.id) {
-      return orderData.id;
+      return orderData;
     }
 
     const errorDetail = orderData?.details?.[0];
@@ -101,4 +101,103 @@ export async function generatePayPalAccessToken() {
 
   const responseData = await response.json();
   return responseData.access_token;
+}
+
+// Function: capturePayPalPayment
+// Description: Captures a paypal payment and updates the order status in the database
+// Permission Level: User
+// Parameters:
+//     - orderId: The ID of the order in db that's status to be updated
+//     - paypalOrderId: The ID of the paypal order received from createPaypalOrder function
+// Returns: updated order details
+export async function capturePayPalPayment(orderId: string, paypalOrderId: string) {
+  try {
+    const user = await currentUser();
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+
+    // Create a paypal access token
+    const accessToken = await generatePayPalAccessToken();
+
+    // Capture the payment using paypal API
+    const response = await fetch(
+      `https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    const paypalOrderData = await response.json();
+    console.log("Captured paypal payment data ==>", paypalOrderData.purchase_units?.[0]?.payments?.captures?.[0].amount.value);
+
+    const paidAmountInDollar = Number(paypalOrderData?.purchase_units?.[0]?.payments?.captures?.[0].amount.value);
+    const paidAmountInCents = Math.round(paidAmountInDollar * 100);
+
+    console.log("DOLLAR ===>", paidAmountInDollar, "CENTS =====>", paidAmountInCents);
+
+    await db.$transaction(async (tx) => {
+      const newPaymentDetails = await tx.paymentDetails.upsert({
+        where: {orderId},
+        update: {
+          paymentIntentId: paypalOrderId,
+          paymentMethod: "paypal",
+          status: paypalOrderData?.status === "COMPLETED" ? "Completed" : paypalOrderData.status,
+          amount: paidAmountInCents,
+          currency: paypalOrderData?.purchase_units?.[0]?.payments?.captures?.[0].amount.currency_code,
+        },
+        create: {
+          paymentIntentId: paypalOrderId,
+          paymentMethod: "paypal",
+          status: paypalOrderData?.status === "COMPLETED" ? "Completed" : paypalOrderData.status,
+          amount: paidAmountInCents,
+          currency: paypalOrderData?.purchase_units?.[0]?.payments?.captures?.[0].amount.currency_code,
+          orderId,
+          userId: user.id,
+        },
+      });
+      console.log("created payment detail in db");
+
+      // Connect the order with the new payment details
+      const order = await tx.order.update({
+        where: {id: orderId},
+        data: {
+          paymentDetails: {connect: {id: newPaymentDetails.id}},
+          paymentStatus: paypalOrderData.status === "COMPLETED" ? "PAID" : "FAILED",
+        },
+        include: {
+          orderGroups: {
+            include: {orderItems: true},
+          },
+        },
+      });
+
+      // If the payment was success then reduce the stock of the items
+      if (paypalOrderData.status === "COMPLETED") {
+        const { orderGroups } = order;
+        for (const group of orderGroups) {
+          for (const item of group.orderItems) {
+            await tx.size.update({
+              where: { id: item.sizeId },
+              data: {
+                quantity: { decrement: item.quantity },
+              },
+            });
+            console.log(`Decremented ${item.name}`);
+          }
+        }
+      }
+    });
+
+    return paypalOrderData;
+
+  } catch (error) {
+    console.error("Could not approve PayPal Checkout: ", error);
+    throw error;
+  }
 }

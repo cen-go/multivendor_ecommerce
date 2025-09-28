@@ -653,14 +653,6 @@ export async function placeOrder(address: ShippingAddress, cartId: string ) {
         },
       });
 
-      // decrease the stock if the order is placed successfully
-      for (const item of validatedCartItems) {
-        await tx.size.update({
-          where: { id: item.sizeId },
-          data: { quantity: { decrement: item.quantity } },
-        });
-      }
-
       // Delete the cart
       await tx.cart.delete({ where: { id: cartId } });
 

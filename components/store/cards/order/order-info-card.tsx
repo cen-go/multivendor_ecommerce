@@ -32,7 +32,7 @@ export default function OrderInfoCard({
           {paymentDetails ? paymentDetails.paymentIntentId : "-"}
         </p>
         <p className="mt-0.5 text-neutral-500 text-sm">
-          {paymentDetails && paymentDetails.status === "COMPLETED"
+          {paymentDetails && paymentDetails.status === "Completed"
             ? paymentDetails.updatedAt.toDateString()
             : "-"}
         </p>
