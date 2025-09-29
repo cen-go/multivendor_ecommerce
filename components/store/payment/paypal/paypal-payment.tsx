@@ -20,6 +20,7 @@ export default function PaypalPayment({orderId}: {orderId: string}) {
           shape: "pill",
           label: "pay",
         }}
+        fundingSource="paypal"
         createOrder={createOrder}
         onApprove={async (data, actions) => {
           try {

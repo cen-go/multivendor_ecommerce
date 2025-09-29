@@ -134,12 +134,10 @@ export async function capturePayPalPayment(orderId: string, paypalOrderId: strin
     );
 
     const paypalOrderData = await response.json();
-    console.log("Captured paypal payment data ==>", paypalOrderData.purchase_units?.[0]?.payments?.captures?.[0].amount.value);
 
+    // convert the amount coming from PayPal API in dollars as string to an integer in cents as db expects
     const paidAmountInDollar = Number(paypalOrderData?.purchase_units?.[0]?.payments?.captures?.[0].amount.value);
     const paidAmountInCents = Math.round(paidAmountInDollar * 100);
-
-    console.log("DOLLAR ===>", paidAmountInDollar, "CENTS =====>", paidAmountInCents);
 
     await db.$transaction(async (tx) => {
       const newPaymentDetails = await tx.paymentDetails.upsert({
@@ -161,7 +159,6 @@ export async function capturePayPalPayment(orderId: string, paypalOrderId: strin
           userId: user.id,
         },
       });
-      console.log("created payment detail in db");
 
       // Connect the order with the new payment details
       const order = await tx.order.update({
@@ -188,7 +185,6 @@ export async function capturePayPalPayment(orderId: string, paypalOrderId: strin
                 quantity: { decrement: item.quantity },
               },
             });
-            console.log(`Decremented ${item.name}`);
           }
         }
       }

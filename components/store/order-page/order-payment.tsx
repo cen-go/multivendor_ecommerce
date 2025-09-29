@@ -1,5 +1,6 @@
 import PaypalPayment from "../payment/paypal/paypal-payment";
 import PaypalWrapper from "../payment/paypal/paypal-wrapper";
+import StripePayment from "../payment/stripe/stripe-payment";
 import StripeWrapper from "../payment/stripe/stripe-wrapper";
 
 interface Props {
@@ -18,7 +19,7 @@ export default function OrderPayment({orderId, amount}: Props) {
       </PaypalWrapper>
       {/* Stripe */}
       <StripeWrapper amount={amount}>
-        <div></div>
+        <StripePayment orderId={orderId} />
       </StripeWrapper>
     </div>
   )

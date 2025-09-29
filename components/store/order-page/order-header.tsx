@@ -1,9 +1,8 @@
 "use client";
 import OrderStatusTag from "@/components/shared/order-status-tag";
 import PaymentStatusTag from "@/components/shared/payment-status-tag";
-import { Button } from "@/components/ui/button";
 import { OrderExtendedType } from "@/lib/types";
-import { ChevronLeft, ChevronRight, Download, Printer } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";
 
 export default function OrderHeader({ order }: { order: OrderExtendedType }) {
@@ -28,17 +27,6 @@ export default function OrderHeader({ order }: { order: OrderExtendedType }) {
           <div className="w-full flex items-center gap-x-4">
             <PaymentStatusTag status={order.paymentStatus} />
             <OrderStatusTag status={order.orderStatus} />
-          </div>
-          {/* Actions */}
-          <div className="flex items-center gap-x-4">
-            <Button variant="outline" >
-              <Download className="w-4 me-2" />
-              Export
-            </Button>
-            <Button variant="outline" >
-              <Printer className="w-4 me-2" />
-              Print
-            </Button>
           </div>
         </div>
       </div>
