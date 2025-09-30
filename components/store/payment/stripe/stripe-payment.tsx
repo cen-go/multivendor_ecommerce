@@ -1,12 +1,15 @@
 "use client";
 
+// React & Next.js
 import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+// Stripe
 import {
   useStripe,
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
-import { FormEvent, useState } from "react";
+// Server actions
 import {
   createStripePaymentIntent,
   insertStripePaymentIntoDb,

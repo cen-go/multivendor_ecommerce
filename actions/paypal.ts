@@ -26,6 +26,10 @@ export async function createPayPalPayment(OrderId: string) {
       throw new Error("Order not found.");
     }
 
+    if (order.paymentStatus === "PAID") {
+      throw new Error("This order is already paid.");
+    }
+
     // Convert order total to USD from cents and string to send to paypal
     const orderTotal = (order.total / 100).toFixed(2);
 

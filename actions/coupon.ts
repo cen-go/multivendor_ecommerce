@@ -1,10 +1,13 @@
 "use server"
 
 import db from "@/lib/db";
+// Zod Schemas
 import { ApplyCouponFormSchema, CouponFormSchema } from "@/lib/schemas";
-import { CartWithCartItemsType } from "@/lib/types";
+
 import { formatCurrency } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
+// Types
+import { CartWithCartItemsType } from "@/lib/types";
 import { Coupon, Role } from "@prisma/client";
 
 // Function: upsertCoupon

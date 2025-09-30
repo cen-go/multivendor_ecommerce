@@ -1,9 +1,9 @@
 "use client";
+
 import OrderStatusTag from "@/components/shared/order-status-tag";
 import PaymentStatusTag from "@/components/shared/payment-status-tag";
 import { OrderExtendedType } from "@/lib/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React from "react";
 
 export default function OrderHeader({ order }: { order: OrderExtendedType }) {
   if (!order) return;

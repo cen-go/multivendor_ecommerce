@@ -1,9 +1,9 @@
 "use client"
 
+import { useRouter } from "next/navigation";
 import { PayPalButtons } from "@paypal/react-paypal-js"
 import { capturePayPalPayment, createPayPalPayment } from "@/actions/paypal";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 export default function PaypalPayment({orderId}: {orderId: string}) {
   const router = useRouter();

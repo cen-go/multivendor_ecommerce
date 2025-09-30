@@ -1,13 +1,18 @@
+// React & Next.js
+import { redirect } from "next/navigation";
+// Server actions
 import { getOrder } from "@/actions/order";
+// Components
 import OrderInfoCard from "@/components/store/cards/order/order-info-card";
 import OrderTotalDetailsCard from "@/components/store/cards/order/order-total-card";
 import OrderUserDetailsCard from "@/components/store/cards/order/order-user-card";
 import OrderGroupTable from "@/components/store/order-page/order-group-table";
 import OrderHeader from "@/components/store/order-page/order-header";
 import OrderPayment from "@/components/store/order-page/order-payment";
+// Types
 import { OrderExtendedType } from "@/lib/types";
+// Utils
 import { calculateShippingDateRange } from "@/lib/utils";
-import { redirect } from "next/navigation";
 
 export default async function OrderPage({params}: {params: Promise<{orderId: string}>}) {
   const { orderId } = await params;
