@@ -196,3 +196,9 @@ export type OrderGroupWithItemsType = OrderGroup & {
   coupon: Coupon | null;
   store: Store;
 };
+
+export type SearchResultsType = {
+  name: string;
+  link: string;
+  image: string;
+}
