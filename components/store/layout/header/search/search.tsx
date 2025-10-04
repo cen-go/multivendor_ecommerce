@@ -1,9 +1,12 @@
 "use client"
 
-import { SearchResultsType } from "@/lib/types";
-import { SearchIcon } from "lucide-react";
+// React & Next.js
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
+// Types
+import { SearchResultsType } from "@/lib/types";
+
+import { SearchIcon } from "lucide-react";
 import SearchSuggestions from "./suggestions";
 
 export default function Search() {

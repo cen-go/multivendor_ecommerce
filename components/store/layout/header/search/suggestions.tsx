@@ -1,7 +1,9 @@
-import { SearchResultsType } from "@/lib/types"
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+// React & Next.js
 import { Dispatch, SetStateAction } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+// Types
+import { SearchResultsType } from "@/lib/types"
 
 interface Props {
   suggestions: SearchResultsType[];
