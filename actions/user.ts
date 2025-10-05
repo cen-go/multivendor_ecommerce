@@ -80,7 +80,6 @@ export async function followStore(storeId: string) {
   }
 }
 
-
 // Function: saveUserCart
 // Description: Saves the user's cart by validating product data from the database
 //              and assuring no front-end manipulation.
@@ -148,7 +147,6 @@ export async function saveUserCart(cartProducts:CartProductType[]) {
     return { success: false, message: "An unexpected error occured!" };
   }
 }
-
 
 // Function to revalidate products to avoid front end manipulations
 // and remake the calculations when the country data changes
@@ -418,12 +416,11 @@ export async function addToWishlist(productId: string, variantId: string, sizeId
 export async function getUserShippingAddresses(userId:string) {
   const userAdresses = await db.shippingAddress.findMany({
     where: {userId},
-    include: {country: true},
+    include: {country: true, user:true},
   });
 
   return userAdresses
 }
-
 
 // Function: upsertUserAddress
 // Description: creates a new address for a specific user or updates an existing address.
