@@ -1,9 +1,12 @@
 import { getUserOrders } from "@/actions/profile"
+import OrdersTable from "@/components/store/profile/orders-table";
 
 export default async function UserOrdersPage() {
-  const orders = await getUserOrders({});
+  const ordersData = await getUserOrders({});
 
   return (
-    <div>UserOrdersPage</div>
+    <div>
+      <OrdersTable orders={ordersData.orders} totalPages={ordersData.totalPages} />
+    </div>
   )
 }

@@ -95,6 +95,7 @@ export type UserCountry = {
 
 import countries from "@/lib/data/countries.json";
 import { getOrder } from "@/actions/order";
+import { getUserOrders } from "@/actions/profile";
 
 export type SelectMenuOption = (typeof countries)[number];
 
@@ -202,3 +203,5 @@ export type SearchResultsType = {
   link: string;
   image: string;
 }
+
+export type UserOrderType = Prisma.PromiseReturnType<typeof getUserOrders>["orders"][0];

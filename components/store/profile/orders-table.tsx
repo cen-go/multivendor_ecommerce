@@ -1,0 +1,131 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { UserOrderType } from "@/lib/types";
+import { formatCurrency } from "@/lib/utils";
+import PaymentStatusTag from "@/components/shared/payment-status-tag";
+import OrderStatusTag from "@/components/shared/order-status-tag";
+import Pagination from "@/components/shared/pagination";
+import { getUserOrders } from "@/actions/profile";
+
+interface Props {
+  orders: UserOrderType[];
+  totalPages: number;
+}
+
+export default function OrdersTable({ orders, totalPages }: Props) {
+  const [tableData, setTableData] = useState<UserOrderType[]>(orders);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    async function getOrders() {
+      const response = await getUserOrders({ page });
+      if (response.orders) {
+        setTableData(response.orders)
+      }
+    }
+
+    getOrders();
+  }, [page]);
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      {/* Table */}
+      <div className="bg-white px-6 py-1 overflow-hidden">
+        {/* Scrollable Table container */}
+        <div className="max-h-[700px] overflow-x-auto overflow-y-auto scrollbar border rounded-md">
+          <table className="w-full min-w-max table-auto text-left">
+            <thead>
+              <tr>
+                <th className="cursor-pointer text-sm border-y p-4">Order</th>
+                <th className="cursor-pointer text-sm border-y p-4">
+                  Products
+                </th>
+                <th className="cursor-pointer text-sm border-y p-4 hidden md:inline-block">
+                  Items
+                </th>
+                <th className="cursor-pointer text-sm border-y p-4 hidden md:inline-block">
+                  Payment
+                </th>
+                <th className="cursor-pointer text-sm border-y p-4 hidden md:inline-block">
+                  Delivery
+                </th>
+                <th className="cursor-pointer text-sm border-y p-4">Total</th>
+                <th className="cursor-pointer text-sm border-y p-4"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.map((order) => {
+                const totalItemsCount = order.orderGroups.reduce(
+                  (tot, gr) =>
+                    tot +
+                    gr.orderItems.reduce(
+                      (grTot, item) => grTot + item.quantity,
+                      0
+                    ),
+                  0
+                );
+
+                const images = order.orderGroups.flatMap((gr) =>
+                  gr.orderItems.map((item) => item.image)
+                );
+                return (
+                  <tr key={order.id} className="border-b">
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col w-[80px] xl:w-auto">
+                          <p className="block antialiased font-sans text-sm leading-normal font-normal whitespace-nowrap overflow-hidden overflow-ellipsis">
+                            #{order.id}
+                          </p>
+                          <p className="antialiased font-sans text-sm leading-normal font-normal">
+                            {order.createdAt.toDateString().slice(4)}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex">
+                        {images.slice(0, 4).map((img, i) => (
+                          <Image
+                            key={img}
+                            src={img}
+                            alt=""
+                            width={50}
+                            height={50}
+                            className="w-8 h-8 object-cover shadow-sm rounded-full"
+                            style={{ transform: `translateX(-${i * 8}px)` }}
+                          />
+                        ))}
+                      </div>
+                    </td>
+                    <td className="p-4 hidden md:inline-block">
+                      {totalItemsCount} pcs
+                    </td>
+                    <td className="p-4 text-center hidden md:inline-block">
+                      <PaymentStatusTag status={order.paymentStatus} isTable />
+                    </td>
+                    <td className="p-4 hidden md:inline-block">
+                      <OrderStatusTag status={order.orderStatus} />
+                    </td>
+                    <td className="p-4 text-sm md:text-base">{formatCurrency(order.total)}</td>
+                    <td className="p-4">
+                      <Link href={`/order/${order.id}`}>
+                        <span className="text-sm text-blue-primary cursor-pointer hover:underline">
+                          View
+                        </span>
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <Pagination totalPages={totalPages} page={page} setPage={setPage} />
+        </div>
+      </div>
+    </div>
+  );
+}

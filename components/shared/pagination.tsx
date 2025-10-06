@@ -36,7 +36,7 @@ export default function Pagination({ page, totalPages, setPage }: Props) {
               className={cn(
                 "text-sm font-medium leading-none cursor-pointer text-gray-600  hover:text-orange-background  border-t border-transparent pt-3 mr-4 px-2",
                 {
-                  "font-bold border-orange-background hover:text-gray-600": p === page,
+                  "font-bold border-orange-background text-orange-background hover:text-gray-600": p === page,
                 }
               )}
               onClick={() => setPage(p)}

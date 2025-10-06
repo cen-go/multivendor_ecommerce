@@ -115,7 +115,7 @@ export default function UserMenu() {
                   <div>
                     {/* Links */}
                     <div className="max-w-[calc(100vh-180px)] text-secondary-foreground overflow-y-auto overflow-x-hidden pt-0 px-2 pb-4">
-                      <ul className="grid grid-cols-2 gap-2 py-2.5 px-4 w-full">
+                      <ul className="flex justify-between gap-2 py-2.5 px-4 w-full">
                         {links.map((item) => (
                           <li
                             key={item.title}
