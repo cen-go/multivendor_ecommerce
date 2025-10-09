@@ -15,6 +15,8 @@ import { subMonths, subYears } from "date-fns";
 //   - search: the string to search by.
 //   - period: The period of orders u wanna get.
 // Returns: Array containing user orders with groups sorted by totalPrice in descending order.
+export type UserOrdersFilter = "all" | "unpaid" | "toShip" | "shipped" | "delivered";
+export type UserOrdersTimePeriod = "all" | "6-months" | "1-year" | "2-year"
 export async function getUserOrders({
   filter = "all",
   page = 1,
@@ -22,11 +24,11 @@ export async function getUserOrders({
   search = "",
   period = "all",
 }: {
-  filter?: "all" | "unpaid" | "toShip" | "shipped" | "delivered";
+  filter?: UserOrdersFilter;
   page?: number;
   pageSize?: number;
   search?: string; // Search by product ID, store name  or product name
-  period?: "all" | "6-months" | "1-year" | "2-year";
+  period?: UserOrdersTimePeriod;
 }) {
   const user = await currentUser();
   if (!user) {
@@ -49,7 +51,11 @@ export async function getUserOrders({
     (whereClause.AND as Prisma.OrderWhereInput[]).push({orderStatus: OrderStatus.PROCESSING})
   }
   if (filter === "shipped") {
-    (whereClause.AND as Prisma.OrderWhereInput[]).push({orderStatus: OrderStatus.SHIPPED})
+    (whereClause.AND as Prisma.OrderWhereInput[]).push({OR : [
+      {orderStatus: OrderStatus.SHIPPED},
+      {orderStatus: OrderStatus.ON_DELIVERY},
+      {orderStatus: OrderStatus.PARTIALLY_SHIPPED},
+    ]})
   }
   if (filter === "delivered") {
     (whereClause.AND as Prisma.OrderWhereInput[]).push({orderStatus: OrderStatus.DELIVERED})
@@ -83,7 +89,7 @@ export async function getUserOrders({
           orderGroups: {
             some: {
               orderItems: {
-                some: {name: search} // Search by product name
+                some: {name: {contains: search}} // Search by product name
               }
             }
           }

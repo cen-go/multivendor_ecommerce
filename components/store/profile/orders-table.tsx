@@ -8,7 +8,8 @@ import { formatCurrency } from "@/lib/utils";
 import PaymentStatusTag from "@/components/shared/payment-status-tag";
 import OrderStatusTag from "@/components/shared/order-status-tag";
 import Pagination from "@/components/shared/pagination";
-import { getUserOrders } from "@/actions/profile";
+import { getUserOrders, UserOrdersFilter, UserOrdersTimePeriod } from "@/actions/profile";
+import OrdersTableHeader from "./orders-table-header";
 
 interface Props {
   orders: UserOrderType[];
@@ -18,43 +19,63 @@ interface Props {
 export default function OrdersTable({ orders, totalPages }: Props) {
   const [tableData, setTableData] = useState<UserOrderType[]>(orders);
   const [page, setPage] = useState(1);
+  const [totalDataPages, setTotalDataPages] = useState(totalPages);
+
+  // States for filtering and search
+  const [filter , setFilter] = useState<UserOrdersFilter>("all");
+  const [timePeriod , setTimePeriod] = useState<UserOrdersTimePeriod>("all");
+  const [searchTerm , setSearchTerm] = useState<string>("");
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, timePeriod, searchTerm])
+  
 
   useEffect(() => {
     async function getOrders() {
-      const response = await getUserOrders({ page });
+      const response = await getUserOrders({ page, filter, period: timePeriod, search: searchTerm });
       if (response.orders) {
-        setTableData(response.orders)
+        setTableData(response.orders);
+        setTotalDataPages(response.totalPages);
       }
     }
 
     getOrders();
-  }, [page]);
+  }, [page, filter, timePeriod, searchTerm]);
 
   return (
-    <div className="space-y-4">
+    <div>
       {/* Header */}
+      <OrdersTableHeader
+        filter={filter}
+        setFilter={setFilter}
+        timePeriod={timePeriod}
+        setTimePeriod={setTimePeriod}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
       {/* Table */}
-      <div className="bg-white px-6 py-1 overflow-hidden">
+      <div className="bg-white px-6 pt-1 pb-8 overflow-hidden">
         {/* Scrollable Table container */}
         <div className="max-h-[700px] overflow-x-auto overflow-y-auto scrollbar border rounded-md">
           <table className="w-full min-w-max table-auto text-left">
             <thead>
-              <tr>
-                <th className="cursor-pointer text-sm border-y p-4">Order</th>
-                <th className="cursor-pointer text-sm border-y p-4">
+              <tr className="border-b">
+                <th className="cursor-pointer text-sm p-4">Order</th>
+                <th className="cursor-pointer text-sm p-4">
                   Products
                 </th>
-                <th className="cursor-pointer text-sm border-y p-4 hidden md:inline-block">
+                <th className="cursor-pointer text-sm p-4 hidden md:inline-block">
                   Items
                 </th>
-                <th className="cursor-pointer text-sm border-y p-4 hidden md:inline-block">
+                <th className="cursor-pointer text-sm p-4 hidden md:inline-block">
                   Payment
                 </th>
-                <th className="cursor-pointer text-sm border-y p-4 hidden md:inline-block">
+                <th className="cursor-pointer text-sm p-4 hidden md:inline-block">
                   Delivery
                 </th>
-                <th className="cursor-pointer text-sm border-y p-4">Total</th>
-                <th className="cursor-pointer text-sm border-y p-4"></th>
+                <th className="cursor-pointer text-sm p-4">Total</th>
+                <th className="cursor-pointer text-sm p-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -110,7 +131,9 @@ export default function OrdersTable({ orders, totalPages }: Props) {
                     <td className="p-4 hidden md:inline-block">
                       <OrderStatusTag status={order.orderStatus} />
                     </td>
-                    <td className="p-4 text-sm md:text-base">{formatCurrency(order.total)}</td>
+                    <td className="p-4 text-sm md:text-base">
+                      {formatCurrency(order.total)}
+                    </td>
                     <td className="p-4">
                       <Link href={`/order/${order.id}`}>
                         <span className="text-sm text-blue-primary cursor-pointer hover:underline">
@@ -123,7 +146,7 @@ export default function OrdersTable({ orders, totalPages }: Props) {
               })}
             </tbody>
           </table>
-          <Pagination totalPages={totalPages} page={page} setPage={setPage} />
+          <Pagination totalPages={totalDataPages} page={page} setPage={setPage} />
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
+// React & Next.js
 import Image from "next/image";
 import Link from "next/link";
-
+// Icons
 import UnpaidImg from "@/public/assets/images/unpaid.avif";
 import ToBeShippedImg from "@/public/assets/images/to-be-shipped.avif";
 import ShippedImg from "@/public/assets/images/shipped.avif";
