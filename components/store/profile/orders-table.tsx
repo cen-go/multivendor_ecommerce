@@ -3,37 +3,53 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+// Types
 import { UserOrderType } from "@/lib/types";
+import { UserOrdersFilter, UserOrdersTimePeriod } from "@/actions/profile";
+// Server actions & db queries
+import { getUserOrders } from "@/actions/profile";
+// Utils
 import { formatCurrency } from "@/lib/utils";
+// Components
 import PaymentStatusTag from "@/components/shared/payment-status-tag";
 import OrderStatusTag from "@/components/shared/order-status-tag";
 import Pagination from "@/components/shared/pagination";
-import { getUserOrders, UserOrdersFilter, UserOrdersTimePeriod } from "@/actions/profile";
 import OrdersTableHeader from "./orders-table-header";
 
 interface Props {
   orders: UserOrderType[];
   totalPages: number;
+  initialFilter?: UserOrdersFilter;
 }
 
-export default function OrdersTable({ orders, totalPages }: Props) {
+export default function OrdersTable({
+  orders,
+  totalPages,
+  initialFilter,
+}: Props) {
   const [tableData, setTableData] = useState<UserOrderType[]>(orders);
   const [page, setPage] = useState(1);
   const [totalDataPages, setTotalDataPages] = useState(totalPages);
 
   // States for filtering and search
-  const [filter , setFilter] = useState<UserOrdersFilter>("all");
-  const [timePeriod , setTimePeriod] = useState<UserOrdersTimePeriod>("all");
-  const [searchTerm , setSearchTerm] = useState<string>("");
+  const [filter, setFilter] = useState<UserOrdersFilter>(
+    initialFilter ?? "all"
+  );
+  const [timePeriod, setTimePeriod] = useState<UserOrdersTimePeriod>("all");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     setPage(1);
-  }, [filter, timePeriod, searchTerm])
-  
+  }, [filter, timePeriod, searchTerm]);
 
   useEffect(() => {
     async function getOrders() {
-      const response = await getUserOrders({ page, filter, period: timePeriod, search: searchTerm });
+      const response = await getUserOrders({
+        page,
+        filter,
+        period: timePeriod,
+        search: searchTerm,
+      });
       if (response.orders) {
         setTableData(response.orders);
         setTotalDataPages(response.totalPages);
@@ -62,9 +78,7 @@ export default function OrdersTable({ orders, totalPages }: Props) {
             <thead>
               <tr className="border-b">
                 <th className="cursor-pointer text-sm p-4">Order</th>
-                <th className="cursor-pointer text-sm p-4">
-                  Products
-                </th>
+                <th className="cursor-pointer text-sm p-4">Products</th>
                 <th className="cursor-pointer text-sm p-4 hidden md:inline-block">
                   Items
                 </th>
@@ -146,7 +160,11 @@ export default function OrdersTable({ orders, totalPages }: Props) {
               })}
             </tbody>
           </table>
-          <Pagination totalPages={totalDataPages} page={page} setPage={setPage} />
+          <Pagination
+            totalPages={totalDataPages}
+            page={page}
+            setPage={setPage}
+          />
         </div>
       </div>
     </div>

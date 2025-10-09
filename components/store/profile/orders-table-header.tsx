@@ -1,8 +1,12 @@
-import { UserOrdersFilter, UserOrdersTimePeriod } from "@/actions/profile"
-import { cn } from "@/lib/utils";
-import { ChevronDown, FunnelXIcon, SearchIcon } from "lucide-react";
+// React & Next.js
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+// Types
+import { UserOrdersFilter, UserOrdersTimePeriod } from "@/actions/profile"
+// Utils
+import { cn } from "@/lib/utils";
+// Icons
+import { ChevronDown, FunnelXIcon, SearchIcon } from "lucide-react";
 
 interface Props {
   filter: UserOrdersFilter;
