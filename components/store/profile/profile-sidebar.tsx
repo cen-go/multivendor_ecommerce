@@ -70,10 +70,6 @@ const menu = [
     link: "/profile/orders",
   },
   {
-    title: "Payment",
-    link: "/profile/payment",
-  },
-  {
     title: "Shipping address",
     link: "/profile/addresses",
   },

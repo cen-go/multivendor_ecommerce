@@ -74,7 +74,7 @@ export async function getUserOrders({
   }
 
   // Apply the search filter
-  if (search.trim()) {
+  if (search.trim() && search.trim().length >= 3) {
     (whereClause.AND as Prisma.OrderWhereInput[]).push({
       OR: [
         {id: {contains: search}}, // Search by order ID
@@ -136,4 +136,89 @@ export async function getUserOrders({
     pageSize,
   };
 
+}
+
+// Function: getUserReviews
+// Description: Retrieves paginated reviews for the authenticated user, with optional filters for rating and search functionality.
+// Permission: User
+// Parameters:
+//   - filter: A string to filter reviews by rating (e.g., "5", "4", "3", "2", "1").
+//   - page: The current page number for pagination (default = 1).
+//   - pageSize: The number of reviews per page (default = 6).
+//   - search: the string to search by.
+//   - period: A string to filter reviews by creation date
+// Returns: A Promise resolving to an object containing reviews and pagination data
+export type UserReviewsQueryFilter = "1" | "2" | "3" | "4" | "5" | "all";
+export type UserReviewsTimePeriodFilter = "all" | "6-months" | "1-year" | "2-year"
+export async function getUserReviews({
+  filter = "all",
+  page = 1,
+  pageSize = 5,
+  search = "",
+  period = "all",
+}: {
+  filter?: UserReviewsQueryFilter;
+  page?: number;
+  pageSize?: number;
+  search?: string; // Search by product ID, store name  or product name
+  period?: UserReviewsTimePeriodFilter;
+}) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("Not authenticated.");
+  }
+
+  const skip = pageSize * (page - 1);
+
+  // Define base where statement for db query
+  const whereClause: Prisma.ReviewWhereInput = {
+    AND: [
+      {userId: user.id}
+    ],
+  }
+
+  // define rating filter
+  if (filter && filter != "all") {
+    (whereClause.AND as Prisma.ReviewWhereInput[]).push({rating: parseInt(filter)});
+  }
+
+  // Define filters for time period
+  const now = new Date();
+  if (period === "6-months") {
+    (whereClause.AND as Prisma.ReviewWhereInput[]).push({createdAt: {gte: subMonths(now, 6)}});
+  }
+  if (period === "1-year") {
+    (whereClause.AND as Prisma.ReviewWhereInput[]).push({createdAt: {gte: subYears(now, 1)}});
+  }
+  if (period === "2-year") {
+    (whereClause.AND as Prisma.ReviewWhereInput[]).push({createdAt: {gte: subYears(now, 2)}});
+  }
+
+  // Apply search filter
+  if (search.trim() && search.trim().length >= 4) {
+    (whereClause.AND as Prisma.ReviewWhereInput[]).push({review : {contains: search}});
+  }
+
+  const reviews = await db.review.findMany({
+    where: whereClause,
+    include: {
+      images: true,
+      user: true,
+    },
+    skip,
+    take: pageSize,
+    orderBy: {createdAt: "desc"}
+  });
+
+  // Fetch the total count of reviews and calculate the total num of pages
+  const reviewsCount = await db.review.count({where: whereClause});
+  const totalPages = Math.ceil(reviewsCount / pageSize);
+
+  return {
+    reviews,
+    totalPages,
+    reviewsCount,
+    currentPagge: page,
+    pageSize,
+  }
 }

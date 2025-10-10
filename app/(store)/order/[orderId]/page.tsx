@@ -48,7 +48,7 @@ export default async function OrderPage({params}: {params: Promise<{orderId: str
     <div className="p-2">
       <OrderHeader order={order} />
       <div
-        className="w-full grid "
+        className="w-full grid max-w-[1400px] mx-auto"
         style={{
           gridTemplateColumns:
             order.paymentStatus === "PENDING" ||
