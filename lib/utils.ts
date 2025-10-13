@@ -8,6 +8,7 @@ import { PrismaClient } from "@prisma/client";
 import db from "./db";
 import { CartProductType, UserCountry } from "./types";
 import { differenceInDays, differenceInHours } from "date-fns";
+import { MAX_VIEWED_PRODUCTS_HISTORY } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -238,4 +239,27 @@ export function getTimeLeft(targetDate:string): {days: number; hours: number} {
   const hoursLeft = differenceInHours(target, now) % 24;
 
   return {days: daysLeft, hours: hoursLeft};
+}
+
+// Handle product history in local storage
+export function updateProductHistory(variantId: string) {
+  // Fetch the existing product history from local storage
+  let productHistory: string[] = [];
+  const historyFromStorage = localStorage.getItem("productHistory");
+
+  if (historyFromStorage) {
+    productHistory = JSON.parse(historyFromStorage);
+  }
+
+  // Update history array, remove the product first if it exists
+  productHistory = productHistory.filter((product) => product !== variantId);
+  const newHistoryLength = productHistory.unshift(variantId);
+
+  // Check for the max limit of the stored products in history
+  if (newHistoryLength > MAX_VIEWED_PRODUCTS_HISTORY) {
+    productHistory.pop(); // remove the oldest product in array
+  }
+
+  // Save history in local storage
+  localStorage.setItem("productHistory", JSON.stringify(productHistory));
 }

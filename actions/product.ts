@@ -12,6 +12,7 @@ import {
   CountriesWithFreeShippingType,
   ProductQueryFiltersType,
   ProductShippingDetailsType,
+  ProductType,
   ProductWithVariantType,
   RatingStatisticsType,
   StoreProductType,
@@ -828,8 +829,84 @@ export async function getShippingDetails(
   return shippingDetails;
 }
 
+// Fetches product details based on an array of variant IDs
+export async function getProductsByArrayOfIds({variantIds, page=1, pageSize=10}: {variantIds: string[], page?: number, pageSize?: number}) {
+  try {
+    if (!variantIds || variantIds.length === 0) {
+      throw new Error("IDs are not defined");
+    }
 
+    const skip = pageSize * (page - 1);
 
+    const variants = await db.productVariant.findMany({
+      where: {
+        id: {
+          in: variantIds,
+        },
+      },
+      select: {
+        id: true,
+        variantName: true,
+        slug: true,
+        images: true,
+        sizes: true,
+        product: {
+          select: {
+            name: true,
+            slug: true,
+            rating: true,
+            brand: true,
+            sales: true,
+            id: true,
+          },
+        },
+      },
+      skip,
+      take: pageSize,
+    });
 
+    const variantsCount = await db.productVariant.count({
+      where: {
+        id: {
+          in: variantIds,
+        },
+      },
+    });
 
+    const totalPages = Math.ceil(variantsCount / pageSize);
 
+    const products: ProductType[] = variants.map(variant => ({
+      id: variant.product.id,
+      name: `${variant.product.brand} ${variant.product.name}`,
+      slug: variant.product.slug,
+      rating: variant.product.rating,
+      sales: variant.product.sales,
+      variantImages: variant.images.map(img => ({imageUrl: img.url, variantUrl: `/product/${variant.product.slug}/${variant.slug}`})),
+      variants: [{
+        variantSlug: variant.slug,
+        images: variant.images,
+        variantId: variant.id,
+        variantName: variant.variantName,
+        sizes: variant.sizes,
+      }],
+    }));
+
+    // order products the same order with the IDs fetched from localstorage
+    const orderedProducts: ProductType[] = variantIds
+      .map((variantId) =>
+        products.find((product) => product.variants[0].variantId === variantId)
+      )
+      .filter((prod) => prod !== undefined);
+
+    return {
+      products: orderedProducts,
+      page,
+      pageSize,
+      totalPages,
+    };
+
+  } catch (error) {
+    console.error("Error fetching products by variant IDs: ", error);
+    throw new Error("Failed to fetch products. Please try again");
+  }
+}

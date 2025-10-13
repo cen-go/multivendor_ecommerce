@@ -1,5 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function UserHistoryPage() {
-  return (
-    <div>UserHistoryPage</div>
-  )
+  return redirect("/profile/history/1");
 }

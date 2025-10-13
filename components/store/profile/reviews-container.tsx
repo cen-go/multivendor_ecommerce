@@ -1,8 +1,12 @@
 "use client"
 
-import { getUserReviews, UserReviewsQueryFilter, UserReviewsTimePeriodFilter } from "@/actions/profile";
-import { ReviewWithImagesType } from "@/lib/types";
 import { useEffect, useState } from "react";
+// Server action
+import { getUserReviews } from "@/actions/profile";
+// Types
+import { UserReviewsQueryFilter, UserReviewsTimePeriodFilter } from "@/actions/profile";
+import { ReviewWithImagesType } from "@/lib/types";
+// Components
 import ReviewsContainerHeader from "./reviews-container-header";
 import Pagination from "@/components/shared/pagination";
 import ReviewCard from "../cards/review-card";

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { CartProductType, ProductShippingDetailsType } from "@/lib/types";
 import { Size } from "@prisma/client";
 // Utils
-import { isProductValidToAdd } from "@/lib/utils";
+import { isProductValidToAdd, updateProductHistory } from "@/lib/utils";
 // Components
 import ShipTo from "./shipping/ship-to";
 import ShippingDetails from "./shipping/shipping-details";
@@ -36,6 +36,9 @@ export default function ShippingAndActionsCard({
     useState<CartProductType>(cartProductData);
   // state to validate the product before adding to the cart
   const [isProductValid, setIsProductValid] = useState<boolean>(false);
+
+  // Add product to viewed products history in local storage
+  updateProductHistory(cartProductData.variantId);
 
   // Function to update the properties of productToAddToCart state object when the the selected size changes
   const handleChange = useCallback(
