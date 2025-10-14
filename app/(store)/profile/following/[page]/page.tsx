@@ -1,3 +1,6 @@
+import { getUserFollowedStores } from "@/actions/profile";
+import FollowingContainer from "@/components/store/profile/following-container";
+
 export default async function ProfileFollowedStoresPage({params}: {params: Promise<{page: string}>}) {
   const {page} = await params;
 

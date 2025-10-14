@@ -1,8 +1,7 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { FC, useEffect, useState } from "react";
+"use client"
+
 import Pagination from "../../shared/pagination";
-import StoreCard from "../../cards/store-card";
+import StoreCard from "@/components/store/cards/store-card";
 
 interface Props {
   stores: {
@@ -17,15 +16,8 @@ interface Props {
   totalPages: number;
 }
 
-const FollowingContainer: FC<Props> = ({ stores, page, totalPages }) => {
-  const router = useRouter();
-  const [currentPage, setPage] = useState<number>(page);
+export default function FollowingContainer ({ stores, page, totalPages }: Props)  {
 
-  useEffect(() => {
-    if (currentPage !== page) {
-      router.push(`/profile/following/${currentPage}`);
-    }
-  }, [currentPage, page]);
   return (
     <div>
       <div className="flex flex-wrap pb-16">
@@ -33,9 +25,7 @@ const FollowingContainer: FC<Props> = ({ stores, page, totalPages }) => {
           <StoreCard key={store.id} store={store} />
         ))}
       </div>
-      <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+      <Pagination page={page} pathname="/profile/following" totalPages={totalPages} />
     </div>
   );
 };
-
-export default FollowingContainer;
