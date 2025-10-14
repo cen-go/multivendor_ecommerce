@@ -1,5 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function UserWishlistPage() {
-  return (
-    <div>UserWishlistPage</div>
-  )
+  redirect("/profile/wishlist/1");
 }
