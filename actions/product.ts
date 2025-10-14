@@ -830,7 +830,20 @@ export async function getShippingDetails(
 }
 
 // Fetches product details based on an array of variant IDs
-export async function getProductsByArrayOfIds({variantIds, page=1, pageSize=10}: {variantIds: string[], page?: number, pageSize?: number}) {
+export async function getProductsByArrayOfIds({
+  variantIds,
+  page = 1,
+  pageSize = 10,
+}: {
+  variantIds: string[];
+  page?: number;
+  pageSize?: number;
+}): Promise<{
+  products: ProductType[];
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}> {
   try {
     if (!variantIds || variantIds.length === 0) {
       throw new Error("IDs are not defined");
@@ -875,20 +888,25 @@ export async function getProductsByArrayOfIds({variantIds, page=1, pageSize=10}:
 
     const totalPages = Math.ceil(variantsCount / pageSize);
 
-    const products: ProductType[] = variants.map(variant => ({
-      id: variant.product.id,
+    const products: ProductType[] = variants.map((variant) => ({
+      id: variant.id,
       name: `${variant.product.brand} ${variant.product.name}`,
       slug: variant.product.slug,
       rating: variant.product.rating,
       sales: variant.product.sales,
-      variantImages: variant.images.map(img => ({imageUrl: img.url, variantUrl: `/product/${variant.product.slug}/${variant.slug}`})),
-      variants: [{
-        variantSlug: variant.slug,
-        images: variant.images,
-        variantId: variant.id,
-        variantName: variant.variantName,
-        sizes: variant.sizes,
-      }],
+      variantImages: variant.images.map((img) => ({
+        imageUrl: img.url,
+        variantUrl: `/product/${variant.product.slug}/${variant.slug}`,
+      })),
+      variants: [
+        {
+          variantSlug: variant.slug,
+          images: variant.images,
+          variantId: variant.id,
+          variantName: variant.variantName,
+          sizes: variant.sizes,
+        },
+      ],
     }));
 
     // order products the same order with the IDs fetched from localstorage
@@ -904,7 +922,6 @@ export async function getProductsByArrayOfIds({variantIds, page=1, pageSize=10}:
       pageSize,
       totalPages,
     };
-
   } catch (error) {
     console.error("Error fetching products by variant IDs: ", error);
     throw new Error("Failed to fetch products. Please try again");

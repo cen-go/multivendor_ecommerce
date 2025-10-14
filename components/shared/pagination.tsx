@@ -2,19 +2,25 @@ import { cn } from "@/lib/utils";
 import { MoveLeftIcon, MoveRightIcon } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
+import { redirect } from "next/navigation";
 
 interface Props {
   page: number;
   totalPages: number;
-  setPage: Dispatch<SetStateAction<number>>;
+  setPage?: Dispatch<SetStateAction<number>>;
+  pathname?: string;
 }
-export default function Pagination({ page, totalPages, setPage }: Props) {
+export default function Pagination({ page, totalPages, setPage, pathname }: Props) {
   const pages = Array.from({length: totalPages}).map((_, i) => i + 1);
 
   function handlePagination(btnType: "next" | "prev") {
     const targetPage = btnType === "next" ? page +1 : page - 1;
 
-    setPage(targetPage);
+    if (setPage) {
+      setPage(targetPage);
+    } else if (pathname) {
+      redirect(`${pathname}/${targetPage}`)
+    }
   }
 
   return (
@@ -39,7 +45,13 @@ export default function Pagination({ page, totalPages, setPage }: Props) {
                   "font-bold border-orange-background text-orange-background hover:text-gray-600": p === page,
                 }
               )}
-              onClick={() => setPage(p)}
+              onClick={() => {
+                if (setPage) {
+                  setPage(p)
+                } else if (pathname) {
+                  redirect(`${pathname}/${p}`)
+                }
+              }}
             >
               {p}
             </div>
