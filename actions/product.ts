@@ -368,7 +368,7 @@ export async function deleteProduct(product: StoreProductType) {
 // Returns: An object containing paginated products, filtered variants, and pagination metadata (totalPages, currentPage, pageSize)
 export async function getProducts(
   filters: ProductQueryFiltersType = {},
-  // sortBy: string = "",
+  sortBy: string = "",
   page: number = 1,
   pageSize: number = 10
 ) {
@@ -412,6 +412,23 @@ export async function getProducts(
     if (store) {
       (whereClause.AND as Prisma.ProductWhereInput[]).push({storeId: store.id});
     }
+  }
+
+  // Apply search filter. (search term in product name or description)
+  if (filters.search) {
+    (whereClause.AND as Prisma.ProductWhereInput[]).push({
+      OR : [
+        {name: {contains: filters.search}},
+        {description: {contains: filters.search}},
+        {brand: {contains: filters.search}},
+        {variants: {
+          some: {
+            variantName: {contains: filters.search},
+            variantDescription: {contains: filters.search},
+          },
+        }}
+      ],
+    });
   }
 
   // Get all filtered and sorted products

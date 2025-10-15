@@ -1,6 +1,7 @@
 import {
   Cart,
   CartItem,
+  Category,
   Color,
   Country,
   Coupon,
@@ -17,6 +18,7 @@ import {
   ShippingRate,
   Size,
   Store,
+  SubCategory,
   User,
 } from "@prisma/client";
 import { getAllSubcategories } from "@/actions/subcategory";
@@ -150,6 +152,9 @@ export type ProductQueryFiltersType = {
   category?: string;
   subcategory?: string;
   storeUrl?: string;
+  search?: string;
+  offer?: string;
+  size?: string[];
 }
 
 export type RatingStatisticsType = Prisma.PromiseReturnType<typeof getRatingStatistics>
@@ -207,3 +212,7 @@ export type SearchResultsType = {
 export type UserOrderType = Prisma.PromiseReturnType<typeof getUserOrders>["orders"][0];
 
 export type ProductWishlistType = Prisma.PromiseReturnType<typeof getUserWishlist>["wishlist"][0];
+
+export type CategoryWithSubsType = Category & {
+  subCategories: SubCategory[];
+}

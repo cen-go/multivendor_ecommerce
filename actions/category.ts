@@ -93,6 +93,7 @@ export async function upsertCategory(category: Partial<Category>) {
 // Returns: An array of categories sorted by updatedAt date in descending order
 export async function getAllCategories() {
   const categories = await db.category.findMany({
+    include: {subCategories: true},
     orderBy: {updatedAt: "desc"},
   });
   return categories;
