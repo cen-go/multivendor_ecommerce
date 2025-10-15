@@ -5,9 +5,13 @@ import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OfferTag } from "@prisma/client";
 import OfferLink from "./offer-link";
+import { useSearchParams } from "next/navigation";
 
 export default function OfferFilter({ offers }: { offers: OfferTag[] }) {
-  const [show, setShow] = useState<boolean>(true);
+  const searchParams = useSearchParams();
+  const offerTagQuery = searchParams.get("offer");
+
+  const [show, setShow] = useState<boolean>(!!offerTagQuery);
   return (
     <div className="pt-5 pb-4">
       {/* Header */}
@@ -15,7 +19,7 @@ export default function OfferFilter({ offers }: { offers: OfferTag[] }) {
         className="relative cursor-pointer flex items-center justify-between select-none"
         onClick={() => setShow((prev) => !prev)}
       >
-        <h3 className="text-sm font-bold overflow-ellipsis capitalize line-clamp-1 text-main-primary">
+        <h3 className="text font-bold overflow-ellipsis capitalize line-clamp-1 text-main-primary">
           Offer
         </h3>
         <span className="absolute right-0">

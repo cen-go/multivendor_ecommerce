@@ -265,7 +265,7 @@ model Question {
 model OfferTag {
   id   String @id @default(uuid())
   name String
-  url  String
+  url  String @unique
 
   products Product[]
 

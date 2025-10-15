@@ -431,6 +431,20 @@ export async function getProducts(
     });
   }
 
+  // Apply offer filter
+  if (filters.offer) {
+    const offer = await db.offerTag.findUnique({
+      where: { url: filters.offer },
+      select: { id: true },
+    });
+
+    if (offer) {
+      (whereClause.AND as Prisma.ProductWhereInput[]).push({
+        offerTagId: offer.id,
+      });
+    }
+  }
+
   // Get all filtered and sorted products
   const products = await db.product.findMany({
     where: whereClause,
