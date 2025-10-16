@@ -510,6 +510,80 @@ export async function getProducts(
   };
 }
 
+// Function: getFilteredSizes
+// Description: Retrieves all sizes that exist in a product based on the filters (category, subCategory, offer).
+// Permission Level: Public
+// Params: filters - an object containing category, subCategory, and offer as URLs.
+// Returns: Array of sizes in the form {id: string, size: string}[].
+export async function getFilteredSizes(
+  filters: {
+    category?: string;
+    subcategory?: string;
+    offer?: string;
+  },
+  take: number = 10
+) {
+  const { category, subcategory, offer } = filters;
+
+  // Construct the query dynamically based on the available filters
+  const sizes = await db.size.findMany({
+    where:{
+      productVariant: {
+        product: {
+          AND: [
+            category? {category: {url: category}} : {},
+            subcategory? {subcategory: {url: subcategory}} : {},
+            offer? {offerTag: {url: offer}} : {},
+          ],
+        },
+      },
+    },
+    select: {size: true},
+    take,
+  });
+
+  // Get Sizes count
+  const sizesCount = await db.size.count({
+    where:{
+      productVariant: {
+        product: {
+          AND: [
+            category? {category: {url: category}} : {},
+            subcategory? {subcategory: {url: subcategory}} : {},
+            offer? {offerTag: {url: offer}} : {},
+          ],
+        },
+      },
+    },
+  });
+
+  // Turn sizes into an array of strings
+  const sizesArray = sizes.map(s => s.size);
+  // Remove the duplicate values from the sizes array
+  const uniqueSizesArray = Array.from(new Set(sizesArray));
+
+  // Define a custom order using a Map for fast lookups
+  const sizeOrderMap = new Map(
+    ["xs", "s", "m", "l", "xl", "xxl", "2xl", "xxxl", "3xl"].map(
+      (size, i) => [size, i]
+    )
+  );
+
+  // Custom sorting by sizeOrderMap, fallback to alphabetical if not found
+  uniqueSizesArray.sort((a,b) => {
+    return (
+      (sizeOrderMap.get(a) ?? Infinity) - (sizeOrderMap.get(b) ?? Infinity) ||
+      a.localeCompare(b)
+    );
+  });
+
+  return {
+    sizes: uniqueSizesArray.map(s => ({size: s})),
+    count: sizesCount,
+  };
+
+}
+
 // Function: getProductPageData
 // Description: Fetches details of a specific product variant from the database.
 // Permission Level: Public
