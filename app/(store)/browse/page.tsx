@@ -1,5 +1,5 @@
 // Db queries
-import { getFilteredSizes, getProducts } from "@/actions/product";
+import { getProducts } from "@/actions/product";
 // Components
 import ProductsFilters from "@/components/store/browse-page/filters";
 import ProductsSort from "@/components/store/browse-page/sort";
@@ -18,9 +18,7 @@ export default async function BrowsePage({searchParams}: Props) {
  const size = Array.isArray(sizeQuery) ? sizeQuery : sizeQuery ? [sizeQuery] :undefined;
 
   const response = await getProducts({category, subcategory, storeUrl, size, offer, search}, sort);
-  const products = response.products
-
-  await getFilteredSizes({});
+  const products = response.products;
 
   return (
     <div className="relative h-screen overflow-hidden">

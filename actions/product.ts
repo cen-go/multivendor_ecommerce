@@ -445,6 +445,19 @@ export async function getProducts(
     }
   }
 
+  // Apply sizes filter using the array of sizes
+  if (filters.size && Array.isArray(filters.size)) {
+    (whereClause.AND as Prisma.ProductWhereInput[]).push({
+      variants: {
+        some: {
+          sizes: {
+            some: { size: { in: filters.size } },
+          },
+        },
+      },
+    });
+  }
+
   // Get all filtered and sorted products
   const products = await db.product.findMany({
     where: whereClause,

@@ -12,8 +12,6 @@ export default async function ProductFilters({
 }: {
   queries: ProductQueryFiltersType;
 }) {
-  const { category, subcategory, size, offer, } = queries;
-
   const categories = await getAllCategories();
   const offers = await getAllOfferTags();
 
@@ -25,7 +23,7 @@ export default async function ProductFilters({
         <PriceFilter />
         <CategoryFilter categories={categories} />
         <OfferFilter offers={offers} />
-        <SizeFilter />
+        <SizeFilter queries={queries} />
       </div>
     </div>
   );

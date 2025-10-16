@@ -1,11 +1,14 @@
 "use client";
 
+// React & Next.js
 import { useState } from "react";
-import { Minus, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { OfferTag } from "@prisma/client";
-import OfferLink from "./offer-link";
 import { useSearchParams } from "next/navigation";
+// Types
+import { OfferTag } from "@prisma/client";
+
+import { cn } from "@/lib/utils";
+import { Minus, Plus } from "lucide-react";
+import OfferLink from "./offer-link";
 
 export default function OfferFilter({ offers }: { offers: OfferTag[] }) {
   const searchParams = useSearchParams();
