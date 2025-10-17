@@ -1,6 +1,7 @@
-import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { cn } from "@/lib/utils";
+import { Check } from "lucide-react"; // Icons
 
 export default function SizeLink({ size }: { size: string }) {
   const searchParams = useSearchParams();

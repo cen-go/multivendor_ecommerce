@@ -1,10 +1,14 @@
 "use client";
+
 import { useCallback, useEffect, useState } from "react";
-import { Minus, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+// Types
 import { ProductQueryFiltersType } from "@/lib/types";
-import SizeLink from "./size-link";
+// Db queries
 import { getFilteredSizes } from "@/actions/product";
+
+import { Minus, Plus } from "lucide-react"; // Icons
+import { cn } from "@/lib/utils";
+import SizeLink from "./size-link";
 
 export default function SizeFilter({
   queries,

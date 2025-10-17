@@ -11,6 +11,7 @@ import db from "@/lib/db";
 import {
   CountriesWithFreeShippingType,
   ProductQueryFiltersType,
+  ProductQuerySortingOptions,
   ProductShippingDetailsType,
   ProductType,
   ProductWithVariantType,
@@ -368,7 +369,7 @@ export async function deleteProduct(product: StoreProductType) {
 // Returns: An object containing paginated products, filtered variants, and pagination metadata (totalPages, currentPage, pageSize)
 export async function getProducts(
   filters: ProductQueryFiltersType = {},
-  sortBy: string = "",
+  sortBy: ProductQuerySortingOptions = "",
   page: number = 1,
   pageSize: number = 10
 ) {
@@ -458,10 +459,45 @@ export async function getProducts(
     });
   }
 
+  // Apply min and max price filters
+  if (filters.minPrice || filters.maxPrice) {
+    (whereClause.AND as Prisma.ProductWhereInput[]).push({
+        variants: {
+          some: {
+            sizes: {
+              some: {
+                price: {
+                  gte: filters.minPrice ? Math.round(filters.minPrice * 100) : 0,
+                  lte: filters.maxPrice ? Math.round(filters.maxPrice * 100) : Number.MAX_SAFE_INTEGER,
+                },
+              },
+            }
+          },
+        },
+      });
+  }
+
+  // Define the sort order
+  let sortOrder: Prisma.ProductOrderByWithRelationInput[] = [];
+  switch (sortBy) {
+    case "most-popular":
+      sortOrder = [{sales: "desc"}, {rating: "desc"}];
+      break;
+    case "new-arrivals":
+      sortOrder = [{createdAt: "desc"}];
+      break;
+    case "top-rated":
+      sortOrder = [{rating: "desc"}];
+      break;
+    default:
+      sortOrder = [{sales: "desc"}, {rating: "desc"}];
+      break;
+  }
+
   // Get all filtered and sorted products
   const products = await db.product.findMany({
     where: whereClause,
-    orderBy: {},
+    orderBy: sortOrder ?? undefined,
     skip: skip,
     take: pageSize,
     include: {
@@ -507,6 +543,30 @@ export async function getProducts(
     }
   });
 
+  // If sorting by price, compute min price across variants/sizes and sort in JS
+  if (sortBy === "price-high-to-low" || sortBy === "price-low-to-high") {
+    const getProductMinPrice = (
+      prod: (typeof productsWithFilteredVariants)[0]
+    ) => {
+      const prices = prod.variants.flatMap((v) =>
+        v.sizes.map((s) => Math.round(s.price * (1 - s.discount / 100)))
+      );
+      return prices.length ? Math.min(...prices) : Number.MAX_SAFE_INTEGER;
+    };
+
+    productsWithFilteredVariants.sort((a, b) => {
+      const priceA = getProductMinPrice(a);
+      const priceB = getProductMinPrice(b);
+
+      if (sortBy === "price-low-to-high") {
+        return priceA - priceB;
+      } else if (sortBy === "price-high-to-low") {
+        return priceB - priceA;
+      } else {
+        return 0;
+      }
+    })
+  }
 
   // the count of the products matching the filters
   const totalCount = products.length;

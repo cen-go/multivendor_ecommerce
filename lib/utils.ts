@@ -253,7 +253,7 @@ export function updateProductHistory(variantId: string) {
 
   // Update history array, remove the product first if it exists
   productHistory = productHistory.filter((product) => product !== variantId);
-  const newHistoryLength = productHistory.unshift(variantId);
+  const newHistoryLength = productHistory.unshift(variantId); // returns the new array length
 
   // Check for the max limit of the stored products in history
   if (newHistoryLength > MAX_VIEWED_PRODUCTS_HISTORY) {

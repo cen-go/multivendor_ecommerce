@@ -155,7 +155,17 @@ export type ProductQueryFiltersType = {
   search?: string;
   offer?: string;
   size?: string[];
+  minPrice?: number;
+  maxPrice?: number;
 }
+
+export type ProductQuerySortingOptions =
+  | ""
+  | "most-popular"
+  | "new-arrivals"
+  | "top-rated"
+  | "price-low-to-high"
+  | "price-high-to-low";
 
 export type RatingStatisticsType = Prisma.PromiseReturnType<typeof getRatingStatistics>
 
