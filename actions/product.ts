@@ -538,6 +538,7 @@ export async function getProducts(
       name: product.name,
       rating: product.rating,
       sales: product.sales,
+      numReviews: product.numReviews,
       variants,
       variantImages,
     }
@@ -1049,6 +1050,7 @@ export async function getProductsByArrayOfIds({
             brand: true,
             sales: true,
             id: true,
+            numReviews: true,
           },
         },
       },
@@ -1072,6 +1074,7 @@ export async function getProductsByArrayOfIds({
       slug: variant.product.slug,
       rating: variant.product.rating,
       sales: variant.product.sales,
+      numReviews: variant.product.numReviews,
       variantImages: variant.images.map((img) => ({
         imageUrl: img.url,
         variantUrl: `/product/${variant.product.slug}/${variant.slug}`,
