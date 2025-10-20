@@ -98,6 +98,7 @@ export type UserCountry = {
 import countries from "@/lib/data/countries.json";
 import { getOrder } from "@/actions/order";
 import { getUserOrders, getUserWishlist } from "@/actions/profile";
+import { getHomeFeaturedCategories } from "@/actions/home";
 
 export type SelectMenuOption = (typeof countries)[number];
 
@@ -268,3 +269,7 @@ export type SimpleProduct = {
   price: number;
   image: string;
 };
+
+export type FeaturedCategoryType = Prisma.PromiseReturnType<
+  typeof getHomeFeaturedCategories
+>[0];

@@ -156,3 +156,64 @@ export async function getHomeDataDynamic(params:Param[]): Promise<Record<string,
 
   return results.reduce((acc, result) => ({ ...acc, ...result }), {});
 }
+
+export async function getHomeFeaturedCategories()  {
+  const featuredCategories = await db.category.findMany({
+    where: {
+      featured: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      url: true,
+      image: true,
+      subCategories: {
+        where: {
+          featured: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          url: true,
+          image: true,
+          _count: {
+            select: {
+              products: true, // Get the count of products in subcategories
+            },
+          },
+        },
+        orderBy: {
+          products: {
+            _count: "desc", // Order by product count
+          },
+        },
+        take: 3, // Limit subCategories to 3
+      },
+      _count: {
+        select: {
+          products: true, // Get the count of products in categories
+        },
+      },
+    },
+    orderBy: {
+      products: {
+        _count: "desc", // Order by product count
+      },
+    },
+    take: 6, // Limit categories to 6
+  });
+
+  return featuredCategories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    url: category.url,
+    productCount: category._count.products,
+    subCategories: category.subCategories.map((subcategory) => ({
+      id: subcategory.id,
+      name: subcategory.name,
+      url: subcategory.url,
+      image: subcategory.image,
+      productCount: subcategory._count.products,
+    })),
+  }));
+};
