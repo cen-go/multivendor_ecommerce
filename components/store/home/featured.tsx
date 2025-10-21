@@ -1,9 +1,12 @@
 "use client";
+
+// Reanct & Next.js
 import Link from "next/link";
-import MainSwiper from "@/components/store/shared/swiper";
-import { SimpleProduct } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
+
+import MainSwiper from "@/components/store/shared/swiper"; // Components
+import { SimpleProduct } from "@/lib/types"; // Types
 
 export default function Featured({ products }: { products: SimpleProduct[] }) {
   const is1170px = useMediaQuery({ query: "(min-width: 1170px)" });
@@ -30,35 +33,9 @@ export default function Featured({ products }: { products: SimpleProduct[] }) {
   return (
     <div className="relative rounded-md overflow-hidden">
       <div
-        className="w-full flex items-center justify-end bg-cover bg-center bg-no-repeat"
+        className="w-full flex items-center text-end bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url(/assets/images/ads/featured.webp)" }}
       >
-        {/* Coupon */}
-        <Link href="/">
-          <div className="w-52 px-3 relative h-[190px]">
-            <div className="flex flex-col justify-center items-center h-[103px]">
-              <h3 className="leading-5 font-bold my-1 text-white w-full">
-                Wecome Newcomers!
-              </h3>
-              <p className="text-sm w-full text-white">
-                Enjoy shopping made easy like nothing before
-              </p>
-            </div>
-            <div
-              className="absolute w-[192px] h-[55px] pl-[14px] text-white overflow-hidden pr-[45px] bottom-[35px] 
-              text-left bg-contain bg-no-repeat"
-              style={{ backgroundImage: "url(/assets/images/ads/coupon.gif)" }}
-            >
-              <h3 className="text-[20px] leading-6 mt-[11px] mb-1 text-white w-full">
-                use &#39;MHAJJI&#39;
-              </h3>
-
-              <p className="overflow-hidden overflow-ellipsis w-full text-xs -translate-y-1">
-                for 87% off
-              </p>
-            </div>
-          </div>
-        </Link>
         {/* Product swiper */}
         <div
           className={is1700px ? "ml-10" : ""}
@@ -81,6 +58,33 @@ export default function Featured({ products }: { products: SimpleProduct[] }) {
             spaceBetween={-10}
           />
         </div>
+        {/* Coupon */}
+        <Link href="/">
+          <div className="w-72 pr-8 relative h-[190px]">
+            <div className="flex flex-col justify-center items-center h-[103px]">
+              <h3 className="leading-5 font-bold my-1 text-white w-full">
+                Wecome Newcomers!
+              </h3>
+              <p className="text-sm w-full text-white">
+                Enjoy shopping made easy like nothing before
+              </p>
+            </div>
+            <div
+              className="absolute w-55 h-[55px] text-white overflow-hidden pl-3 bottom-[32px] right-3
+              text-left bg-contain bg-no-repeat"
+              style={{ backgroundImage: "url(/assets/images/ads/coupon.gif)" }}
+            >
+              <h3 className="text-[20px] leading-6 mt-[11px] mb-1 text-white w-full">
+                use &#39;SUPER50&#39;
+              </h3>
+
+              <p className="overflow-hidden overflow-ellipsis w-full text-xs -translate-y-1">
+                for 50% off
+              </p>
+            </div>
+          </div>
+        </Link>
+        
       </div>
     </div>
   );

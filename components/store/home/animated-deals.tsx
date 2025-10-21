@@ -1,12 +1,17 @@
 "use client";
+
+import Link from "next/link";
+import Image from "next/image";
+// Types
 import { SimpleProduct } from "@/lib/types";
+// Images
 import AnimatedImg from "@/public/assets/images/ads/animated-deals.gif";
 import TopSellerImg from "@/public/assets/images/featured/most-popular.avif";
 import TopRatedImg from "@/public/assets/images/featured/top-rated.jpg";
-import Image from "next/image";
-import Link from "next/link";
+//C Components
 import MainSwiper from "../shared/swiper";
 import Countdown from "../shared/countdown";
+
 export default function AnimatedDeals({
   products,
 }: {
@@ -15,7 +20,7 @@ export default function AnimatedDeals({
   return (
     <div className="relative bg-[#ed3835] w-full rounded-md overflow-hidden">
       <span className="inline-block w-full font-semibold text-center text-4xl text-white outline-none absolute top-[53%]">
-        Up to 90%
+        Up to 70%
       </span>
       <Image
         src={AnimatedImg}

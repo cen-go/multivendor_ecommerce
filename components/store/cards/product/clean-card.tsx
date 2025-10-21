@@ -1,8 +1,11 @@
-import { ProductType, VariantSimplified } from "@/lib/types";
+// React & Next.js
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import RatingStars from "../../shared/rating-stars";
+
+import { ProductType, VariantSimplified } from "@/lib/types"; // Types
+import RatingStars from "../../shared/rating-stars"; // Components
+import { formatCurrency } from "@/lib/utils"; // Utils
 
 export default function ProductCardClean({
   product,
@@ -15,20 +18,21 @@ export default function ProductCardClean({
 
   const size = variant.sizes.reduce((lowest, current) => {
     const currentPriceAfterDiscount =
-      current.price * (1 - current.discount / 100);
-    const lowestPriceAfterDiscount = lowest.price * (1 - lowest.discount / 100);
+      Math.round(current.price * (1 - current.discount / 100));
+    const lowestPriceAfterDiscount = Math.round(lowest.price * (1 - lowest.discount / 100));
 
     return currentPriceAfterDiscount < lowestPriceAfterDiscount
       ? current
       : lowest;
   });
   const numReviews = new Intl.NumberFormat().format(product.numReviews);
+
   return (
-    <Link href={`/product/${product.slug}?variant=${variant.variantSlug}`}>
+    <Link href={`/product/${product.slug}/${variant.variantSlug}`}>
       <div className="card">
         <div className="image-container">
           <Image src={variant.images[0].url} alt="" width={300} height={300} />
-          <div className="price">${size.price}</div>
+          <div className="price">{formatCurrency(size.price)}</div>
         </div>
         <div className="content">
           <div className="brand line-clamp-1">{variant.variantName}</div>

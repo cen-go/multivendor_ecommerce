@@ -1,6 +1,6 @@
-import { FeaturedCategoryType } from "@/lib/types";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
+import { FeaturedCategoryType } from "@/lib/types";
 
 export default function CategoryCard({
   category,

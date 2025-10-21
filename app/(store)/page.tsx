@@ -1,5 +1,10 @@
+import Image from "next/image";
+// Server actions
 import { getHomeDataDynamic } from "@/actions/home";
 import { getProducts } from "@/actions/product";
+// Types
+import { SimpleProduct } from "@/lib/types";
+// Components
 import ProductCard from "@/components/store/cards/product/product-card";
 import AnimatedDeals from "@/components/store/home/animated-deals";
 import Featured from "@/components/store/home/featured";
@@ -8,22 +13,19 @@ import HomeMainSwiper from "@/components/store/home/home-main-swiper";
 import HomeSideline from "@/components/store/home/sideline/home-sideline";
 import HomeUserCard from "@/components/store/home/user-card/home-user-card";
 import MainSwiper from "@/components/store/shared/swiper";
-import { SimpleProduct } from "@/lib/types";
+
 import SuperDealsImg from "@/public/assets/images/ads/super-deals.avif";
-import Image from "next/image";
 
 export default async function Home() {
-  const productsData = await getProducts({}, "", 1, 100);
+  const productsData = await getProducts({}, "", 1, 30);
   const { products } = productsData;
 
   const {
-    products_super_deals,
     products_best_deals,
     products_user_card,
     products_featured,
   } = await getHomeDataDynamic([
     { property: "offer", value: "best-deals", type: "simple" },
-    { property: "offer", value: "super-deals", type: "full" },
     { property: "offer", value: "user-card", type: "simple" },
     { property: "offer", value: "featured", type: "simple" },
   ]);
@@ -77,7 +79,7 @@ export default async function Home() {
             </div>
             <div className="mt-10 space-y-10">
               <div className="bg-white rounded-md">
-                <MainSwiper products={products_super_deals} type="curved">
+                <MainSwiper products={products} type="curved">
                   <div className="mb-4 pl-4 flex items-center justify-between">
                     <Image
                       src={SuperDealsImg}
@@ -98,7 +100,7 @@ export default async function Home() {
                   <span>More to love</span>
                   <div className="h-[1px] flex-1 border-t-[2px] border-t-[hsla(0,0%,59.2%,.3)] my-4 mx-[14px]" />
                 </div>
-                <div className="mt-7 bg-white justify-center flex flex-wrap min-[1530px]:grid min-[1530px]:grid-cols-7 p-4 pb-16 rounded-md">
+                <div className="mt-7 bg-white justify-center gap-10 flex flex-wrap min-[1530px]:grid min-[1530px]:grid-cols-7 p-4 pb-26 rounded-md">
                   {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}

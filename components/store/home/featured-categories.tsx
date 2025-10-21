@@ -1,6 +1,8 @@
 "use client";
-import { FeaturedCategoryType } from "@/lib/types";
+
 import { useEffect, useState } from "react";
+
+import { FeaturedCategoryType } from "@/lib/types";
 import { getHomeFeaturedCategories } from "@/actions/home";
 import CategoryCard from "./category-card";
 
@@ -14,6 +16,7 @@ export default function FeaturedCategories() {
     };
     getCategories();
   }, []);
+
   return (
     <div className="w-full mx-auto">
       {/* Header */}

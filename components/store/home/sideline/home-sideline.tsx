@@ -1,14 +1,16 @@
 import Link from "next/link";
+// Images
 import CouponImg from "@/public/assets/images/sideline/couponn.png"
 import WishlistImg from "@/public/assets/images/sideline/wishlist.png"
 import HistoryImg from "@/public/assets/images/sideline/history.png"
 import FeedbackImg from "@/public/assets/images/sideline/feedback.png"
+// Components
 import SidelineItem from "./sideline-item";
 
 export default function HomeSideline() {
   return (
     <div>
-      <div className="fixed z-30 w-10 h-120 rounded-bl-full rounded-tl-full top-50 right-0 bg-gradient-to-t from-slate-500 to-slate-800 text-[13px]">
+      <div className="hidden md:block fixed z-30 w-10 h-120 rounded-bl-full rounded-tl-full top-50 right-0 bg-gradient-to-t from-slate-500 to-slate-800 text-[13px]">
         <div className="fixed top-[34%] -translate-y-1/2 text-center">
           <Link
             href="/profile"

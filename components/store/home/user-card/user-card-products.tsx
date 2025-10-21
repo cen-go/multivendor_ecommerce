@@ -1,4 +1,5 @@
 "use client";
+
 import MainSwiper from "@/components/store/shared/swiper";
 import { SimpleProduct } from "@/lib/types";
 
