@@ -1,10 +1,13 @@
-import { SimpleProduct } from "@/lib/types";
-import { currentUser } from "@clerk/nextjs/server";
-import Image from "next/image";
-import UserImg from "@/public/assets/images/default-user.avif";
 import Link from "next/link";
+import Image from "next/image";
+
+import { SimpleProduct } from "@/lib/types"; // Types
+import { currentUser } from "@clerk/nextjs/server"; // Clerk
+import UserImg from "@/public/assets/images/default-user.avif"; // Images
+// Components
 import { Button } from "@/components/store/ui/button";
 import UserCardProducts from "./user-card-products";
+import { APP_NAME } from "@/lib/constants";
 
 export default async function HomeUserCard({
   products,
@@ -13,6 +16,7 @@ export default async function HomeUserCard({
 }) {
   const user = await currentUser();
   const role = user?.privateMetadata.role;
+
   return (
     <div className="h-full hidden min-[1170px]:block relative bg-white rounded-md shadow-sm overflow-hidden">
       <div
@@ -34,7 +38,7 @@ export default async function HomeUserCard({
             />
           </div>
           <div className="absolute top-16 w-full h-5 font-bold text-black text-center cursor-pointer capitalize">
-            {user ? user.fullName?.toLowerCase() : "Welcome to GoShop"}
+            {user ? user.fullName?.toLowerCase() : `Welcome to ${APP_NAME}`}
           </div>
         </div>
         {/* User links */}

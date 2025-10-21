@@ -1,24 +1,31 @@
 "use client";
-import { ProductType, SimpleProduct } from "@/lib/types";
-import { FC, ReactNode } from "react";
+
+import { ReactNode } from "react";
+
+import { ProductType, SimpleProduct } from "@/lib/types"; // Types
+// Swiper imports
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+// Components
 import ProductCard from "../cards/product/product-card";
-import { Navigation, Pagination } from "swiper/modules";
 import ProductCardSimple from "@/components/store/cards/product/simple-card";
 import ProductCardClean from "@/components/store/cards/product/clean-card";
+
 interface Props {
   children?: ReactNode;
   products: SimpleProduct[] | ProductType[];
   type: "main" | "curved" | "simple";
   slidesPerView?: number;
-  breakpoints?: any;
+  breakpoints?: {
+    [key: number]: { slidesPerView?: number };
+  };
   spaceBetween?: number;
 }
 
-const MainSwiper: FC<Props> = ({
+export default function MainSwiper({
   products,
   type,
   breakpoints = {
@@ -31,7 +38,7 @@ const MainSwiper: FC<Props> = ({
   children,
   slidesPerView = 1,
   spaceBetween = 30,
-}) => {
+}: Props) {
   return (
     <div className="p-4 rounded-md cursor-pointer">
       <div>{children}</div>
@@ -42,8 +49,8 @@ const MainSwiper: FC<Props> = ({
         slidesPerView={slidesPerView}
         breakpoints={breakpoints}
       >
-        {products.map((product, i) => (
-          <SwiperSlide key={i}>
+        {products.map((product) => (
+          <SwiperSlide key={product.slug}>
             {type === "simple" ? (
               <ProductCardSimple product={product as SimpleProduct} />
             ) : type === "curved" ? (
@@ -56,6 +63,4 @@ const MainSwiper: FC<Props> = ({
       </Swiper>
     </div>
   );
-};
-
-export default MainSwiper;
+}
