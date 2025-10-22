@@ -42,3 +42,14 @@ export async function getOrder(orderId: string) {
 
   return order;
 }
+
+/**
+ * @name updateOrderGroupStatus
+ * @description - Updates the status of a specified order group.
+ *              - Throws an error if the user is not authenticated or lacks seller privileges.
+ * @access User
+ * @param storeId - The store id of the seller to verify ownership.
+ * @param groupId - The ID of the order group whose status is to be updated.
+ * @param status - The new status to be set for the order.
+ * @returns {Object} - Updated order status.
+ */

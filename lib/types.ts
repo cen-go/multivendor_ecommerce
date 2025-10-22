@@ -29,7 +29,7 @@ import {
   getRatingStatistics,
   getShippingDetails,
 } from "@/actions/product";
-import { getStoreDefaultShippingDetails } from "@/actions/store";
+import { getStoreDefaultShippingDetails, getStoreOrders } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
   label: string;
@@ -273,3 +273,5 @@ export type SimpleProduct = {
 export type FeaturedCategoryType = Prisma.PromiseReturnType<
   typeof getHomeFeaturedCategories
 >[0];
+
+export type StoreOrderType = Prisma.PromiseReturnType<typeof getStoreOrders>[0];

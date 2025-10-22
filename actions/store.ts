@@ -382,3 +382,59 @@ export async function upsertShippingRate(storeUrl:string, shippingRate: z.infer<
     return { success: false, message: "An unexpected error occurred." };
   }
 }
+
+// Function: getStoreOrders
+// Description: Fetches all orders for a specific store
+// Permission Level: Seller
+// Parameters:
+//   - storeUrl: Url of the store whose orders are going to be fetched.
+// Returns: Array of order groups including order details and items.
+export async function getStoreOrders(storeUrl: string) {
+  try {
+    const user = await currentUser();
+    if (!user) {
+      throw new Error("Unauthenticated!");
+    }
+
+    // Verify the user is an seller
+    if (user.privateMetadata.role !== Role.SELLER) {
+      throw new Error("Unauthorized Access: Seller privileges required.");
+    }
+
+    const store = await db.store.findUnique({where: {url: storeUrl}});
+
+    if (!store) {
+      throw new Error("Store not found");
+    }
+    // Verify the store ownership
+    if (store.userId !== user.id) {
+      throw new Error("You don't have permission to view orders of this store.");
+    }
+
+    const orders = await db.orderGroup.findMany({
+      where: { storeId: store.id },
+      include: {
+        orderItems: true,
+        coupon: true,
+        order: {
+          select: {
+            paymentStatus: true,
+            paymentDetails: true,
+            shippingAddress: { include: { country: true } },
+            user: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {updatedAt: "desc"},
+    });
+
+    return orders;
+  } catch (error) {
+    console.error("Error fetching store orders: ", error);
+    throw new Error("Somethin went wrong while fetching the store orders.");
+  }
+}
