@@ -420,16 +420,13 @@ export async function getStoreOrders(storeUrl: string) {
           select: {
             paymentStatus: true,
             paymentDetails: true,
-            shippingAddress: { include: { country: true } },
-            user: {
-              select: {
-                email: true,
-              },
+            shippingAddress: {
+              include: { country: true, user: { select: { email: true } } },
             },
           },
         },
       },
-      orderBy: {updatedAt: "desc"},
+      orderBy: { updatedAt: "desc" },
     });
 
     return orders;

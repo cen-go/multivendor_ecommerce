@@ -1,8 +1,13 @@
 "use client"
 
-import OrderStatusTag from "@/components/shared/order-status-tag";
-import { OrderStatus } from "@prisma/client";
 import { useState } from "react";
+// Server actions
+import { updateOrderGroupStatus } from "@/actions/order";
+// Types
+import { OrderStatus } from "@prisma/client";
+// components
+import OrderStatusTag from "@/components/shared/order-status-tag";
+import { toast } from "sonner";
 
 interface Props {
   storeId: string;
@@ -17,7 +22,15 @@ export default function OrderStatusUpdate({storeId, orderGroupId, orderStatus}: 
   const options = Object.values(OrderStatus).filter(s => s !== newStatus);
 
   async function handleClick(selectedStatus:OrderStatus) {
-    console.log(selectedStatus);
+    const response = await updateOrderGroupStatus(storeId, orderGroupId, selectedStatus)
+    if (response.success) {
+      toast.success(response.message);
+      setNewStatus(response.status ?? selectedStatus);
+      setIsOpen(false);
+    } else {
+      toast.error(response.message);
+      setIsOpen(false);
+    }
   }
 
   return (
