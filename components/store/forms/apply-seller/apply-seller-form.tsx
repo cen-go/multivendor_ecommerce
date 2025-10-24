@@ -4,6 +4,7 @@ import { StoreType } from "@/lib/types";
 import { useState } from "react";
 import Instructions from "./instructions";
 import ProgressBar from "./progress-bar";
+import Step1 from "./steps/step-1/step-1";
 
 export default function ApplySellerMultiForm() {
   const [step, setStep] = useState<number>(1);
@@ -33,6 +34,28 @@ export default function ApplySellerMultiForm() {
         {/* Progress bar */}
         <ProgressBar step={step} />
         {/* Steps */}
+         {step === 1 ? (
+          <Step1 step={step} setStep={setStep} />
+        ) : step === 2 ? (
+          <div></div>
+          // <Step2
+          //   formData={formData}
+          //   setFormData={setFormData}
+          //   step={step}
+          //   setStep={setStep}
+          // />
+        ) : step === 3 ? (
+          <div></div>
+          // <Step3
+          //   formData={formData}
+          //   setFormData={setFormData}
+          //   step={step}
+          //   setStep={setStep}
+          // />
+        ) : step === 4 ? (
+          <div></div>
+          // <Step4 />
+        ) : null}
       </div>
     </div>
   )

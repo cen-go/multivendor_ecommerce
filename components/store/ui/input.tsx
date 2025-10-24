@@ -19,7 +19,7 @@ export default function Input({name, type, value, placeholder, onChange, readonl
         value={String(value)}
         onChange={(e) => onChange(e.target.value)}
         readOnly={readonly}
-        className="w-full pr-6 pl-8 py-4 rounded-xl outline-none duration-200 ring-1 ring-transparent focus:ring-[#11BE86]"
+        className="w-full pr-6 pl-8 py-4 bg-white rounded-xl outline-none duration-200 ring-1 ring-transparent focus:ring-[#11BE86]"
       />
     </div>
   );
