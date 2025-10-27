@@ -5,9 +5,12 @@ import { useState } from "react";
 import Instructions from "./instructions";
 import ProgressBar from "./progress-bar";
 import Step1 from "./steps/step-1/step-1";
+import Step4 from "./steps/step-4/step-4";
+import Step2 from "./steps/step-2/step-2";
+import Step3 from "./steps/step-3/step-3";
 
 export default function ApplySellerMultiForm() {
-  const [step, setStep] = useState<number>(1);
+  const [step, setStep] = useState<number>(3);
   const [formData, setFormData] = useState<StoreType>({
     name: "",
     description: "",
@@ -17,12 +20,12 @@ export default function ApplySellerMultiForm() {
     logo: "",
     cover: "",
     defaultShippingService: "",
-    defaultShippingFeePerItem: undefined,
-    defaultShippingFeeForAdditionalItem: undefined,
-    defaultShippingFeePerKg: undefined,
-    defaultShippingFeeFixed: undefined,
-    defaultDeliveryTimeMin: undefined,
-    defaultDeliveryTimeMax: undefined,
+    defaultShippingFeePerItem: 0,
+    defaultShippingFeeForAdditionalItem: 0,
+    defaultShippingFeePerKg: 0,
+    defaultShippingFeeFixed: 0,
+    defaultDeliveryTimeMin: 7,
+    defaultDeliveryTimeMax: 31,
     returnPolicy: "",
   });
 
@@ -37,24 +40,21 @@ export default function ApplySellerMultiForm() {
          {step === 1 ? (
           <Step1 step={step} setStep={setStep} />
         ) : step === 2 ? (
-          <div></div>
-          // <Step2
-          //   formData={formData}
-          //   setFormData={setFormData}
-          //   step={step}
-          //   setStep={setStep}
-          // />
+          <Step2
+            formData={formData}
+            setFormData={setFormData}
+            step={step}
+            setStep={setStep}
+          />
         ) : step === 3 ? (
-          <div></div>
-          // <Step3
-          //   formData={formData}
-          //   setFormData={setFormData}
-          //   step={step}
-          //   setStep={setStep}
-          // />
+          <Step3
+            formData={formData}
+            setFormData={setFormData}
+            step={step}
+            setStep={setStep}
+          />
         ) : step === 4 ? (
-          <div></div>
-          // <Step4 />
+          <Step4 />
         ) : null}
       </div>
     </div>

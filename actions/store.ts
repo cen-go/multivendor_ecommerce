@@ -4,7 +4,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 // zod schemas
 import * as z from "zod";
-import { ShippingRateFormSchema, StoreFormSchema, StoreShippingFormSchema } from "@/lib/schemas";
+import { ShippingRateFormSchema, StoreFormSchema, StoreShippingFormSchema, StoreShippingSchema } from "@/lib/schemas";
 // Database client
 import db from "@/lib/db";
 // Types
@@ -433,5 +433,103 @@ export async function getStoreOrders(storeUrl: string) {
   } catch (error) {
     console.error("Error fetching store orders: ", error);
     throw new Error("Somethin went wrong while fetching the store orders.");
+  }
+}
+
+// Function: upsertStore
+// Description:  Upserts a store into the database, ensuring uniqueness of name, email, URL
+// Permission Level: User
+// Parameters:
+//   - storeData: Partial store object containing the details of the store to ne upserted
+// Returns: Updated or newly created store details.
+export async function ApplyAsSeller(storeData: Partial<Store>) {
+  try {
+    // Get the current user
+    const user = await currentUser();
+    if (!user) {
+      return { success: false, message: "Unauthenticated!" };
+    }
+
+    // Check for existing store with same name, url, or email (excluding current store)
+    const existingStore = await db.store.findFirst({
+      where: {
+        AND: [
+          {
+            OR: [
+              { name: storeData.name },
+              { url: storeData.url },
+              { email: storeData.email },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (existingStore) {
+      let errorMessage = "";
+      if (existingStore.name === storeData.name) {
+        errorMessage = "A store with the same name already exists.";
+      } else if (existingStore.url === storeData.url) {
+        errorMessage = "A store with the same URL already exists.";
+      } else if (existingStore.email === storeData.email) {
+        errorMessage = "A store with the same email already exists.";
+      }
+      return { success: false, message: errorMessage };
+    }
+
+    // Validate the form data
+    const validatedStoreData = StoreFormSchema.safeParse({
+      name: storeData.name,
+      description: storeData.description,
+      email: storeData.email,
+      phone: storeData.phone,
+      url: storeData.url,
+      logo: [{ url: storeData.logo }],
+      cover: [{ url: storeData.cover }],
+    });
+
+    if (!validatedStoreData.success) {
+      const validationError = validatedStoreData.error.flatten();
+      return {
+        success: false,
+        fieldErrors: validationError.fieldErrors,
+        formErrors: validationError.formErrors,
+        message: "Validation failed.",
+      };
+    }
+
+    // Validate the form data
+    const validatedShippingData = StoreShippingSchema.safeParse(storeData);
+
+    if (!validatedShippingData.success) {
+      const validationError = validatedShippingData.error.flatten();
+      return {
+        success: false,
+        fieldErrors: validationError.fieldErrors,
+        formErrors: validationError.formErrors,
+        message: "Validation failed.",
+      };
+    }
+
+    const store = { ...validatedStoreData.data, ...validatedShippingData.data };
+
+    // Create a new store
+    const storeDetails = await db.store.create({
+      data: {
+        ...store,
+        userId: user.id,
+        logo: store.logo[0].url,
+        cover: store.cover[0].url,
+        defaultShippingFeePerItem: Math.round(store.defaultShippingFeePerItem * 100),
+        defaultShippingFeePerAdditionalItem: Math.round(store.defaultShippingFeeForAdditionalItem * 100),
+        defaultShippingFeePerKg: Math.round(store.defaultShippingFeePerKg * 100),
+        defaultShippingFeeFixed: Math.round(store.defaultShippingFeeFixed * 100),
+      },
+    });
+
+    return { success: true, message: "Your application successfully submitted", store: storeDetails };
+  } catch (error) {
+    console.error("Error applying to be a seller: ", error);
+    return { success: false, message: "An unexpected error occurred." };
   }
 }

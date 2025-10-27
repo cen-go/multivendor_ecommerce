@@ -4,7 +4,7 @@ export default function Instructions() {
   return (
     <div
       className="h-[calc(100vh-64px)] bg-teal-100 border-t-4 border-teal-500 text-teal-900 px-4 py-3 shadow-md
-     w-80 lg:w-full z-50 lg:relative"
+     w-80 lg:w-full z-50 lg:relative hidden md:block"
     >
       <div className="flex">
         <div className="me-1">
