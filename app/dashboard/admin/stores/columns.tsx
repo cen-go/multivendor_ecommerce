@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 
 // Custom components
 import CustomModal from "@/components/dashboard/shared/custom-modal";
+import StoreSummary from "@/components/dashboard/shared/store-summary";
+import StoreStatusUpdate from "@/components/dashboard/forms/store-status-update";
 
 // UI components
 import {
@@ -28,11 +30,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Hooks and utilities
 import { toast } from "sonner";
 
-// Lucide icons
+// Custom hooks
+import { useModal } from "@/lib/modal-provider";
+// Icons
 import {
   BadgeCheck,
   BadgeMinus,
@@ -41,18 +43,15 @@ import {
   Trash,
 } from "lucide-react";
 
-// Queries
+// Server actions
 import { deleteStore } from "@/actions/store";
 
 // Tanstack React Table
 import { ColumnDef } from "@tanstack/react-table";
 
-// Prisma models
+// Types
 import { AdminStoreType } from "@/lib/types";
 import { StoreStatus } from "@prisma/client";
-import { useModal } from "@/lib/modal-provider";
-import StoreSummary from "@/components/dashboard/shared/store-summary";
-import StoreStatusUpdate from "@/components/dashboard/forms/store-status-update";
 
 export const columns: ColumnDef<AdminStoreType>[] = [
   {
@@ -157,7 +156,7 @@ interface CellActionsProps {
 }
 
 // CellActions component definition
-const CellActions: React.FC<CellActionsProps> = ({ storeId }) => {
+function CellActions({ storeId }: CellActionsProps) {
   // Hooks
   const { setClose } = useModal();
   const [loading, setLoading] = useState(false);

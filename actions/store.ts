@@ -11,6 +11,7 @@ import db from "@/lib/db";
 import { Role, Store, StoreStatus } from "@prisma/client";
 import { StoreShippingDetailType, StoreShippingRateForCountryType } from "@/lib/types";
 import { revalidatePath } from "next/cache";
+import { checkIfUserFollowingStore } from "./product";
 
 // Function: upsertStore
 // Description:  Upserts a store into the database, ensuring uniqueness of name, email, URL
@@ -667,4 +668,73 @@ export async function updateStoreStatus(storeId: string, status: StoreStatus) {
     console.error("Error updating the store status: ", error);
     return { success: false, message: "An unexpected error occurred." };
   }
+}
+
+
+export async function getStorePageDetails(storeUrl: string) {
+  const user = await currentUser();
+
+  // Fetch the store details from the database
+  const store = await db.store.findUnique({
+    where: {
+      url: storeUrl,
+      status: "ACTIVE",
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      logo: true,
+      cover: true,
+      averageRating: true,
+      _count: {
+        select: {
+          followers: true,
+        },
+      },
+    },
+  });
+  let isUserFollowingStore = false;
+  if (user && store) {
+    isUserFollowingStore = await checkIfUserFollowingStore(store.id, user.id);
+  }
+  // Handle case where the store is not found
+  if (!store) {
+    return null;
+  }
+  return { ...store, isUserFollowingStore };
+};
+
+export async function getCategoriesForStore(storeUrl: string) {
+  // Retrieve the storeId based on the storeUrl
+  const store = await db.store.findUnique({
+    where: { url: storeUrl },
+  });
+
+  // If no store is found, return an empty array or handle as needed
+  if (!store) {
+    return [];
+  }
+
+  const storeId = store.id;
+
+  // Retrieve all categories from the database
+  const categories = await db.category.findMany({
+    where: storeId
+      ? {
+          products: {
+            some: {
+              storeId: storeId,
+            },
+          },
+        }
+      : {},
+    include: {
+      subCategories: true,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+  return categories;
 }

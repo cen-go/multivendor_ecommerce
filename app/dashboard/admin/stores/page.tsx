@@ -1,4 +1,4 @@
-// Queries
+// DB queries
 import { getAllStores } from "@/actions/store";
 
 // Data table

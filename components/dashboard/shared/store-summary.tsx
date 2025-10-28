@@ -1,8 +1,11 @@
-import { AdminStoreType } from "@/lib/types";
-import { StoreStatus } from "@prisma/client";
-import { cn, formatCurrency } from "@/lib/utils";
 import { useState } from "react";
 import Image from "next/image";
+// Types
+import { AdminStoreType } from "@/lib/types";
+import { StoreStatus } from "@prisma/client";
+// Utils
+import { cn, formatCurrency } from "@/lib/utils";
+
 import StoreStatusUpdate from "../forms/store-status-update";
 
 interface Props {

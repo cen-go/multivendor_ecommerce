@@ -1,8 +1,9 @@
-import { toast } from "sonner";
-import { StoreStatus } from "@prisma/client";
 import { useState } from "react";
+
+import { StoreStatus } from "@prisma/client"; // Type
+import { updateStoreStatus } from "@/actions/store"; // Server action
+import { toast } from "sonner";
 import StoreStatusTag from "@/components/shared/store-status-tag";
-import { updateStoreStatus } from "@/actions/store";
 
 interface Props {
   storeId: string;
