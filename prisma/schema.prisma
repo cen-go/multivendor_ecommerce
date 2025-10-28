@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  relationMode = "foreignKeys"
 }
 
 enum Role {
@@ -121,7 +121,7 @@ enum ShippingFeeMethod {
 model Product {
   id                String            @id @default(uuid())
   name              String
-  description       String            @db.LongText
+  description       String            @db.Text
   slug              String            @unique
   brand             String
   rating            Float             @default(0)
@@ -161,7 +161,7 @@ model Product {
 model ProductVariant {
   id                 String   @id @default(uuid())
   variantName        String
-  variantDescription String?  @db.LongText
+  variantDescription String?  @db.Text
   variantImage       String
   slug               String   @unique
   isSale             Boolean  @default(false)
