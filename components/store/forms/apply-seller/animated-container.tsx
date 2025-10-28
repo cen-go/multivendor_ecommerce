@@ -13,7 +13,7 @@ export default function AnimatedContainer({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="h-[calc(100vh-200px)]"
+      className="h-[calc(100vh-300px)]"
     >
       <div className="h-full flex flex-col pt-4 overflow-y-auto px-2">
         {children}

@@ -1,9 +1,12 @@
-import { StoreShippingSchema } from "@/lib/schemas";
-import { StoreType } from "@/lib/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
+// Types
+import { StoreType } from "@/lib/types";
+// Form related imports
+import { StoreShippingSchema } from "@/lib/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+// Components
 import AnimatedContainer from "../../animated-container";
 import {
   Form,
@@ -13,10 +16,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ApplyAsSeller } from "@/actions/store";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+// Server action
+import { ApplyAsSeller } from "@/actions/store";
 
 export default function Step3({
   step,
@@ -38,8 +42,8 @@ export default function Step3({
       defaultShippingService: formData.defaultShippingService,
       defaultShippingFeePerItem: formData.defaultShippingFeePerItem,
       defaultShippingFeePerKg: formData.defaultShippingFeePerKg,
-      defaultShippingFeeForAdditionalItem:
-        formData.defaultShippingFeeForAdditionalItem,
+      defaultShippingFeePerAdditionalItem:
+        formData.defaultShippingFeePerAdditionalItem,
       defaultShippingFeeFixed: formData.defaultShippingFeeFixed,
       defaultDeliveryTimeMin: formData.defaultDeliveryTimeMin,
       defaultDeliveryTimeMax: formData.defaultDeliveryTimeMax,
@@ -61,7 +65,7 @@ export default function Step3({
         defaultShippingService: values.defaultShippingService,
         defaultShippingFeePerItem: values.defaultShippingFeePerItem,
         defaultShippingFeePerAdditionalItem:
-          values.defaultShippingFeeForAdditionalItem,
+          values.defaultShippingFeePerAdditionalItem,
         defaultShippingFeePerKg: values.defaultShippingFeePerKg,
         defaultShippingFeeFixed: values.defaultShippingFeeFixed,
         defaultDeliveryTimeMin: values.defaultDeliveryTimeMin,
@@ -80,7 +84,7 @@ export default function Step3({
     defaultShippingService: string;
     defaultShippingFeePerItem: number;
     defaultShippingFeePerKg: number;
-    defaultShippingFeeForAdditionalItem: number;
+    defaultShippingFeePerAdditionalItem: number;
     defaultShippingFeeFixed: number;
     defaultDeliveryTimeMin: number;
     defaultDeliveryTimeMax: number;
@@ -189,14 +193,14 @@ export default function Step3({
               {/* Shipping Fee for Additional Item */}
               <FormField
                 control={form.control}
-                name="defaultShippingFeeForAdditionalItem"
+                name="defaultShippingFeePerAdditionalItem"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Shipping Fee for Additional Item</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Shipping Fee for Additional Item"
-                        name="defaultShippingFeeForAdditionalItem"
+                        name="defaultShippingFeePerAdditionalItem"
                         type="number"
                         value={Number(field.value)}
                         onChange={handleInputChange}

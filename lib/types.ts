@@ -29,7 +29,7 @@ import {
   getRatingStatistics,
   getShippingDetails,
 } from "@/actions/product";
-import { getStoreDefaultShippingDetails, getStoreOrders } from "@/actions/store";
+import { getAllStores, getStoreDefaultShippingDetails, getStoreOrders } from "@/actions/store";
 
 export interface DashboardSidebarMenuInterface {
   label: string;
@@ -284,12 +284,14 @@ export type StoreType = {
   logo: string;
   cover: string;
   url: string;
-  defaultShippingService: string;
+  defaultShippingService?: string;
   defaultDeliveryTimeMax?: number;
   defaultDeliveryTimeMin?: number;
   defaultShippingFeeFixed?: number;
-  defaultShippingFeeForAdditionalItem?: number;
+  defaultShippingFeePerAdditionalItem?: number;
   defaultShippingFeePerItem?: number;
   defaultShippingFeePerKg?: number;
   returnPolicy?: string;
 };
+
+export type AdminStoreType = Prisma.PromiseReturnType<typeof getAllStores>[0];

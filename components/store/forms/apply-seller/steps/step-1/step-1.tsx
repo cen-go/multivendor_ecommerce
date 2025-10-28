@@ -1,11 +1,14 @@
+// React & Next.js
 import Link from "next/link";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+// Components
 import AnimatedContainer from "../../animated-container";
 import UserDetails from "./user-details";
 import { Button } from "@/components/store/ui/button";
-import UserImg from "@/public/assets/images/default-user.avif";
+
 import { useUser } from "@clerk/nextjs";
+import UserImg from "@/public/assets/images/default-user.avif";
 
 interface Props {
   step: number;

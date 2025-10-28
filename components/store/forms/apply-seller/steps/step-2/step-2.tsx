@@ -1,8 +1,11 @@
-import { StoreFormSchema } from "@/lib/schemas";
-import { StoreType } from "@/lib/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Dispatch, SetStateAction } from "react";
+// Types
+import { StoreType } from "@/lib/types";
+// Form related imports
+import { StoreFormSchema } from "@/lib/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+// Components
 import AnimatedContainer from "../../animated-container";
 import {
   Form,
@@ -88,7 +91,7 @@ export default function Step2({
                   control={form.control}
                   name="logo"
                   render={({ field }) => (
-                    <FormItem className="absolute -bottom-20 -left-10 md:-left-36 z-10 inset-x-5 lg:inset-x-15">
+                    <FormItem className="absolute -bottom-20 -left-50 z-10 inset-x-5 lg:inset-x-15">
                       <FormControl>
                         <ImageUpload
                           type="profile"

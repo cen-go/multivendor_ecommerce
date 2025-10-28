@@ -8,7 +8,7 @@ import { ShippingRateFormSchema, StoreFormSchema, StoreShippingFormSchema, Store
 // Database client
 import db from "@/lib/db";
 // Types
-import { Role, Store } from "@prisma/client";
+import { Role, Store, StoreStatus } from "@prisma/client";
 import { StoreShippingDetailType, StoreShippingRateForCountryType } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
@@ -437,11 +437,11 @@ export async function getStoreOrders(storeUrl: string) {
 }
 
 // Function: upsertStore
-// Description:  Upserts a store into the database, ensuring uniqueness of name, email, URL
+// Description:  Create a store in the database, ensuring uniqueness of name, email, URL
 // Permission Level: User
 // Parameters:
 //   - storeData: Partial store object containing the details of the store to ne upserted
-// Returns: Updated or newly created store details.
+// Returns: an object indicating status of the result and message
 export async function ApplyAsSeller(storeData: Partial<Store>) {
   try {
     // Get the current user
@@ -521,7 +521,7 @@ export async function ApplyAsSeller(storeData: Partial<Store>) {
         logo: store.logo[0].url,
         cover: store.cover[0].url,
         defaultShippingFeePerItem: Math.round(store.defaultShippingFeePerItem * 100),
-        defaultShippingFeePerAdditionalItem: Math.round(store.defaultShippingFeeForAdditionalItem * 100),
+        defaultShippingFeePerAdditionalItem: Math.round(store.defaultShippingFeePerAdditionalItem * 100),
         defaultShippingFeePerKg: Math.round(store.defaultShippingFeePerKg * 100),
         defaultShippingFeeFixed: Math.round(store.defaultShippingFeeFixed * 100),
       },
@@ -530,6 +530,141 @@ export async function ApplyAsSeller(storeData: Partial<Store>) {
     return { success: true, message: "Your application successfully submitted", store: storeDetails };
   } catch (error) {
     console.error("Error applying to be a seller: ", error);
+    return { success: false, message: "An unexpected error occurred." };
+  }
+}
+
+// Function: getAllStores
+// Description: Retrieves all stores from the database.
+// Permission Level: Admin only
+// Parameters: None
+// Returns: An array of store details.
+export const getAllStores = async () => {
+  try {
+    // Get current user
+    const user = await currentUser();
+
+    // Ensure user is authenticated
+    if (!user) throw new Error("Unauthenticated.");
+
+    // Verify admin permission
+    if (user.privateMetadata.role !== "ADMIN") {
+      throw new Error(
+        "Unauthorized Access: Admin Privileges Required to View Stores."
+      );
+    }
+
+    // Fetch all stores from the database
+    const stores = await db.store.findMany({
+      include: {
+        user: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return stores;
+  } catch (error) {
+    console.error("Error fetching all stores getAllStores: ", error)
+    throw new Error("An error occured fetching the stores.");
+    ;
+  }
+};
+
+// Function: deleteStore
+// Description: Deletes a store from the database.
+// Permission Level: Admin only
+// Parameters:
+//   - storeId: The ID of the store to be deleted.
+// Returns: Response indicating success or failure of the deletion operation.
+export const deleteStore = async (storeId: string) => {
+  try {
+    // Get current user
+    const user = await currentUser();
+
+    // Check if user is authenticated
+    if (!user) {
+      return {success: false, message: "Unauthenticated!" };
+    }
+
+    // Verify admin permission
+    if (user.privateMetadata.role !== Role.ADMIN) {
+      return {success: false, message: "Unauthorized Access: Admin privileges required." };
+    }
+
+    // Ensure store ID is provided
+    if (!storeId) {
+      return {success: false, message: "Please provide store ID." };
+    }
+
+    // Delete store from the database
+    const response = await db.store.delete({
+      where: {
+        id: storeId,
+      },
+    });
+
+    return {success: true, message: `Store named ${response.name} has succcessfully deleted` };
+  } catch (error) {
+    console.error("Error deleting store: ", error);
+      return {success: false, message: "An unexpected error occurred." };
+  }
+};
+
+export async function updateStoreStatus(storeId: string, status: StoreStatus) {
+  try {
+    // Get current user
+    const user = await currentUser();
+
+    // Check if user is authenticated
+    if (!user) {
+      return { success: false, message: "Unauthenticated!" };
+    }
+
+    // Verify admin permission
+    if (user.privateMetadata.role !== Role.ADMIN) {
+      return {
+        success: false,
+        message: "Unauthorized Access: Admin privileges required.",
+      };
+    }
+
+    const store = await db.store.findUnique({
+      where: {
+        id: storeId,
+      },
+    });
+
+    if (!store) {
+      return { success: false, message: "Store not found" };
+    }
+
+    // Retrieve the order to be updated
+    const updatedStore = await db.store.update({
+      where: {
+        id: storeId,
+      },
+      data: {
+        status,
+      },
+    });
+
+    // Update the user role
+    if (store.status === "PENDING" && updatedStore.status === "ACTIVE") {
+      await db.user.update({
+        where: {
+          id: updatedStore.userId,
+        },
+        data: {
+          role: "SELLER",
+        },
+      });
+    }
+
+    return {success: true, message: "Order status successfully updated.", status: updatedStore.status};
+
+  } catch (error) {
+    console.error("Error updating the store status: ", error);
     return { success: false, message: "An unexpected error occurred." };
   }
 }

@@ -470,7 +470,7 @@ export const StoreShippingSchema = z.object({
       invalid_type_error: "Default shipping fee per item must be a number",
     })
     .default(0),
-  defaultShippingFeeForAdditionalItem: z
+  defaultShippingFeePerAdditionalItem: z
     .number({
       required_error: "Default shipping fee for additional items is required",
       invalid_type_error:

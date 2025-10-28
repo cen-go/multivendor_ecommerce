@@ -1,7 +1,8 @@
 "use client"
 
-import { StoreType } from "@/lib/types";
 import { useState } from "react";
+
+import { StoreType } from "@/lib/types";
 import Instructions from "./instructions";
 import ProgressBar from "./progress-bar";
 import Step1 from "./steps/step-1/step-1";
@@ -19,14 +20,14 @@ export default function ApplySellerMultiForm() {
     url: "",
     logo: "",
     cover: "",
-    defaultShippingService: "",
+    defaultShippingService: undefined,
     defaultShippingFeePerItem: 0,
-    defaultShippingFeeForAdditionalItem: 0,
+    defaultShippingFeePerAdditionalItem: 0,
     defaultShippingFeePerKg: 0,
     defaultShippingFeeFixed: 0,
     defaultDeliveryTimeMin: 7,
     defaultDeliveryTimeMax: 31,
-    returnPolicy: "",
+    returnPolicy: undefined,
   });
 
   return (
