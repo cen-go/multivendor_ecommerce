@@ -27,7 +27,7 @@ export default function FiltersHeader({queries}: {queries: ProductQueryFiltersTy
   }
 
   // handle removing specific filters or search queries
-  function handleRemoveFilter(filterKey: string,arrayValue?: string[],specificValue?: string,) {
+  function handleRemoveFilter(filterKey: string, arrayValue?: (string | number)[], specificValue?: string | number,) {
     if (specificValue && arrayValue) {
       // remove the value from the values array. if the filter value is an array like the sizes filter
       const updatedArray = arrayValue.filter(
@@ -35,7 +35,7 @@ export default function FiltersHeader({queries}: {queries: ProductQueryFiltersTy
       );
       queryParams.delete(filterKey); // remove the search param completely
       // Add the remaining search param values in the array one by one
-      updatedArray.forEach((val) => queryParams.append(filterKey, val));
+      updatedArray.forEach((val) => queryParams.append(filterKey, val.toString()));
     } else {
       queryParams.delete(filterKey);
     }

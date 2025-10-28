@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 // DB queries
 import { getAllStores } from "@/actions/store";
 
