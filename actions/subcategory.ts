@@ -173,8 +173,8 @@ export async function getRandomSubcategories(
   // if random selection is required, use a random query to randomize
   if (random) {
     const subcategories = await db.$queryRaw<SubCategory[]>`
-    SELECT * FROM SubCategory
-    ORDER BY RAND()
+    SELECT * FROM "SubCategory"
+    ORDER BY RANDOM()
     LIMIT ${limit || 8}
     `;
 
