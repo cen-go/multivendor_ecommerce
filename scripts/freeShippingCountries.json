@@ -1,0 +1,58 @@
+[
+	{
+		"id" : "2d2b5f63-61d0-4ef9-9b59-5ad35f3d3fcc",
+		"freeShippingId" : "968a9523-3bec-4ea5-8618-54fe1ebd67d4",
+		"countryId" : "cdb92af8-0e68-43ff-8027-be3255075f36",
+		"createdAt" : "2025-07-29 14:09:15.665",
+		"updatedAt" : "2025-07-29 14:14:38.511"
+	},
+	{
+		"id" : "50b6a992-eff6-402d-96f4-518786c8804b",
+		"freeShippingId" : "ea47c3e1-e444-4105-985c-e17dab60d499",
+		"countryId" : "eaf89c59-6453-4b44-9d65-33bea9991510",
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "6e71fa67-8f20-48cf-81ec-45c438d7c3e1",
+		"freeShippingId" : "968a9523-3bec-4ea5-8618-54fe1ebd67d4",
+		"countryId" : "eaf89c59-6453-4b44-9d65-33bea9991510",
+		"createdAt" : "2025-07-29 14:15:03.735",
+		"updatedAt" : "2025-07-29 14:14:42.489"
+	},
+	{
+		"id" : "86e98557-37b4-4629-9094-b9b9db3f247c",
+		"freeShippingId" : "ea47c3e1-e444-4105-985c-e17dab60d499",
+		"countryId" : "25054254-a196-435e-9765-423b4fad0748",
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "86f292c8-e623-4827-b7ab-ae3c2957cebe",
+		"freeShippingId" : "ea47c3e1-e444-4105-985c-e17dab60d499",
+		"countryId" : "ca6ba06e-5701-4417-b15a-7dc4a05fe16d",
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "a5958a3c-116d-4985-add9-058b14df7d08",
+		"freeShippingId" : "ea47c3e1-e444-4105-985c-e17dab60d499",
+		"countryId" : "2157518a-ad38-45cb-ae18-7f70bdcd918e",
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "da0bf0bb-46ef-4567-b3e8-7eaadb17c404",
+		"freeShippingId" : "ea47c3e1-e444-4105-985c-e17dab60d499",
+		"countryId" : "f78c032b-ae71-49c8-a3e9-2532d6615550",
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "efb2b032-6f8c-4140-bf79-d329740912f8",
+		"freeShippingId" : "ea47c3e1-e444-4105-985c-e17dab60d499",
+		"countryId" : "77bb6277-3570-49c2-a7c4-cd4b6f8dbfd2",
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	}
+]

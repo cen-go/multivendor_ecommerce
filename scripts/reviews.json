@@ -1,0 +1,67 @@
+[
+	{
+		"id" : "23e95068-a4d1-4fff-afec-f1c1ad8302b6",
+		"variant" : "46MM Purple",
+		"review" : "I overally liked it.",
+		"rating" : 4,
+		"color" : "purple",
+		"size" : "46mm",
+		"likes" : 2,
+		"userId" : "user_2xHy4AAh2Y5WKNZZR6Pkh9cV8op",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"createdAt" : "2025-08-05 14:28:12.568",
+		"updatedAt" : "2025-08-05 14:26:15.835"
+	},
+	{
+		"id" : "46430bab-b1ee-4f02-b93f-0369a16cdb43",
+		"variant" : "46MM Purple",
+		"review" : "Excellent! Just as I expected",
+		"rating" : 5,
+		"color" : "purple",
+		"size" : "46mm",
+		"likes" : 4,
+		"userId" : "user_2xJYUD85sus7Ps47nKsE7mlqxov",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"createdAt" : "2025-08-05 14:26:08.541",
+		"updatedAt" : "2025-08-05 14:24:23.988"
+	},
+	{
+		"id" : "97add157-915e-4e06-a29c-0c0150c22cd7",
+		"variant" : "Night Indigo",
+		"review" : "Best jacket I've ever had. I will definitely buy again.",
+		"rating" : 5,
+		"color" : "#293B61",
+		"size" : "l",
+		"likes" : 0,
+		"userId" : "user_2xJYUD85sus7Ps47nKsE7mlqxov",
+		"productId" : "ed41cc2a-7eaf-483c-bafa-2729a0fc7b4f",
+		"createdAt" : "2025-08-16 13:07:49.611",
+		"updatedAt" : "2025-08-16 14:21:55.614"
+	},
+	{
+		"id" : "9c2dd8f3-e429-4a59-8baa-000bfbc1cdbd",
+		"variant" : "Purple",
+		"review" : "product arrived too late, packaging was damaged.",
+		"rating" : 2,
+		"color" : "purple",
+		"size" : "46mm",
+		"likes" : 0,
+		"userId" : "user_2xHyP25110egbaFr06WvQKYIRo8",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"createdAt" : "2025-08-05 14:29:34.335",
+		"updatedAt" : "2025-08-05 14:28:13.435"
+	},
+	{
+		"id" : "e98443a7-6a28-497d-ae3f-22707da7d698",
+		"variant" : "46MM Purple",
+		"review" : "Excellent",
+		"rating" : 4,
+		"color" : "purple",
+		"size" : "46mm",
+		"likes" : 2,
+		"userId" : "user_2xJYUD85sus7Ps47nKsE7mlqxov",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"createdAt" : "2025-08-05 14:46:43.824",
+		"updatedAt" : "2025-08-05 14:47:46.178"
+	}
+]

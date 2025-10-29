@@ -1,0 +1,26 @@
+[
+	{
+		"id" : "224c875f-8efb-4508-8f05-b740a2ebfa60",
+		"question" : "Does it have sim card slot?",
+		"answer" : "Watch 5 doesn't have a phsical sim card slot. But it supports e-sim.",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"createdAt" : "2025-08-03 18:57:24.616",
+		"updatedAt" : "2025-08-03 18:56:27.360"
+	},
+	{
+		"id" : "400192ce-fc0d-4d3f-be8f-ddf47a1841d9",
+		"question" : "Is e-sim supported?",
+		"answer" : "yes it is supported.",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"createdAt" : "2025-07-21 12:36:45.356",
+		"updatedAt" : "2025-07-21 12:36:45.356"
+	},
+	{
+		"id" : "88d2d679-8810-41c9-97bc-e805d10e857e",
+		"question" : "Is it compatible with IOS (iPhone 15 Pro max) ?",
+		"answer" : "Yes, it's fully compatible.",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"createdAt" : "2025-08-03 18:55:51.354",
+		"updatedAt" : "2025-08-03 18:55:06.880"
+	}
+]

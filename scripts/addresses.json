@@ -1,0 +1,50 @@
+[
+	{
+		"id" : "2a134269-add6-474e-aadf-4889f911c467",
+		"userId" : "user_2xJYUD85sus7Ps47nKsE7mlqxov",
+		"countryId" : "df375a71-073f-4b55-be9e-f2b9e6c881f8",
+		"title" : "ev",
+		"firstName" : "durmuş",
+		"lastName" : "yılmaz",
+		"phone" : "05320000000",
+		"address1" : "ihsaniye",
+		"address2" : "ışıkkent",
+		"city" : "Pyongyang",
+		"zip_code" : "16130",
+		"default" : false,
+		"createdAt" : "2025-09-12 22:40:17.759",
+		"updatedAt" : "2025-09-13 15:58:26.580"
+	},
+	{
+		"id" : "86b83cab-2ecf-45cc-85dc-4a1e2518c98d",
+		"userId" : "user_2xJYUD85sus7Ps47nKsE7mlqxov",
+		"countryId" : "eaf89c59-6453-4b44-9d65-33bea9991510",
+		"title" : "Türkiye adres",
+		"firstName" : "Satılmış",
+		"lastName" : "Bağcı",
+		"phone" : "05320000000",
+		"address1" : "Cihangir",
+		"address2" : "tr adres",
+		"city" : "İstanbul",
+		"zip_code" : "34130",
+		"default" : false,
+		"createdAt" : "2025-09-16 13:52:51.669",
+		"updatedAt" : "2025-09-16 13:52:51.669"
+	},
+	{
+		"id" : "ed7b16f4-4a6f-4f5a-b99c-20bc54280747",
+		"userId" : "user_2xJYUD85sus7Ps47nKsE7mlqxov",
+		"countryId" : "cdb92af8-0e68-43ff-8027-be3255075f36",
+		"title" : "work",
+		"firstName" : "durmuş",
+		"lastName" : "yılmaz",
+		"phone" : "05320000000",
+		"address1" : "main street",
+		"address2" : "city apartment",
+		"city" : "Shenyang",
+		"zip_code" : "16130",
+		"default" : true,
+		"createdAt" : "2025-09-12 22:45:25.900",
+		"updatedAt" : "2025-09-19 18:02:20.702"
+	}
+]

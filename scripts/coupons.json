@@ -1,0 +1,22 @@
+[
+	{
+		"id" : "48c4e00e-53e5-4e5d-8026-d4019b98394a",
+		"code" : "big",
+		"startDate" : "2025-09-22T00:00:00",
+		"endDate" : "2025-10-04T18:30:00",
+		"discount" : 80,
+		"storeId" : "6e8f2fae-fc6c-4b37-a8eb-300bb57852e1",
+		"createdAt" : "2025-09-21 13:54:39.801",
+		"updatedAt" : "2025-09-22 12:08:48.336"
+	},
+	{
+		"id" : "74108665-12e1-4d9a-9ec8-690b58af8a05",
+		"code" : "super50",
+		"startDate" : "2025-09-21T20:00:00",
+		"endDate" : "2025-10-15T22:00:00",
+		"discount" : 50,
+		"storeId" : "6e8f2fae-fc6c-4b37-a8eb-300bb57852e1",
+		"createdAt" : "2025-09-22 19:53:06.878",
+		"updatedAt" : "2025-09-22 19:53:06.878"
+	}
+]

@@ -1,0 +1,281 @@
+[
+	{
+		"id" : "025ce095-e9e3-4d05-a715-7d8b0ca71b2a",
+		"name" : "RAM",
+		"value" : "LPDDR4 1GB",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "0f38bdbc-aca4-428a-b89e-7355db41ef5b",
+		"name" : "Storage",
+		"value" : "64GB TF/MicroSD",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "1642cb54-fd1f-4e94-98ca-e766041f4a9f",
+		"name" : "Color",
+		"value" : "Grey",
+		"productId" : null,
+		"variantId" : "7ff22f1a-6fe2-4d09-88fc-c527b560216e",
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "1e53286e-d117-439b-815a-6005bae0c8a9",
+		"name" : "Dimensions",
+		"value" : "46mm",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-07-21 12:36:45.356",
+		"updatedAt" : "2025-07-21 12:36:45.356"
+	},
+	{
+		"id" : "2c373055-c86b-4ccd-b149-4d976d56c4dd",
+		"name" : "Battery",
+		"value" : "Li-polymer battery 3200mAh, lasting 6 hours",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "2d1fe4e8-e4bd-4cbb-922d-810c8ed79992",
+		"name" : "Water resiztance",
+		"value" : "IPX9 5 ATM",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-08-03 18:51:45.703",
+		"updatedAt" : "2025-08-03 18:51:24.354"
+	},
+	{
+		"id" : "2eed53a1-2cc2-4533-9452-ca7e3257c223",
+		"name" : "color",
+		"value" : "Ash Blue",
+		"productId" : null,
+		"variantId" : "7edb70c3-807a-4ba4-bfb3-baa315d13a93",
+		"createdAt" : "2025-07-13 19:13:37.230",
+		"updatedAt" : "2025-07-13 19:13:37.230"
+	},
+	{
+		"id" : "37fdf9ca-1836-42cd-85ec-28130874d07a",
+		"name" : "Band",
+		"value" : "compozite",
+		"productId" : null,
+		"variantId" : "8c40c96d-31a9-4d41-957f-50d30b45dd94",
+		"createdAt" : "2025-08-03 18:49:13.756",
+		"updatedAt" : "2025-08-03 18:48:41.026"
+	},
+	{
+		"id" : "39c85d70-e7da-4730-90fe-24d3b25cac64",
+		"name" : "Battery life",
+		"value" : "Up to 4.5 days (standard), 11 days (Battery Saver)",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-07-21 12:36:45.356",
+		"updatedAt" : "2025-07-21 12:36:45.356"
+	},
+	{
+		"id" : "45325c19-5d0f-46bb-8694-1bf73b181647",
+		"name" : "Case/bezel",
+		"value" : "Aerospace-grade Titanium",
+		"productId" : null,
+		"variantId" : "8c40c96d-31a9-4d41-957f-50d30b45dd94",
+		"createdAt" : "2025-07-21 12:36:45.356",
+		"updatedAt" : "2025-07-21 12:36:45.356"
+	},
+	{
+		"id" : "4d83c38c-9b5d-4152-840f-897c10c98196",
+		"name" : "Color",
+		"value" : "Yellow",
+		"productId" : null,
+		"variantId" : "72498506-6c6d-4027-845d-4aa4235c4c3c",
+		"createdAt" : "2025-08-21 18:45:56.120",
+		"updatedAt" : "2025-08-21 18:45:56.120"
+	},
+	{
+		"id" : "52b7151c-1adc-4c92-9525-4f9d28d952a0",
+		"name" : "Screen",
+		"value" : "4.0-inch IPS screen, OCA full lamination, resolution: 640*480",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "70116e32-f5fc-4ccf-b66a-081b2b8733de",
+		"name" : "Origin",
+		"value" : "Imported",
+		"productId" : "902841da-dd46-4b8e-875b-2ea8b6f04c74",
+		"variantId" : null,
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "7266b2c4-4704-4745-acf3-c61d3312d8fd",
+		"name" : "color",
+		"value" : "green",
+		"productId" : null,
+		"variantId" : "d519f980-fbe9-4170-afca-901828619607",
+		"createdAt" : "2025-07-13 19:41:30.536",
+		"updatedAt" : "2025-07-13 19:41:30.536"
+	},
+	{
+		"id" : "79edd72a-62af-480c-9130-7fd4fe1851c2",
+		"name" : "Screen resolution",
+		"value" : "466x466 pixels",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-08-03 18:50:54.358",
+		"updatedAt" : "2025-08-03 18:50:30.321"
+	},
+	{
+		"id" : "829780d6-27f9-46d0-b3db-f5f9032393eb",
+		"name" : "Dimensions",
+		"value" : "Length 13.9cm; Width 9.2cm; Height 2.2cm; Weight 0.216kg",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "8e04e2d7-2de0-468d-ad31-45839d918494",
+		"name" : "Display",
+		"value" : "1.5\" LTPO AMOLED, up to 3000 nits",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-07-21 12:36:45.356",
+		"updatedAt" : "2025-07-21 12:36:45.356"
+	},
+	{
+		"id" : "91c7d4b6-2a07-42c2-b894-c1cc025adacb",
+		"name" : "color",
+		"value" : "Night Indigo",
+		"productId" : null,
+		"variantId" : "9093bc6f-a64d-4df3-a69f-56b5d853c478",
+		"createdAt" : "2025-07-13 19:28:32.577",
+		"updatedAt" : "2025-07-13 19:28:32.577"
+	},
+	{
+		"id" : "92dfef8f-545d-48af-be02-3a8c17233764",
+		"name" : "CPU",
+		"value" : "H700 quad-core ARM Cortex-A53, 1.5GHz frequency",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "a018f743-cb74-4170-989a-24e352d85818",
+		"name" : "WIFI/Bluetooth",
+		"value" : "2.4/5G WIFI 802.11a/b/g/n/ac, Bluetooth 4.2",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "a6e2284d-b76a-4005-98d8-15c42cf78207",
+		"name" : "Sole material",
+		"value" : "Rubber",
+		"productId" : "902841da-dd46-4b8e-875b-2ea8b6f04c74",
+		"variantId" : null,
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "acfe2da2-835e-41e1-82f6-980309f8f998",
+		"name" : "color",
+		"value" : "Indigo blue",
+		"productId" : null,
+		"variantId" : "db0ba396-8b33-4619-9f0a-4675f43bbda9",
+		"createdAt" : "2025-10-21 21:08:16.972",
+		"updatedAt" : "2025-10-21 21:08:16.972"
+	},
+	{
+		"id" : "aeb1ed83-1fec-4b91-b898-177078d271b9",
+		"name" : "Screen Technology",
+		"value" : "LTPO AMOLED",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-08-03 18:46:57.799",
+		"updatedAt" : "2025-08-03 18:46:25.979"
+	},
+	{
+		"id" : "ba81aa28-be54-464c-89b3-ba8d77a1f112",
+		"name" : "Operating system",
+		"value" : "HarmonyOS",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-08-03 18:45:12.705",
+		"updatedAt" : "2025-08-03 18:44:06.933"
+	},
+	{
+		"id" : "c96f6122-4dea-4488-8555-b91c9e65cc36",
+		"name" : "material",
+		"value" : "70% polyester (recycled), 30% cotton",
+		"productId" : "ed41cc2a-7eaf-483c-bafa-2729a0fc7b4f",
+		"variantId" : null,
+		"createdAt" : "2025-07-13 19:13:37.230",
+		"updatedAt" : "2025-07-13 19:13:37.230"
+	},
+	{
+		"id" : "d82d7ef2-e7c0-45a6-8f69-17f149515833",
+		"name" : "Color",
+		"value" : "White",
+		"productId" : null,
+		"variantId" : "18d6375d-b6b8-443b-934b-af6d9675e899",
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "e1d7dc08-5ae6-4b6d-933c-d697fbce9022",
+		"name" : "fit",
+		"value" : "Slim fit",
+		"productId" : "ed41cc2a-7eaf-483c-bafa-2729a0fc7b4f",
+		"variantId" : null,
+		"createdAt" : "2025-07-13 19:13:37.230",
+		"updatedAt" : "2025-07-13 19:13:37.230"
+	},
+	{
+		"id" : "e35f752c-c08e-4699-a4c7-d35c142bf36e",
+		"name" : "GPU",
+		"value" : " Dual- core G31 MP2",
+		"productId" : "daa0f634-e29b-4d71-a433-b2863e9acead",
+		"variantId" : null,
+		"createdAt" : "2025-10-21 20:41:57.684",
+		"updatedAt" : "2025-10-21 20:41:57.684"
+	},
+	{
+		"id" : "ec08d6a7-f092-4bf0-8954-b96f58c64435",
+		"name" : "weight",
+		"value" : "55g (case only)",
+		"productId" : "40260d7d-9cfa-4f06-b624-033fcf3ad6c5",
+		"variantId" : null,
+		"createdAt" : "2025-07-21 12:36:45.356",
+		"updatedAt" : "2025-07-21 12:36:45.356"
+	},
+	{
+		"id" : "f765a124-2be6-4f4b-84f4-4c2ff07af520",
+		"name" : "Outer material",
+		"value" : "Cowhide suede",
+		"productId" : "902841da-dd46-4b8e-875b-2ea8b6f04c74",
+		"variantId" : null,
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	},
+	{
+		"id" : "fc484ee4-1410-4643-98ad-84392a678105",
+		"name" : "Fabric type",
+		"value" : "50% Synthetic, 50% Mesh",
+		"productId" : "902841da-dd46-4b8e-875b-2ea8b6f04c74",
+		"variantId" : null,
+		"createdAt" : "2025-08-21 13:58:45.795",
+		"updatedAt" : "2025-08-21 13:58:45.795"
+	}
+]
