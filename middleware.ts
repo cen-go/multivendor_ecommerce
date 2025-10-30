@@ -11,6 +11,11 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  // If the route is a webhook, skip the middleware logic
+  if (req.nextUrl.pathname.startsWith("/api/webhooks")) {
+    return NextResponse.next();
+  }
+
   if (isProtectedRoute(req)) await auth.protect();
 
   // Creating a basic response
@@ -32,7 +37,7 @@ export default clerkMiddleware(async (auth, req) => {
       maxAge: 3600 * 24 * 30,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: 'lax',
+      sameSite: "lax",
     });
   }
   return response;
