@@ -5,20 +5,20 @@ const DEFAULT_COUNTRY = { name: "United States", code: "US" };
 export const runtime = "edge"; // This is the critical line
 
 export async function POST(req: Request) {
-  let countryCode;
+  // Use the Vercel-provided country code header. It's reliable in production
+  // and when using `vercel dev` for local development.
+  let countryCode = req.headers.get("x-vercel-ip-country");
 
-  // This logic is now simplified because we are always on the Edge in production
-  // In production on Vercel, use the reliable req.geo object.
-  if (process.env.NODE_ENV === "production") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    countryCode = (req as any).geo?.country;
-  } else {
-    // In development, fall back to an IP lookup API.
-    // Vercel provides the user's IP in this header during development.
-    const ip = req.headers.get("x-forwarded-for");
-    const res = await fetch(`https://ipapi.co/${ip}/json/`);
-    const data = await res.json();
-    countryCode = data.country_code;
+  // Fallback for standard `next dev` where the Vercel header is not present.
+  if (!countryCode && process.env.NODE_ENV === "development") {
+    try {
+      const res = await fetch(`https://ipapi.co/json/`);
+      const data = await res.json();
+      countryCode = data.country_code;
+    } catch (error) {
+      console.error("IP lookup failed in development:", error);
+      countryCode = null; // Ensure it's null on failure
+    }
   }
 
   if (countryCode) {
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       COUNTRIES.find((c) => c.code === countryCode) ?? DEFAULT_COUNTRY;
 
     // Create a response object to set the cookie on
-    const response = NextResponse.json({ success: true, country: userCountry }, {status: 200});
+    const response = NextResponse.json({ success: true, country: userCountry });
 
     // Set the cookie on the response
     response.cookies.set("userCountry", JSON.stringify(userCountry), {
