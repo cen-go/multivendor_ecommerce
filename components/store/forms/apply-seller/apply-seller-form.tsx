@@ -11,7 +11,7 @@ import Step2 from "./steps/step-2/step-2";
 import Step3 from "./steps/step-3/step-3";
 
 export default function ApplySellerMultiForm() {
-  const [step, setStep] = useState<number>(3);
+  const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<StoreType>({
     name: "",
     description: "",

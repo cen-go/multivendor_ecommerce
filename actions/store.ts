@@ -1,7 +1,7 @@
 "use server";
 
 // Clerk
-import { currentUser } from "@clerk/nextjs/server";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 // zod schemas
 import * as z from "zod";
 import { ShippingRateFormSchema, StoreFormSchema, StoreShippingFormSchema, StoreShippingSchema } from "@/lib/schemas";
@@ -660,9 +660,14 @@ export async function updateStoreStatus(storeId: string, status: StoreStatus) {
           role: "SELLER",
         },
       });
+      // Update user's private metadata in Clerk
+      const client = await clerkClient()
+      await client.users.updateUserMetadata(updatedStore.userId, {
+        privateMetadata: { role: "SELLER" },
+      });
     }
 
-    return {success: true, message: "Order status successfully updated.", status: updatedStore.status};
+    return {success: true, message: "Store status successfully updated.", status: updatedStore.status};
 
   } catch (error) {
     console.error("Error updating the store status: ", error);
