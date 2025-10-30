@@ -1,6 +1,8 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import db from './lib/db';
+import { geolocation } from "@vercel/functions";
+import countries from "./lib/data/countries.json"
+import { DEFAULT_COUNTRY } from './lib/constants';
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard",
@@ -23,32 +25,27 @@ export default clerkMiddleware(async (auth, req) => {
 
   // ---------- Handle Country Detection ------------
   // Step-1 Check if country is already in the cookies
-  const countryCookie = req.cookies.get("userCountry");
+  const countryCookie = req.cookies.get("userCountryCode");
 
   if (countryCookie) {
     // if the user already selected a country, use this for subsequent requests
     response = NextResponse.next();
   } else {
-    response = NextResponse.redirect(new URL(req.url));
-
     // Get the user's country code from the request geo headers
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const countryCode = (req as any).geo?.country;
+    const countryCode = geolocation(req).country;
+    const userCountry = countries.find(c => c.code === countryCode) ?? DEFAULT_COUNTRY;
 
-    // Find the country in the database using the code
-    const userCountry = await db.country.findFirst({
-      where: { code: countryCode },
-    });
+    // If a country code is found, set it in the cookies
+    if (countryCode) {
+      response = NextResponse.redirect(new URL(req.url));
 
-    // If a country is found, set it in the cookies
-    if (userCountry) {
-    response.cookies.set("userCountry", JSON.stringify(userCountry), {
-      maxAge: 3600 * 24 * 30,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    });
-  }
+      response.cookies.set("userCountry", JSON.stringify(userCountry), {
+        maxAge: 3600 * 24 * 30,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      });
+    }
   }
   return response;
 });
