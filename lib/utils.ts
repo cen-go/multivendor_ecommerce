@@ -96,7 +96,7 @@ export async function getUserCountry(): Promise<UserCountry> {
   let userCountry = DEFAULT_COUNTRY;
   try {
     const response = await fetch(
-      `https://api.ipinfo.io/lite/me?token=${process.env.IPINFO_TOKEN}`
+      `https://api.ipinfo.io/lite/me?token=${process.env.NEXT_PUBLIC_IPINFO_TOKEN}`
     );
     if (response.ok) {
       const data = await response.json();

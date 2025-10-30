@@ -1,7 +1,7 @@
 "use client"
 
 // React, Next.js
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 // Types
 import { SelectMenuOption, UserCountry } from "@/lib/types";
@@ -12,11 +12,15 @@ import { ChevronDownIcon } from "lucide-react";
 import CountrySelector from "@/components/shared/country-selector";
 // Data
 import COUNTRIES from "@/lib/data/countries.json";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import { getUserCountry } from "@/lib/utils";
 
 export default function CountryLanguageCurrencySelector({
   userCountry,
+  countryCookie,
 }: {
   userCountry: UserCountry;
+  countryCookie: RequestCookie | undefined;
 }) {
   const router = useRouter()
   // State for opening and closing the modal
@@ -52,6 +56,17 @@ export default function CountryLanguageCurrencySelector({
       }
     }
   }
+
+  useEffect(() => {
+    const detectUserCountry = async () => {
+      if (!countryCookie) {
+        const userCountry = await getUserCountry();
+        await handleCountryClick(userCountry.code);
+      }
+    };
+
+    detectUserCountry();
+  }, []);
 
   return (
     <div className="relative inline-block">

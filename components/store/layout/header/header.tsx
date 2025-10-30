@@ -37,7 +37,7 @@ export default async function StoreHeader() {
             </Link>
             <div className="flex lg:hidden sm:gap-2">
               {/* <DownloadApp /> */}
-              <CountryLanguageCurrencySelector userCountry={userCountry} />
+              <CountryLanguageCurrencySelector userCountry={userCountry} countryCookie={userCountryCookie} />
               <Cart />
               <UserMenu />
             </div>
@@ -45,7 +45,7 @@ export default async function StoreHeader() {
           <Search />
         </div>
         <div className="hidden lg:flex gap-4 w-full lg:w-fit lg:mt-2 justify-end mt-1.5 pl-6">
-          <CountryLanguageCurrencySelector userCountry={userCountry} />
+          <CountryLanguageCurrencySelector userCountry={userCountry} countryCookie={userCountryCookie} />
           <Cart />
           <UserMenu />
         </div>
