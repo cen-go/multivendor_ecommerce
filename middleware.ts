@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { getUserCountry } from './lib/utils';
+import db from './lib/db';
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard",
@@ -30,15 +30,25 @@ export default clerkMiddleware(async (auth, req) => {
     response = NextResponse.next();
   } else {
     response = NextResponse.redirect(new URL(req.url));
-    // step-2 Get the user country using the util function
-    const userCountry = await getUserCountry();
-    // Set a cookie with the detected country for future requests
+
+    // Get the user's country code from the request geo headers
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const countryCode = (req as any).geo?.country;
+
+    // Find the country in the database using the code
+    const userCountry = await db.country.findFirst({
+      where: { code: countryCode },
+    });
+
+    // If a country is found, set it in the cookies
+    if (userCountry) {
     response.cookies.set("userCountry", JSON.stringify(userCountry), {
       maxAge: 3600 * 24 * 30,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
     });
+  }
   }
   return response;
 });
