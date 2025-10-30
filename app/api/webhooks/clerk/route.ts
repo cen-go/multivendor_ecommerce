@@ -8,11 +8,12 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import db from "@/lib/db";
 
 export async function POST(req: Request) {
+  // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SIGNING_SECRET;
 
   if (!WEBHOOK_SECRET) {
     throw new Error(
-      "Please add CLERK_WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
+      "Please add CLERK_WEBHOOK_SIGNING_SECRET from Clerk Dashboard to .env or .env.local"
     );
   }
 
@@ -29,11 +30,11 @@ export async function POST(req: Request) {
     });
   }
 
-  // Get the payload
+  // Get the body
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
-  // Create a new Svix instance with secret
+  // Create a new Svix instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
 
   try {
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
 
       // Attacah user role as private metadata in clerk
       const client = await clerkClient();
-      await client.users.updateUserMetadata(evt.data.id, {
+      await client.users.updateUserMetadata(id, {
         privateMetadata: { role: dbUser.role || "USER" },
       });
     }
@@ -86,10 +87,13 @@ export async function POST(req: Request) {
       }
 
       // check if the user is in app db
-      const dbUser = await db.user.findUnique({ where: { id: evt.data.id } });
-      // delete the user from app db
-      if (dbUser) {
-        await db.user.delete({ where: { id: dbUser.id } });
+      const userInDb = await db.user.findUnique({ where: { id: evt.data.id } });
+      // delete the user and their store from app db
+      if (userInDb) {
+        await db.$transaction([
+          db.store.deleteMany({ where: { userId: userInDb.id } }),
+          db.user.delete({ where: { id: userInDb.id } }),
+        ]);
       }
     }
 
