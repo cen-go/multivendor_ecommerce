@@ -15,7 +15,7 @@ import Img4 from "@/public/assets/images/swiper/4.webp";
 
 export default function HomeMainSwiper() {
   return (
-    <div className="w-full h-[140px] sm:h-[250px] md:h-[300px] lg:h-[340px] xl:h-[380px] 2xl:h-[420px] overflow-hidden">
+    <div className="w-full h-[140px] sm:h-[250px] md:h-[300px] lg:h-[340px] xl:h-[380px] 2xl:h-[400px] overflow-hidden">
 
       <Swiper
         modules={[Autoplay, Pagination, Navigation]}

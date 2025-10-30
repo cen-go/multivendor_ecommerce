@@ -10,7 +10,7 @@ import AnimatedDeals from "@/components/store/home/animated-deals";
 import Featured from "@/components/store/home/featured";
 import FeaturedCategories from "@/components/store/home/featured-categories";
 import HomeMainSwiper from "@/components/store/home/home-main-swiper";
-import HomeSideline from "@/components/store/home/sideline/home-sideline";
+// import HomeSideline from "@/components/store/home/sideline/home-sideline";
 import HomeUserCard from "@/components/store/home/user-card/home-user-card";
 import MainSwiper from "@/components/store/shared/swiper";
 
@@ -32,7 +32,7 @@ export default async function Home() {
 
   return (
     <div className="relative w-full">
-      <HomeSideline />
+      {/* <HomeSideline /> */}
       <div className="w-full h-full bg-[#f5f5f5] overflow-x-hidden">
           <div className="max-w-[1600px] mx-auto min-h-screen p-4">
             {/* Main */}
@@ -69,7 +69,7 @@ export default async function Home() {
             </div>
             
             {/* Animated deals */}
-            <div className="mt-2 hidden min-[915px]:block">
+            <div className="mt-4 hidden min-[915px]:block">
               <AnimatedDeals
                 products={products_best_deals.filter(
                   (product): product is SimpleProduct =>
