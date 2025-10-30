@@ -1,6 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { geolocation } from "@vercel/functions";
 import countries from "./lib/data/countries.json"
 import { DEFAULT_COUNTRY } from './lib/constants';
 
@@ -32,7 +31,9 @@ export default clerkMiddleware(async (auth, req) => {
     response = NextResponse.next();
   } else {
     // Get the user's country code from the request geo headers
-    const countryCode = geolocation(req).country;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const countryCode = (req as any).geo?.country;
+    console.log(countryCode);
     const userCountry = countries.find(c => c.code === countryCode) ?? DEFAULT_COUNTRY;
 
     // If a country code is found, set it in the cookies
