@@ -24,7 +24,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   // ---------- Handle Country Detection ------------
   // Step-1 Check if country is already in the cookies
-  const countryCookie = req.cookies.get("userCountryCode");
+  const countryCookie = req.cookies.get("userCountry");
 
   if (countryCookie) {
     // if the user already selected a country, use this for subsequent requests
@@ -33,11 +33,11 @@ export default clerkMiddleware(async (auth, req) => {
     // Get the user's country code from the request geo headers
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const countryCode = (req as any).geo?.country;
-    console.log(countryCode);
-    const userCountry = countries.find(c => c.code === countryCode) ?? DEFAULT_COUNTRY;
 
     // If a country code is found, set it in the cookies
     if (countryCode) {
+      const userCountry = countries.find(c => c.code === countryCode) ?? DEFAULT_COUNTRY;
+
       response = NextResponse.redirect(new URL(req.url));
 
       response.cookies.set("userCountry", JSON.stringify(userCountry), {
