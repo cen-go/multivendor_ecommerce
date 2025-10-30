@@ -13,7 +13,6 @@ import CountrySelector from "@/components/shared/country-selector";
 // Data
 import COUNTRIES from "@/lib/data/countries.json";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import { getUserCountry } from "@/lib/utils";
 
 export default function CountryLanguageCurrencySelector({
   userCountry,
@@ -59,14 +58,24 @@ export default function CountryLanguageCurrencySelector({
 
   useEffect(() => {
     const detectUserCountry = async () => {
+      // If the country cookie is not set, detect and set it.
       if (!countryCookie) {
-        const userCountry = await getUserCountry();
-        await handleCountryClick(userCountry.code);
+        try {
+          // This API route will detect country from `req.geo` and set the cookie.
+          const response = await fetch("/api/detectAndSetCountry", {
+            method: "POST",
+          });
+          if (response.ok) {
+            router.refresh();
+          }
+        } catch (error) {
+          console.error("Error detecting user country:", error);
+        }
       }
     };
 
     detectUserCountry();
-  }, []);
+  }, [countryCookie, router]);
 
   return (
     <div className="relative inline-block">
