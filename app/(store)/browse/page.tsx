@@ -52,7 +52,7 @@ export default async function BrowsePage({searchParams}: Props) {
       offer,
       search,
       minPrice: Number(minPrice) || 0,
-      maxPrice: Number(maxPrice) || Number.MAX_SAFE_INTEGER,
+      maxPrice: Number(maxPrice) || undefined,
     },
     sortValue
   );

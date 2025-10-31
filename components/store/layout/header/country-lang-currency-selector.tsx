@@ -60,7 +60,6 @@ export default function CountryLanguageCurrencySelector({
     const detectUserCountry = async () => {
       // If the country cookie is not set, detect and set it.
       if (!countryCookie) {
-        console.log("this run");
         try {
           // This API route will detect country from `req.geo` and set the cookie.
           const response = await fetch("/api/detectAndSetCountry", {

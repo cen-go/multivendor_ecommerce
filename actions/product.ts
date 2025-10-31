@@ -468,7 +468,7 @@ export async function getProducts(
               some: {
                 price: {
                   gte: filters.minPrice ? Math.round(filters.minPrice * 100) : 0,
-                  lte: filters.maxPrice ? Math.round(filters.maxPrice * 100) : Number.MAX_SAFE_INTEGER,
+                  lte: filters.maxPrice ? Math.round(filters.maxPrice * 100) : 2147483647,
                 },
               },
             }
