@@ -4,7 +4,7 @@
 
 ---
 
-![Project Screenshot](https://via.placeholder.com/800x400.png?text=Add+a+screenshot+of+your+app!)
+![Project Screenshot](https://res.cloudinary.com/dkkuvgnl7/image/upload/v1762197641/screencapture-portfolio-multivendor-ecommerce-vercel-app-2025-11-03-22_17_08.jpg!)
 
 A full‑featured multivendor e‑commerce demo built with Next.js (App Router), Prisma, PostgreSQL (Neon), Stripe and PayPal integrations, and a Tailwind CSS UI.
 
