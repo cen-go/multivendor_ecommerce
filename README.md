@@ -1,10 +1,25 @@
 # Multivendor E‑commerce (Next.js) — Portfolio Project
 
+**[Live Demo](https://portfolio-multivendor-ecommerce.vercel.app/)**
+
+---
+
+![Project Screenshot](https://via.placeholder.com/800x400.png?text=Add+a+screenshot+of+your+app!)
+
 A full‑featured multivendor e‑commerce demo built with Next.js (App Router), Prisma, PostgreSQL (Neon), Stripe and PayPal integrations, and a Tailwind CSS UI.
 
 This README contains quick setup, payment gateway notes, seeding instructions, and common troubleshooting tips tailored for this repo.
 
 ---
+
+## Tech Stack
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Tailwind CSS, ShadCN UI
+- **State Management:** Zustand
+- **ORM:** Prisma
+- **Database:** PostgreSQL (Neon)
+- **Payments:** Stripe, PayPal
+- **Core:** React 19, TypeScript
 
 ## Features
 - Multi‑vendor store pages and admin dashboard
@@ -13,18 +28,6 @@ This README contains quick setup, payment gateway notes, seeding instructions, a
 - PayPal order creation & capture + server actions
 - Prisma + PostgreSQL (Neon) with transaction-safe stock updates
 - Client UI: Tailwind, Swiper carousel, React Table, etc.
-
----
-
-## Tech stack
-- Next.js (App Router)
-- React 19
-- TypeScript
-- Prisma ORM
-- PostgreSQL (Neon)
-- Stripe, PayPal SDKs
-- Tailwind CSS, Swiper,
-- Zustand
 
 ---
 

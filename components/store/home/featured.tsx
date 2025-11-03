@@ -55,7 +55,7 @@ export default function Featured({ products }: { products: SimpleProduct[] }) {
             products={products}
             type="simple"
             slidesPerView={1}
-            spaceBetween={-10}
+            spaceBetween={20}
           />
         </div>
         {/* Coupon */}
@@ -66,7 +66,7 @@ export default function Featured({ products }: { products: SimpleProduct[] }) {
                 Wecome Newcomers!
               </h3>
               <p className="text-sm w-full text-white">
-                Enjoy shopping made easy like nothing before
+                Enjoy legendary discount in your first purchase from &#39;Test Store&#39;
               </p>
             </div>
             <div
@@ -74,12 +74,12 @@ export default function Featured({ products }: { products: SimpleProduct[] }) {
               text-left bg-contain bg-no-repeat"
               style={{ backgroundImage: "url(/assets/images/ads/coupon.gif)" }}
             >
-              <h3 className="text-[20px] leading-6 mt-[11px] mb-1 text-white w-full">
-                use &#39;SUPER50&#39;
+              <h3 className="text-[16px] leading-6 mt-[11px] mb-1 text-white w-full">
+                use &#39;ALMOSTFREE&#39;
               </h3>
 
               <p className="overflow-hidden overflow-ellipsis w-full text-xs -translate-y-1">
-                for 50% off
+                for 80% off
               </p>
             </div>
           </div>

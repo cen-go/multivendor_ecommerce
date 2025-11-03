@@ -6,7 +6,7 @@ import { ProductSimpleVariantType, ProductSize, ProductType, ProductWithVariants
 type FormatType = "simple" | "full";
 
 type Param = {
-  property: "category" | "subcategory" | "offer";
+  property: "category" | "subcategory" | "offer" | "store";
   value: string;
   type: FormatType;
 }
@@ -24,7 +24,8 @@ export async function getHomeDataDynamic(params:Param[]): Promise<Record<string,
     const propertyMapping: PropertyMapping = {
       category: "category.url",
       subcategory: "subcategory.url",
-      offer: "offerTag.url"
+      offer: "offerTag.url",
+      store: "store.url",
     };
 
     const mapProperty = (property: string): string => {
@@ -119,6 +120,8 @@ export async function getHomeDataDynamic(params:Param[]): Promise<Record<string,
           ? { category: { url: value } }
           : dbField === "subcategory.url"
           ? { subcategory: { url: value } }
+          : dbField === "store.url"
+          ? { store: { url: value } }
           : {};
 
       // Query products based on the constructed where clause

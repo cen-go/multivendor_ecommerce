@@ -21,13 +21,14 @@ export default async function Home() {
   const { products } = productsData;
 
   const {
-    products_best_deals,
     products_user_card,
-    products_featured,
+    products_gaming,
+    products_test_store,
   } = await getHomeDataDynamic([
     { property: "offer", value: "best-deals", type: "simple" },
     { property: "offer", value: "user-card", type: "simple" },
-    { property: "offer", value: "featured", type: "simple" },
+    { property: "category", value: "gaming", type: "simple" },
+    { property: "store", value: "test-store", type: "simple" },
   ]);
 
   return (
@@ -51,7 +52,7 @@ export default async function Home() {
                 <HomeMainSwiper />
                 {/* Featured card */}
                 <Featured
-                  products={products_featured.filter(
+                  products={products_test_store.filter(
                     (product): product is SimpleProduct =>
                       "variantSlug" in product
                   )}
@@ -71,7 +72,7 @@ export default async function Home() {
             {/* Animated deals */}
             <div className="mt-4 hidden min-[915px]:block">
               <AnimatedDeals
-                products={products_best_deals.filter(
+                products={products_gaming.filter(
                   (product): product is SimpleProduct =>
                     "variantSlug" in product
                 )}
